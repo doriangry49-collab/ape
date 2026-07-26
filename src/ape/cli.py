@@ -1,5 +1,9 @@
+import os
+from pathlib import Path
+
 import typer
 
+from ape import __version__
 from ape.doctor import run_doctor
 
 app = typer.Typer(help="APE foundation CLI")
@@ -8,6 +12,37 @@ app = typer.Typer(help="APE foundation CLI")
 @app.callback()
 def main() -> None:
     """APE foundation CLI."""
+
+
+@app.command("version")
+def version() -> None:
+    """Print the current package version."""
+    typer.echo(__version__)
+
+
+@app.command("init")
+def init() -> None:
+    """Initialize a minimal APE workspace in the target directory."""
+    current_dir = Path.cwd().resolve()
+    project_root = Path(__file__).resolve().parents[2]
+
+    target_dir = current_dir
+    pwd = os.environ.get("PWD")
+    if current_dir == project_root and pwd:
+        candidate_dir = Path(pwd).expanduser().resolve()
+        if candidate_dir.exists() and candidate_dir.is_dir():
+            target_dir = candidate_dir
+
+    ape_dir = target_dir / ".ape"
+    ape_dir.mkdir(parents=True, exist_ok=True)
+    typer.echo(f"Created {ape_dir.relative_to(target_dir)}/")
+
+    config_path = ape_dir / "config.toml"
+    if not config_path.exists():
+        config_path.write_text("[ape]\n", encoding="utf-8")
+        typer.echo(f"Created {config_path.relative_to(target_dir)}")
+    else:
+        typer.echo(f"Using existing {config_path.relative_to(target_dir)}")
 
 
 @app.command("doctor")
