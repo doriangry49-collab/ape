@@ -44,7 +44,9 @@ def test_init_command_uses_pwd_for_target_directory(tmp_path, monkeypatch) -> No
     assert (target_dir / ".ape" / "config.toml").is_file()
 
 
-def test_config_command_reports_workspace_status(tmp_path, monkeypatch) -> None:
+def test_config_command_reports_workspace_status_from_current_directory(
+    tmp_path, monkeypatch
+) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("PWD", raising=False)
 
@@ -56,6 +58,28 @@ def test_config_command_reports_workspace_status(tmp_path, monkeypatch) -> None:
     assert f"Workspace: {tmp_path}" in config_result.output
     assert f"Config: {tmp_path / '.ape' / 'config.toml'}" in config_result.output
     assert "Status: OK" in config_result.output
+
+
+def test_config_command_reports_workspace_status_from_parent_directory(
+    tmp_path, monkeypatch
+) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text("[ape]\n", encoding="utf-8")
+
+    child_dir = workspace_dir / "child"
+    child_dir.mkdir()
+
+    monkeypatch.chdir(child_dir)
+    monkeypatch.delenv("PWD", raising=False)
+
+    result = runner.invoke(app, ["config"])
+
+    assert result.exit_code == 0
+    assert f"Workspace: {workspace_dir}" in result.output
+    assert f"Config: {workspace_dir / '.ape' / 'config.toml'}" in result.output
+    assert "Status: OK" in result.output
 
 
 def test_config_command_errors_without_workspace(tmp_path, monkeypatch) -> None:

@@ -14,15 +14,18 @@
 ## Current Status
 
 - **Version:** v0.1.0
-- **Current Sprint:** Sprint 1.1 – Project Memory & Architecture
-- **Last Completed Sprint:** Sprint 1 – Foundation
-- **Current Focus:** finalize documentation and project memory
+- **Current Sprint:** Sprint 3 – Configuration Foundation
+- **Last Completed Sprint:** Sprint 3 – Configuration Foundation
+- **Current Focus:** finalize Sprint 3 documentation and prepare for Sprint 4
 
 ## Working Features
 
 - ✅ uv-based project environment
 - ✅ Typer CLI
 - ✅ `ape doctor`
+- ✅ `ape version`
+- ✅ `ape init`
+- ✅ `ape config`
 - ✅ pytest
 - ✅ Ruff
 - ✅ Basic project structure
@@ -59,12 +62,15 @@ A sprint is considered complete only if all of the following pass:
 
 ## Next Objective
 
-Sprint 2
+Sprint 4 – Workspace Discovery
 
-Planned commands:
+Planned work:
 
-- `ape version`
-- `ape init`
+- Detect an APE workspace from child directories.
+- Search parent directories for `.ape/config.toml`.
+- Keep existing commands unchanged.
+- Add regression tests.
+- No new dependencies.
 
 ## Resume Instructions
 

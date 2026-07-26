@@ -12,13 +12,13 @@ Before making any changes, read these files in order:
 
 ## Current Sprint
 
-Sprint 1.1 – Project Memory & Architecture
+Sprint 4 – Workspace Discovery
 
 ## Current Goal
 
-Complete the project documentation and establish a permanent project memory for the current foundation.
+Detect an APE workspace from child directories by searching parent directories for `.ape/config.toml`.
 
-Do not redesign the Foundation.
+Do not redesign the existing CLI.
 Do not introduce new dependencies without approval.
 Do not add AI providers or other platform layers.
 
@@ -30,13 +30,10 @@ Do not add AI providers or other platform layers.
 - Every sprint ends with a working system.
 - GitHub is the single source of truth.
 
-## Next Planned Sprint
+## Next Planned Work
 
-Sprint 2
-
-Planned work:
-
-- `ape version`
-- `ape init`
-
-Only begin Sprint 2 after Sprint 1.1 is fully completed and reviewed.
+- Detect an APE workspace from child directories.
+- Search parent directories for `.ape/config.toml`.
+- Keep existing commands unchanged.
+- Add regression tests.
+- No new dependencies.
