@@ -44,6 +44,30 @@ def test_init_command_uses_pwd_for_target_directory(tmp_path, monkeypatch) -> No
     assert (target_dir / ".ape" / "config.toml").is_file()
 
 
+def test_config_command_reports_workspace_status(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("PWD", raising=False)
+
+    init_result = runner.invoke(app, ["init"])
+    config_result = runner.invoke(app, ["config"])
+
+    assert init_result.exit_code == 0
+    assert config_result.exit_code == 0
+    assert f"Workspace: {tmp_path}" in config_result.output
+    assert f"Config: {tmp_path / '.ape' / 'config.toml'}" in config_result.output
+    assert "Status: OK" in config_result.output
+
+
+def test_config_command_errors_without_workspace(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("PWD", raising=False)
+
+    result = runner.invoke(app, ["config"])
+
+    assert result.exit_code == 1
+    assert "Error: no APE workspace found" in result.output
+
+
 def test_doctor_command_succeeds_and_prints_status() -> None:
     result = runner.invoke(app, ["doctor"])
 

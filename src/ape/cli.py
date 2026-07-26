@@ -45,6 +45,22 @@ def init() -> None:
         typer.echo(f"Using existing {config_path.relative_to(target_dir)}")
 
 
+@app.command("config")
+def config() -> None:
+    """Show the current APE workspace configuration details."""
+    current_dir = Path.cwd().resolve()
+    workspace_dir = current_dir
+    config_path = workspace_dir / ".ape" / "config.toml"
+
+    if not config_path.exists():
+        typer.echo("Error: no APE workspace found")
+        raise typer.Exit(code=1)
+
+    typer.echo(f"Workspace: {workspace_dir}")
+    typer.echo(f"Config: {config_path}")
+    typer.echo("Status: OK")
+
+
 @app.command("doctor")
 def doctor() -> None:
     """Show a simple environment status."""
