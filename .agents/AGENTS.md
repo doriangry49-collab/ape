@@ -42,3 +42,14 @@ Any other wording ("looks good", "continue", "okay", "evaluate", etc.) must not 
 
 ## Architecture Freeze Rule
 Eğer son iki mimari inceleme raporunda yalnızca orta (Medium) ve düşük (Low) önem seviyesinde bulgular tespit ediliyorsa, yeni bir "cleanup sprint" önermek yerine ürün geliştirme (feature sprint) öner. Mimari inceleme bundan sonra sadece geliştirilen yeni özelliğin oluşturduğu teknik borcu değerlendirmek için kullanılsın. Sürekli refactoring önermekten kaçın. YAGNI ilkesini aktif olarak uygula.
+
+## Sprint Closure Procedure
+At the end of every sprint (after changes are pushed), you MUST run the following 5 commands as a standard "Repository Health Check":
+```bash
+git fetch origin
+git status
+git log --oneline HEAD..origin/main
+ruff check .
+pytest -q
+```
+If HEAD..origin/main is empty, git status says "Already up to date", and all tests/checks pass, then the sprint is truly finished. This proves that you successfully pushed the code and the repository is healthy.
