@@ -6,7 +6,12 @@ import typer
 from ape import __version__
 from ape.doctor import run_doctor
 from ape.project import Project
-from ape.services import DoctorService
+from ape.services import (
+    ConfigService,
+    DoctorService,
+    ProjectInfoService,
+    ProjectValidationService,
+)
 
 app = typer.Typer(help="APE foundation CLI")
 
@@ -28,40 +33,35 @@ def init() -> None:
     current_dir = Path.cwd().resolve()
     project_root = Path(__file__).resolve().parents[2]
 
-    target_dir = current_dir
-    pwd = os.environ.get("PWD")
-    if current_dir == project_root and pwd:
-        candidate_dir = Path(pwd).expanduser().resolve()
-        if candidate_dir.exists() and candidate_dir.is_dir():
-            target_dir = candidate_dir
+    project = Project.load(current_dir)
+    info_service = ProjectInfoService(project)
+    target_root, ape_dir, config_path, created = info_service.initialize_workspace(
+        current_dir,
+        project_root,
+        os.environ.get("PWD"),
+    )
 
-    project = Project.load(target_dir)
-    target_dir = project.root
-
-    ape_dir = target_dir / ".ape"
-    ape_dir.mkdir(parents=True, exist_ok=True)
-    typer.echo(f"Created {ape_dir.relative_to(target_dir)}/")
-
-    config_path = ape_dir / "config.toml"
-    if not config_path.exists():
-        config_path.write_text("[ape]\n", encoding="utf-8")
-        typer.echo(f"Created {config_path.relative_to(target_dir)}")
+    typer.echo(f"Created {ape_dir.relative_to(target_root)}/")
+    if created:
+        typer.echo(f"Created {config_path.relative_to(target_root)}")
     else:
-        typer.echo(f"Using existing {config_path.relative_to(target_dir)}")
+        typer.echo(f"Using existing {config_path.relative_to(target_root)}")
 
 
 @app.command("config")
 def config() -> None:
     """Show the current APE workspace configuration details."""
     project = Project.load()
+    info_service = ProjectInfoService(project)
+    validation_service = ProjectValidationService(project)
+    config_service = ConfigService(project)
 
-    if not project.exists():
+    if not validation_service.has_workspace or not validation_service.has_config:
         typer.echo("Error: no APE workspace found")
         raise typer.Exit(code=1)
 
-    config_path = project.config_path
-    typer.echo(f"Workspace: {project.root}")
-    typer.echo(f"Config: {config_path}")
+    typer.echo(f"Workspace: {info_service.root}")
+    typer.echo(f"Config: {config_service.config_path}")
     typer.echo("Status: OK")
 
 

@@ -209,6 +209,29 @@ def test_workspace_service_returns_none_when_workspace_is_missing(tmp_path) -> N
     assert service.exists is False
 
 
+def test_project_info_service_initializes_workspace_and_config(tmp_path, monkeypatch) -> None:
+    package_root = Path(__file__).resolve().parents[1]
+    target_dir = tmp_path / "target"
+    target_dir.mkdir()
+
+    monkeypatch.setenv("PWD", str(target_dir))
+
+    project = Project.load(package_root)
+    service = ProjectInfoService(project)
+
+    target_root, ape_dir, config_path, created = service.initialize_workspace(
+        package_root,
+        package_root,
+        str(target_dir),
+    )
+
+    assert target_root == target_dir
+    assert ape_dir == target_dir / ".ape"
+    assert config_path == target_dir / ".ape" / "config.toml"
+    assert created is True
+    assert config_path.read_text(encoding="utf-8") == "[ape]\n"
+
+
 def test_project_validation_service_reports_valid_project_state(tmp_path) -> None:
     workspace_dir = tmp_path / "workspace"
     workspace_dir.mkdir()

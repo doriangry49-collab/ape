@@ -18,3 +18,16 @@ class WorkspaceService:
     @property
     def exists(self) -> bool:
         return self.workspace_dir is not None
+
+    def resolve_target_directory(
+        self,
+        current_dir: Path,
+        project_root: Path,
+        pwd: str | None = None,
+    ) -> Path:
+        target_dir = current_dir
+        if current_dir == project_root and pwd:
+            candidate_dir = Path(pwd).expanduser().resolve()
+            if candidate_dir.exists() and candidate_dir.is_dir():
+                target_dir = candidate_dir
+        return target_dir
