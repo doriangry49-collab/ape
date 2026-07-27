@@ -39,3 +39,6 @@ Never move to the next step or sprint without committing approved changes first.
 I must never create a commit or push changes unless the user explicitly writes:
 `COMMIT APPROVED`
 Any other wording ("looks good", "continue", "okay", "evaluate", etc.) must not be interpreted as commit approval.
+
+## Architecture Freeze Rule
+Eğer son iki mimari inceleme raporunda yalnızca orta (Medium) ve düşük (Low) önem seviyesinde bulgular tespit ediliyorsa, yeni bir "cleanup sprint" önermek yerine ürün geliştirme (feature sprint) öner. Mimari inceleme bundan sonra sadece geliştirilen yeni özelliğin oluşturduğu teknik borcu değerlendirmek için kullanılsın. Sürekli refactoring önermekten kaçın. YAGNI ilkesini aktif olarak uygula.
