@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from ape.project import Project
-from ape.services.config_service import ConfigService
 from ape.services.project_validation_service import ProjectValidationService
-from ape.services.workspace_service import WorkspaceService
 
 
 class DoctorService:
@@ -11,8 +9,6 @@ class DoctorService:
 
     def __init__(self, project: Project) -> None:
         self._project = project
-        self._config_service = ConfigService(project)
-        self._workspace_service = WorkspaceService(project.root)
         self._validation_service = ProjectValidationService(project)
         self._status = "unknown"
         self._warnings: list[str] = []

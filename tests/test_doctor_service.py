@@ -60,3 +60,30 @@ def test_run_doctor_uses_the_provided_service() -> None:
 
     assert service_calls == []
 
+def test_doctor_service_does_not_hold_config_or_workspace_dependencies() -> None:
+    """DoctorService should only depend on ProjectValidationService.
+    ConfigService and WorkspaceService are dead dependencies — this test
+    enforces their removal from the constructor.
+    """
+    import inspect
+
+    from ape.services.doctor_service import DoctorService as DS
+
+    init_source = inspect.getsource(DS.__init__)
+    assert "ConfigService" not in init_source, (
+        "DoctorService.__init__ must not instantiate ConfigService"
+    )
+    assert "WorkspaceService" not in init_source, (
+        "DoctorService.__init__ must not instantiate WorkspaceService"
+    )
+
+
+def test_workspace_service_does_not_have_resolve_target_directory() -> None:
+    """resolve_target_directory was dead code after PWD removal.
+    This test enforces its removal.
+    """
+    from ape.services.workspace_service import WorkspaceService as WS
+
+    assert not hasattr(WS, "resolve_target_directory"), (
+        "WorkspaceService must not expose resolve_target_directory (dead code)"
+    )

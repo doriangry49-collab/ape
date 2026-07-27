@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from ape.project import Project
-from ape.services.workspace_service import WorkspaceService
 
 
 class ProjectInitializationService:
@@ -14,13 +13,7 @@ class ProjectInitializationService:
         current_dir: Path,
         project_root: Path,
     ) -> tuple[Path, Path, Path, bool]:
-        workspace_service = WorkspaceService(project_root)
-        target_dir = workspace_service.resolve_target_directory(
-            current_dir,
-            project_root,
-            str(current_dir),
-        )
-        project = Project.load(target_dir)
+        project = Project.load(current_dir)
         target_root = project.root
         ape_dir = target_root / ".ape"
         ape_dir.mkdir(parents=True, exist_ok=True)
