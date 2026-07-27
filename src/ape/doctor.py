@@ -3,6 +3,8 @@ import platform
 from rich.console import Console
 from rich.table import Table
 
+from ape.services import DoctorService
+
 
 def collect_environment_status() -> dict[str, str]:
     return {
@@ -12,8 +14,9 @@ def collect_environment_status() -> dict[str, str]:
     }
 
 
-def run_doctor(console: Console | None = None) -> None:
+def run_doctor(service: DoctorService, console: Console | None = None) -> None:
     console = console or Console()
+
     table = Table(title="APE Environment Status", show_header=False, box=None)
     table.add_column("Key", style="cyan")
     table.add_column("Value")

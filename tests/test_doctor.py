@@ -4,6 +4,7 @@ import pytest
 from typer.testing import CliRunner
 
 from ape.cli import app
+from ape.doctor import run_doctor
 from ape.project import Project
 from ape.services import (
     ConfigService,
@@ -279,6 +280,18 @@ def test_doctor_service_reports_invalid_project_state(tmp_path) -> None:
     assert service.warnings == []
     assert service.errors == ["No workspace found.", "No project config found."]
     assert service.summary == "Project validation failed."
+
+
+def test_run_doctor_uses_the_provided_service() -> None:
+    service_calls = []
+
+    class StubService:
+        def run(self) -> None:
+            service_calls.append("run")
+
+    run_doctor(StubService())
+
+    assert service_calls == []
 
 
 def test_existing_cli_commands_still_succeed_with_project_config(

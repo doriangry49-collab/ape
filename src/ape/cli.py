@@ -6,6 +6,7 @@ import typer
 from ape import __version__
 from ape.doctor import run_doctor
 from ape.project import Project
+from ape.services import DoctorService
 
 app = typer.Typer(help="APE foundation CLI")
 
@@ -67,7 +68,10 @@ def config() -> None:
 @app.command("doctor")
 def doctor() -> None:
     """Show a simple environment status."""
-    run_doctor()
+    project = Project.load()
+    service = DoctorService(project)
+    service.run()
+    run_doctor(service=service)
 
 
 if __name__ == "__main__":
