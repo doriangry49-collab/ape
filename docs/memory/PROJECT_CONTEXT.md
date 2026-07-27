@@ -14,9 +14,9 @@
 ## Current Status
 
 - **Version:** v0.1.0
-- **Current Sprint:** Sprint 6 – Project Services
-- **Last Completed Sprint:** Sprint 5 – Project Model
-- **Current Focus:** evolve the Project abstraction into reusable internal services while keeping CLI behavior unchanged
+- **Current Sprint:** Sprint 6.2 – Project Services
+- **Last Completed Sprint:** Sprint 6.1 – Project Services
+- **Current Focus:** build reusable project information services and prepare the future service layer while preserving CLI behavior and test coverage
 
 ## Working Features
 
@@ -31,7 +31,9 @@
 - ✅ Project configuration support
 - ✅ Built-in TOML parsing via `tomllib`
 - ✅ `Project.config` property
-- ✅ Read-only Project properties
+- ✅ `Project.name` property
+- ✅ `Project.metadata` property
+- ✅ Read-only Project API
 - ✅ pytest
 - ✅ Ruff
 - ✅ Basic project structure
@@ -65,17 +67,17 @@ A sprint is considered complete only if all of the following pass:
 - `ruff check .`
 - `git status` is clean
 - GitHub remains the source of truth for repository state
-- Current verification status: 13 passing tests
+- Current verification status: 16 passing tests
 
 ## Next Objective
 
-Sprint 6 – Project Services
+Sprint 6.2 – Project Services
 
 Planned work:
 
-- Expand the Project abstraction into reusable project services.
+- Expand reusable project information services for the future service layer.
 - Keep commands backward compatible.
-- Add or refine regression coverage as needed.
+- Preserve test coverage and CLI behavior.
 - No new dependencies.
 
 ## Resume Instructions

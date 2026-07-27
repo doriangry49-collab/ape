@@ -4,10 +4,10 @@
 - v0.1.0
 
 ## Current Sprint
-- Sprint 6 – Project Services
+- Sprint 6.2 – Project Services
 
 ## Last Completed Sprint
-- Sprint 5 – Project Model
+- Sprint 6.1 – Project Services
 
 ## Repository Status
 - Active
@@ -30,16 +30,19 @@
 - Project configuration support
 - Built-in TOML parsing via `tomllib`
 - `Project.config` property
-- Read-only Project properties
+- `Project.name` property
+- `Project.metadata` property
+- Read-only Project API
+- CLI behavior unchanged
 - No new dependencies
 
 ## Quality Status
 - Ruff checks passing
 - Pytest passing
-- 13 tests passing
+- 16 tests passing
 
 ## Next Goal
-- Expand the internal project abstraction into reusable project services for future CLI work
+- Continue building reusable project information services for the future service layer while preserving backward compatibility and test coverage
 
 ## Resume Order
 1. Read `docs/memory/PROJECT_CONTEXT.md`

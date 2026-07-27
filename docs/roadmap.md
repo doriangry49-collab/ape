@@ -24,10 +24,17 @@
 - Completed: expose `Project.config` and read-only Project properties.
 - Completed: add regression tests and keep dependencies unchanged.
 
-## Sprint 6 — Project Services (Planned)
-- Define lightweight project services around configuration and project state.
+## Sprint 6.1 — Project Services (Completed)
+- Completed: add `Project.name` as a lightweight project service.
+- Completed: add `Project.metadata` to expose reusable project information.
+- Completed: keep the Project API read-only and backward compatible.
+- Completed: preserve CLI behavior and add regression coverage.
+- Completed: keep dependencies lean and maintainable.
+
+## Sprint 6.2 — Project Services (Planned)
+- Expand reusable project information services for the future service layer.
 - Keep existing CLI commands backward compatible.
-- Add or preserve regression coverage as needed.
+- Preserve regression coverage and CLI behavior.
 - Keep dependencies lean and maintainable.
 
 ## Near-Term Priorities

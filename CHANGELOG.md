@@ -39,3 +39,12 @@
 - Added regression tests for config loading and missing-config fallback
 - Verified 13 passing tests
 - No new dependencies
+
+### Sprint 6.1
+- Added `Project.name` property
+- Added `Project.metadata` property
+- Kept the Project API read-only and lightweight
+- Preserved CLI behavior without changing output or commands
+- Added regression tests for the new project service behavior
+- Verified 16 passing tests
+- No new dependencies

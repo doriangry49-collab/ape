@@ -23,4 +23,9 @@
 - Kept the CLI surface unchanged while preserving existing behavior.
 - Added regression tests for config loading and missing-config fallback.
 - Verified the implementation with Ruff and pytest; 13 tests passed.
-- Prepared the repository for Sprint 6 planning under the title “Project Services”.
+- Completed Sprint 6.1 (Project Services).
+- Added `Project.name` and `Project.metadata` as lightweight read-only project services.
+- Kept the Project API read-only and backward compatible.
+- Preserved CLI behavior and added regression tests for the new project information accessors.
+- Verified the implementation with Ruff and pytest; 16 tests passed.
+- Prepared the repository for Sprint 6.2 planning under the title “Project Services”.

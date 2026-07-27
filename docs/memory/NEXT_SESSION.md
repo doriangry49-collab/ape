@@ -12,11 +12,11 @@ Before making any changes, read these files in order:
 
 ## Current Sprint
 
-Sprint 6 – Project Services
+Sprint 6.2 – Project Services
 
 ## Current Goal
 
-Evolve the lightweight Project abstraction into reusable internal services for future workspace-aware commands.
+Expand reusable project information services for the future service layer while preserving backward compatibility and test coverage.
 
 Do not redesign the existing CLI.
 Keep the architecture simple.
@@ -33,7 +33,7 @@ Continue to preserve the current command behavior and test coverage.
 
 ## Next Planned Work
 
-- Define lightweight project services around configuration and project state.
+- Build reusable project information services around configuration and project state.
 - Keep commands backward compatible.
-- Add or preserve regression coverage.
+- Preserve regression coverage.
 - No new dependencies.
