@@ -11,3 +11,9 @@
 - Added `.ape/` to `.gitignore`.
 - Completed manual verification of the CLI behavior.
 - Verified the implementation with tests and linting.
+- Completed Sprint 4 (Workspace Discovery).
+- Implemented workspace discovery for child and parent directories.
+- Extracted reusable workspace logic into `workspace.py` for shared use.
+- Expanded regression tests for workspace discovery behavior.
+- Verified the implementation with Ruff and pytest; all validation passed.
+- Changes were committed and pushed.

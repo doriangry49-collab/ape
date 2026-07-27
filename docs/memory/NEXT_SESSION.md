@@ -12,15 +12,15 @@ Before making any changes, read these files in order:
 
 ## Current Sprint
 
-Sprint 4 – Workspace Discovery
+Sprint 5 – Project Model
 
 ## Current Goal
 
-Detect an APE workspace from child directories by searching parent directories for `.ape/config.toml`.
+Design the internal project abstraction used by future CLI commands.
 
 Do not redesign the existing CLI.
+Keep the architecture simple.
 Do not introduce new dependencies without approval.
-Do not add AI providers or other platform layers.
 
 ## Development Rules
 
@@ -32,8 +32,8 @@ Do not add AI providers or other platform layers.
 
 ## Next Planned Work
 
-- Detect an APE workspace from child directories.
-- Search parent directories for `.ape/config.toml`.
-- Keep existing commands unchanged.
+- Define the Project abstraction.
+- Introduce reusable project loading.
+- Keep commands backward compatible.
 - Add regression tests.
 - No new dependencies.

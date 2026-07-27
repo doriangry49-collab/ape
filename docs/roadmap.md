@@ -10,10 +10,17 @@
 - Completed: implement `ape config` for workspace inspection.
 - Completed: add regression tests for configuration behavior.
 
-## Sprint 4 — Workspace Discovery
-- Detect an APE workspace from child directories.
-- Search parent directories for `.ape/config.toml`.
-- Keep existing commands unchanged.
+## Sprint 4 — Workspace Discovery (Completed)
+- Completed: detect an APE workspace from child directories.
+- Completed: search parent directories for `.ape/config.toml`.
+- Completed: keep existing commands unchanged.
+- Completed: add regression tests.
+- Completed: keep dependencies unchanged.
+
+## Sprint 5 — Project Model
+- Define the Project abstraction.
+- Introduce reusable project loading.
+- Improve internal architecture for future CLI commands.
 - Add regression tests.
 - No new dependencies.
 

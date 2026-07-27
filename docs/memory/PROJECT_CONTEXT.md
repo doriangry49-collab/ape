@@ -14,9 +14,9 @@
 ## Current Status
 
 - **Version:** v0.1.0
-- **Current Sprint:** Sprint 3 – Configuration Foundation
-- **Last Completed Sprint:** Sprint 3 – Configuration Foundation
-- **Current Focus:** finalize Sprint 3 documentation and prepare for Sprint 4
+- **Current Sprint:** Sprint 5 – Project Model
+- **Last Completed Sprint:** Sprint 4 – Workspace Discovery
+- **Current Focus:** prepare the project model and workspace abstraction
 
 ## Working Features
 
@@ -26,6 +26,8 @@
 - ✅ `ape version`
 - ✅ `ape init`
 - ✅ `ape config`
+- ✅ Workspace discovery
+- ✅ Shared workspace module
 - ✅ pytest
 - ✅ Ruff
 - ✅ Basic project structure
@@ -62,13 +64,13 @@ A sprint is considered complete only if all of the following pass:
 
 ## Next Objective
 
-Sprint 4 – Workspace Discovery
+Sprint 5 – Project Model
 
 Planned work:
 
-- Detect an APE workspace from child directories.
-- Search parent directories for `.ape/config.toml`.
-- Keep existing commands unchanged.
+- Define the Project abstraction.
+- Introduce reusable project loading.
+- Keep commands backward compatible.
 - Add regression tests.
 - No new dependencies.
 
