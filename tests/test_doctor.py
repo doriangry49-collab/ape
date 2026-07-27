@@ -7,6 +7,7 @@ from ape.cli import app
 from ape.project import Project
 from ape.services import (
     ConfigService,
+    DoctorService,
     ProjectInfoService,
     ProjectValidationService,
     WorkspaceService,
@@ -235,6 +236,49 @@ def test_project_validation_service_reports_missing_workspace_and_config(tmp_pat
         "No workspace found.",
         "No project config found.",
     ]
+
+
+def test_doctor_service_reports_valid_project_state(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text(
+        '[ape]\nname = "demo"\n', encoding="utf-8"
+    )
+
+    project = Project.load(workspace_dir)
+    service = DoctorService(project)
+
+    run_result = service.run()
+
+    assert run_result == {
+        "status": "ok",
+        "warnings": [],
+        "errors": [],
+        "summary": "Project validation passed.",
+    }
+    assert service.status == "ok"
+    assert service.warnings == []
+    assert service.errors == []
+    assert service.summary == "Project validation passed."
+
+
+def test_doctor_service_reports_invalid_project_state(tmp_path) -> None:
+    project = Project.load(tmp_path)
+    service = DoctorService(project)
+
+    run_result = service.run()
+
+    assert run_result == {
+        "status": "invalid",
+        "warnings": [],
+        "errors": ["No workspace found.", "No project config found."],
+        "summary": "Project validation failed.",
+    }
+    assert service.status == "invalid"
+    assert service.warnings == []
+    assert service.errors == ["No workspace found.", "No project config found."]
+    assert service.summary == "Project validation failed."
 
 
 def test_existing_cli_commands_still_succeed_with_project_config(
