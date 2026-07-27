@@ -1,17 +1,12 @@
-import platform
-
 from rich.console import Console
 from rich.table import Table
 
-from ape.services import DoctorService
+from ape.services import DoctorService, SystemInfoService
 
 
 def collect_environment_status() -> dict[str, str]:
-    return {
-        "package": "ape",
-        "python": platform.python_version(),
-        "platform": platform.platform(),
-    }
+    service = SystemInfoService()
+    return service.status
 
 
 def run_doctor(service: DoctorService, console: Console | None = None) -> None:
