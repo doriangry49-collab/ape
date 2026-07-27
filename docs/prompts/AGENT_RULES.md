@@ -41,6 +41,21 @@
 - Avoid unnecessary abstractions.
 - Do not introduce AI libraries, Docker, MCP, LiteLLM, databases, networking, or external services unless explicitly requested.
 
+## Repository Safety
+
+Never assume work is finished.
+
+Before considering a task complete, always verify:
+
+- `git status`
+- latest commit
+- latest push
+- Ruff
+- Pytest
+
+If the repository is not clean, explicitly report why.
+Never silently leave uncommitted work.
+
 ## Review
 
 Before proposing a commit, verify:
