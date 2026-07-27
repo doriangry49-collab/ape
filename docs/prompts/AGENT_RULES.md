@@ -56,6 +56,7 @@ Before considering a task complete, always verify:
 
 If the repository is not clean, explicitly report why.
 Never silently leave uncommitted work.
+Never consider a task complete until Repository Health has been verified.
 
 ## Review
 

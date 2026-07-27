@@ -41,3 +41,22 @@ Report only:
 - untracked files (if any)
 - test result
 - ruff result
+
+## Repository Health (Mandatory)
+
+Before ending any implementation session, always verify:
+
+- `git status`
+- `git log --oneline -5`
+- `git branch -vv`
+- `ruff check .`
+- `pytest -q`
+
+If implementation was completed:
+
+- Confirm the commit exists.
+- Confirm push succeeded.
+- Confirm the working tree is clean.
+- Confirm the current branch is synchronized with origin.
+
+If any verification fails, stop and report the problem before ending the session.
