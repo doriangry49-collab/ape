@@ -5,7 +5,7 @@ from typer.testing import CliRunner
 
 from ape.cli import app
 from ape.project import Project
-from ape.services import ConfigService
+from ape.services import ConfigService, ProjectInfoService
 from ape.workspace import find_workspace_dir
 
 runner = CliRunner()
@@ -155,6 +155,29 @@ def test_config_service_handles_missing_config(tmp_path) -> None:
     assert service.config_exists is False
     assert service.config == {}
     assert service.config_path == tmp_path / ".ape" / "config.toml"
+
+
+def test_project_info_service_exposes_read_only_project_information(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text(
+        '[ape]\nname = "demo"\n', encoding="utf-8"
+    )
+
+    project = Project.load(workspace_dir)
+    service = ProjectInfoService(project)
+
+    assert service.root == workspace_dir
+    assert service.config_path == workspace_dir / ".ape" / "config.toml"
+    assert service.exists is True
+    assert service.name == "demo"
+    assert service.info == project.info
+    assert service.metadata == project.metadata
+    assert service.config == project.config
+
+    with pytest.raises(TypeError):
+        service.info["name"] = "other"
 
 
 def test_existing_cli_commands_still_succeed_with_project_config(
