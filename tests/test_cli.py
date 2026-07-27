@@ -106,3 +106,16 @@ def test_doctor_command_succeeds_and_prints_status() -> None:
     assert "APE Environment Status" in result.output
     assert "python" in result.output.lower()
 
+
+def test_cli_does_not_use_project_load_directly() -> None:
+    """CLI should use load_project factory instead of Project.load directly."""
+    from pathlib import Path
+    
+    cli_path = Path(__file__).parent.parent / "src" / "ape" / "cli.py"
+    cli_source = cli_path.read_text(encoding="utf-8")
+    
+    assert "Project.load(" not in cli_source, (
+        "CLI must use load_project() factory, not Project.load() directly"
+    )
+
+

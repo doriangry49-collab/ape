@@ -4,7 +4,6 @@ import typer
 
 from ape import __version__
 from ape.doctor import run_doctor
-from ape.project import Project
 from ape.services import (
     ConfigService,
     DoctorService,
@@ -12,6 +11,7 @@ from ape.services import (
     ProjectInitializationService,
     ProjectValidationService,
 )
+from ape.services.factory import load_project
 
 app = typer.Typer(help="APE foundation CLI")
 
@@ -49,7 +49,7 @@ def init() -> None:
 @app.command("config")
 def config() -> None:
     """Show the current APE workspace configuration details."""
-    project = Project.load()
+    project = load_project()
     info_service = ProjectInfoService(project)
     validation_service = ProjectValidationService(project)
     config_service = ConfigService(project)
@@ -66,7 +66,7 @@ def config() -> None:
 @app.command("doctor")
 def doctor() -> None:
     """Show a simple environment status."""
-    project = Project.load()
+    project = load_project()
     service = DoctorService(project)
     service.run()
     run_doctor(service=service)
