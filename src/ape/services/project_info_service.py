@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from types import MappingProxyType
 
@@ -45,23 +44,3 @@ class ProjectInfoService:
     def config(self) -> dict:
         return self._project.config
 
-    def initialize_workspace(
-        self,
-        current_dir: Path,
-        project_root: Path,
-        pwd: str | None = None,
-    ) -> tuple[Path, Path, Path, bool]:
-        target_dir = self._workspace_service.resolve_target_directory(
-            current_dir,
-            project_root,
-            pwd or os.environ.get("PWD"),
-        )
-        project = Project.load(target_dir)
-        target_root = project.root
-        ape_dir = target_root / ".ape"
-        ape_dir.mkdir(parents=True, exist_ok=True)
-        config_path = ape_dir / "config.toml"
-        created = not config_path.exists()
-        if created:
-            config_path.write_text("[ape]\n", encoding="utf-8")
-        return target_root, ape_dir, config_path, created

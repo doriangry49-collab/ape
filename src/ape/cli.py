@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import typer
@@ -10,6 +9,7 @@ from ape.services import (
     ConfigService,
     DoctorService,
     ProjectInfoService,
+    ProjectInitializationService,
     ProjectValidationService,
 )
 
@@ -33,12 +33,10 @@ def init() -> None:
     current_dir = Path.cwd().resolve()
     project_root = Path(__file__).resolve().parents[2]
 
-    project = Project.load(current_dir)
-    info_service = ProjectInfoService(project)
-    target_root, ape_dir, config_path, created = info_service.initialize_workspace(
-        current_dir,
-        project_root,
-        os.environ.get("PWD"),
+    init_service = ProjectInitializationService()
+    target_root, ape_dir, config_path, created = init_service.initialize_workspace(
+        current_dir=current_dir,
+        project_root=project_root,
     )
 
     typer.echo(f"Created {ape_dir.relative_to(target_root)}/")
