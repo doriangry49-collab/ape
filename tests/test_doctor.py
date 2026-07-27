@@ -72,6 +72,43 @@ def test_project_config_is_empty_when_config_file_is_missing(tmp_path) -> None:
     assert project.config == {}
 
 
+def test_project_name_returns_config_value_when_available(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text(
+        '[ape]\nname = "demo"\n', encoding="utf-8"
+    )
+
+    project = Project.load(workspace_dir)
+
+    assert project.name == "demo"
+
+
+def test_project_name_returns_none_when_missing(tmp_path) -> None:
+    project = Project.load(tmp_path)
+
+    assert project.name is None
+
+
+def test_project_metadata_contains_project_state(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text(
+        '[ape]\nname = "demo"\n', encoding="utf-8"
+    )
+
+    project = Project.load(workspace_dir)
+
+    assert project.metadata == {
+        "root": workspace_dir,
+        "config_path": workspace_dir / ".ape" / "config.toml",
+        "exists": True,
+        "name": "demo",
+    }
+
+
 def test_existing_cli_commands_still_succeed_with_project_config(
     tmp_path, monkeypatch
 ) -> None:

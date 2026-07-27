@@ -29,6 +29,24 @@ class Project:
         with self.config_path.open("rb") as handle:
             return tomllib.load(handle)
 
+    @property
+    def name(self) -> str | None:
+        config = self.config
+        ape_config = config.get("ape", {})
+        if not isinstance(ape_config, dict):
+            return None
+        name = ape_config.get("name")
+        return name if isinstance(name, str) else None
+
+    @property
+    def metadata(self) -> dict[str, object]:
+        return {
+            "root": self.root,
+            "config_path": self.config_path,
+            "exists": self.exists(),
+            "name": self.name,
+        }
+
     @classmethod
     def load(cls, path: Path | None = None) -> "Project":
         start_dir = (path or Path.cwd()).resolve()
