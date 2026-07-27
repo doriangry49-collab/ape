@@ -9,6 +9,8 @@ Before making changes, read the following files in order:
 3. [docs/roadmap.md](docs/roadmap.md)
 4. [docs/prompts/AGENT_RULES.md](docs/prompts/AGENT_RULES.md)
 
+If a relevant specification exists in [docs/specs/](docs/specs/), read it before implementation.
+
 Keep changes documentation-focused unless a different task explicitly requires implementation work.
 ## Core Principles
 
