@@ -4,8 +4,6 @@ from pathlib import Path
 from types import MappingProxyType
 
 from ape.project import Project
-from ape.services.config_service import ConfigService
-from ape.services.workspace_service import WorkspaceService
 
 
 class ProjectInfoService:
@@ -13,8 +11,6 @@ class ProjectInfoService:
 
     def __init__(self, project: Project) -> None:
         self._project = project
-        self._config_service = ConfigService(project)
-        self._workspace_service = WorkspaceService(project.root)
 
     @property
     def root(self) -> Path:
