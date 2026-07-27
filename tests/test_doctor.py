@@ -3,6 +3,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from ape.cli import app
+from ape.workspace import find_workspace_dir
 
 runner = CliRunner()
 
@@ -12,6 +13,18 @@ def test_version_command_prints_package_version() -> None:
 
     assert result.exit_code == 0
     assert result.output.strip() == "0.1.0"
+
+
+def test_find_workspace_dir_discovers_workspace_from_child_directory(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text("[ape]\n", encoding="utf-8")
+
+    child_dir = workspace_dir / "child"
+    child_dir.mkdir()
+
+    assert find_workspace_dir(child_dir) == workspace_dir
 
 
 def test_init_command_creates_ape_directory_and_config(tmp_path, monkeypatch) -> None:
