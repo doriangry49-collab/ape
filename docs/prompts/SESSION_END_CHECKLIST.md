@@ -60,3 +60,21 @@ If implementation was completed:
 - Confirm the current branch is synchronized with origin.
 
 If any verification fails, stop and report the problem before ending the session.
+
+## Repository Health Verification
+
+Before declaring a session complete, verify ALL of the following:
+
+- `git status`
+- latest commit
+- latest push
+- current branch
+- branch tracking status
+- Ruff passes
+- Pytest passes
+- no unintended files remain
+- no `__pycache__` directories are staged
+- no temporary files are staged
+
+Never assume work is finished because a commit was created.
+A session is complete only after the repository is verified to be clean and synchronized with origin.

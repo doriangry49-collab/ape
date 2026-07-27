@@ -60,6 +60,9 @@ Never consider a task complete until Repository Health has been verified.
 
 ## Review
 
+Before proposing any commit, the agent must first perform Repository Health Verification as defined in SESSION_END_CHECKLIST.md.
+The agent must never recommend a commit until Repository Health Verification succeeds.
+
 Before proposing a commit, verify:
 
 - `ruff check .`
