@@ -12,11 +12,11 @@ Before making any changes, read these files in order:
 
 ## Current Sprint
 
-Sprint 5 – Project Model
+Sprint 6 – Project Services
 
 ## Current Goal
 
-Design the internal project abstraction used by future CLI commands.
+Evolve the lightweight Project abstraction into reusable internal services for future workspace-aware commands.
 
 Do not redesign the existing CLI.
 Keep the architecture simple.
@@ -33,8 +33,7 @@ Continue to preserve the current command behavior and test coverage.
 
 ## Next Planned Work
 
-- Define the Project abstraction.
-- Introduce reusable project loading.
+- Define lightweight project services around configuration and project state.
 - Keep commands backward compatible.
-- Add regression tests.
+- Add or preserve regression coverage.
 - No new dependencies.

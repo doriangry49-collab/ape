@@ -16,5 +16,11 @@
 - Extracted reusable workspace logic into `workspace.py` for shared use.
 - Expanded regression tests for workspace discovery behavior.
 - Verified the implementation with Ruff and pytest; all validation passed.
-- Changes were committed and pushed.
-- Documented the completed Sprint 4 work and prepared the repository for Sprint 5 planning.
+- Completed Sprint 5 (Project Model).
+- Added Project configuration support through the lightweight Project abstraction.
+- Implemented built-in TOML parsing using `tomllib`.
+- Exposed `Project.config` plus read-only Project properties.
+- Kept the CLI surface unchanged while preserving existing behavior.
+- Added regression tests for config loading and missing-config fallback.
+- Verified the implementation with Ruff and pytest; 13 tests passed.
+- Prepared the repository for Sprint 6 planning under the title “Project Services”.

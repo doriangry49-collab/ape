@@ -4,15 +4,16 @@
 - v0.1.0
 
 ## Current Sprint
-- Sprint 5 – Project Model
+- Sprint 6 – Project Services
 
 ## Last Completed Sprint
-- Sprint 4 – Workspace Discovery
+- Sprint 5 – Project Model
 
 ## Repository Status
 - Active
 - Documentation and implementation are aligned
-- Workspace discovery is completed and extracted into `src/ape/workspace.py`
+- Project configuration support is implemented through the lightweight Project abstraction
+- Workspace discovery remains completed and shared in `src/ape/workspace.py`
 
 ## Primary Branch
 - main
@@ -26,15 +27,19 @@
 - `ape init`
 - `ape config`
 - Workspace discovery
-- Shared workspace module
+- Project configuration support
+- Built-in TOML parsing via `tomllib`
+- `Project.config` property
+- Read-only Project properties
+- No new dependencies
 
 ## Quality Status
 - Ruff checks passing
 - Pytest passing
-- 8 tests passing
+- 13 tests passing
 
 ## Next Goal
-- Define the internal project abstraction for future CLI commands
+- Expand the internal project abstraction into reusable project services for future CLI work
 
 ## Resume Order
 1. Read `docs/memory/PROJECT_CONTEXT.md`

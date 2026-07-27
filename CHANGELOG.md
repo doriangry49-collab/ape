@@ -30,3 +30,12 @@
 - CLI refactoring for workspace lookup
 - Regression tests
 - Verified `ape doctor`, `ape version`, `ape init`, and `ape config`
+
+### Sprint 5
+- Project configuration support
+- Built-in TOML parsing via `tomllib`
+- Added `Project.config` property
+- Added read-only Project properties
+- Added regression tests for config loading and missing-config fallback
+- Verified 13 passing tests
+- No new dependencies

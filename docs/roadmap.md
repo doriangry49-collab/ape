@@ -17,12 +17,18 @@
 - Completed: add regression tests.
 - Completed: keep dependencies unchanged.
 
-## Sprint 5 — Project Model
-- Define the Project abstraction.
-- Introduce reusable project loading.
-- Improve internal architecture for future CLI commands.
-- Add regression tests.
-- No new dependencies.
+## Sprint 5 — Project Model (Completed)
+- Completed: define a lightweight Project abstraction for future CLI use.
+- Completed: introduce reusable project loading.
+- Completed: add Project configuration support and built-in TOML parsing via `tomllib`.
+- Completed: expose `Project.config` and read-only Project properties.
+- Completed: add regression tests and keep dependencies unchanged.
+
+## Sprint 6 — Project Services (Planned)
+- Define lightweight project services around configuration and project state.
+- Keep existing CLI commands backward compatible.
+- Add or preserve regression coverage as needed.
+- Keep dependencies lean and maintainable.
 
 ## Near-Term Priorities
 - Expand CLI commands only when there is a clear user need.

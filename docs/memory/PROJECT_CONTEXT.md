@@ -14,9 +14,9 @@
 ## Current Status
 
 - **Version:** v0.1.0
-- **Current Sprint:** Sprint 5 – Project Model
-- **Last Completed Sprint:** Sprint 4 – Workspace Discovery
-- **Current Focus:** prepare the project model and workspace abstraction
+- **Current Sprint:** Sprint 6 – Project Services
+- **Last Completed Sprint:** Sprint 5 – Project Model
+- **Current Focus:** evolve the Project abstraction into reusable internal services while keeping CLI behavior unchanged
 
 ## Working Features
 
@@ -28,6 +28,10 @@
 - ✅ `ape config`
 - ✅ Workspace discovery
 - ✅ Shared workspace module at `src/ape/workspace.py`
+- ✅ Project configuration support
+- ✅ Built-in TOML parsing via `tomllib`
+- ✅ `Project.config` property
+- ✅ Read-only Project properties
 - ✅ pytest
 - ✅ Ruff
 - ✅ Basic project structure
@@ -61,18 +65,17 @@ A sprint is considered complete only if all of the following pass:
 - `ruff check .`
 - `git status` is clean
 - GitHub remains the source of truth for repository state
-- Current verification status: 8 passing tests
+- Current verification status: 13 passing tests
 
 ## Next Objective
 
-Sprint 5 – Project Model
+Sprint 6 – Project Services
 
 Planned work:
 
-- Define the Project abstraction.
-- Introduce reusable project loading.
+- Expand the Project abstraction into reusable project services.
 - Keep commands backward compatible.
-- Add regression tests.
+- Add or refine regression coverage as needed.
 - No new dependencies.
 
 ## Resume Instructions
@@ -84,6 +87,7 @@ When starting a new ChatGPT session:
 3. Read `docs/roadmap.md`.
 4. Read `docs/prompts/AGENT_RULES.md`.
 5. Continue from the current sprint without redesigning completed components.
+
 ## Repository
 
 GitHub is the authoritative source for:
