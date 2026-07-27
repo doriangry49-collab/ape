@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tomllib
 from pathlib import Path
+from types import MappingProxyType
 
 from ape.workspace import find_workspace_dir
 
@@ -39,13 +40,19 @@ class Project:
         return name if isinstance(name, str) else None
 
     @property
+    def info(self) -> MappingProxyType:
+        return MappingProxyType(
+            {
+                "root": self.root,
+                "config_path": self.config_path,
+                "exists": self.exists(),
+                "name": self.name,
+            }
+        )
+
+    @property
     def metadata(self) -> dict[str, object]:
-        return {
-            "root": self.root,
-            "config_path": self.config_path,
-            "exists": self.exists(),
-            "name": self.name,
-        }
+        return dict(self.info)
 
     @classmethod
     def load(cls, path: Path | None = None) -> "Project":

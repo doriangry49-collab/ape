@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from ape.cli import app
@@ -89,6 +90,25 @@ def test_project_name_returns_none_when_missing(tmp_path) -> None:
     project = Project.load(tmp_path)
 
     assert project.name is None
+
+
+def test_project_info_returns_read_only_project_information(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text(
+        '[ape]\nname = "demo"\n', encoding="utf-8"
+    )
+
+    project = Project.load(workspace_dir)
+
+    assert project.info["root"] == workspace_dir
+    assert project.info["config_path"] == workspace_dir / ".ape" / "config.toml"
+    assert project.info["exists"] is True
+    assert project.info["name"] == "demo"
+
+    with pytest.raises(TypeError):
+        project.info["name"] = "other"
 
 
 def test_project_metadata_contains_project_state(tmp_path) -> None:
