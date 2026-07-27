@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
 from ape.workspace import find_workspace_dir
@@ -9,8 +10,24 @@ class Project:
     """Lightweight project abstraction for workspace-aware CLI commands."""
 
     def __init__(self, root: Path, config_path: Path) -> None:
-        self.root = root
-        self.config_path = config_path
+        self._root = root
+        self._config_path = config_path
+
+    @property
+    def root(self) -> Path:
+        return self._root
+
+    @property
+    def config_path(self) -> Path:
+        return self._config_path
+
+    @property
+    def config(self) -> dict:
+        if not self.config_path.exists():
+            return {}
+
+        with self.config_path.open("rb") as handle:
+            return tomllib.load(handle)
 
     @classmethod
     def load(cls, path: Path | None = None) -> "Project":

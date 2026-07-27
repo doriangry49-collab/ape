@@ -52,6 +52,43 @@ def test_project_load_uses_path_when_workspace_is_missing(tmp_path) -> None:
     assert project.exists() is False
 
 
+def test_project_config_parses_existing_workspace_config(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text(
+        '[ape]\nname = "demo"\n', encoding="utf-8"
+    )
+
+    project = Project.load(workspace_dir)
+
+    assert project.config == {"ape": {"name": "demo"}}
+
+
+def test_project_config_is_empty_when_config_file_is_missing(tmp_path) -> None:
+    project = Project.load(tmp_path)
+
+    assert project.exists() is False
+    assert project.config == {}
+
+
+def test_existing_cli_commands_still_succeed_with_project_config(
+    tmp_path, monkeypatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("PWD", raising=False)
+    (tmp_path / ".ape").mkdir()
+    (tmp_path / ".ape" / "config.toml").write_text("[ape]\n", encoding="utf-8")
+
+    version_result = runner.invoke(app, ["version"])
+    config_result = runner.invoke(app, ["config"])
+    doctor_result = runner.invoke(app, ["doctor"])
+
+    assert version_result.exit_code == 0
+    assert config_result.exit_code == 0
+    assert doctor_result.exit_code == 0
+
+
 def test_init_command_creates_ape_directory_and_config(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("PWD", raising=False)
