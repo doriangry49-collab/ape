@@ -5,7 +5,7 @@ import typer
 
 from ape import __version__
 from ape.doctor import run_doctor
-from ape.workspace import find_workspace_dir
+from ape.project import Project
 
 app = typer.Typer(help="APE foundation CLI")
 
@@ -34,9 +34,8 @@ def init() -> None:
         if candidate_dir.exists() and candidate_dir.is_dir():
             target_dir = candidate_dir
 
-    discovered_workspace = find_workspace_dir(target_dir)
-    if discovered_workspace is not None:
-        target_dir = discovered_workspace
+    project = Project.load(target_dir)
+    target_dir = project.root
 
     ape_dir = target_dir / ".ape"
     ape_dir.mkdir(parents=True, exist_ok=True)
@@ -53,14 +52,14 @@ def init() -> None:
 @app.command("config")
 def config() -> None:
     """Show the current APE workspace configuration details."""
-    workspace_dir = find_workspace_dir()
+    project = Project.load()
 
-    if workspace_dir is None:
+    if not project.exists():
         typer.echo("Error: no APE workspace found")
         raise typer.Exit(code=1)
 
-    config_path = workspace_dir / ".ape" / "config.toml"
-    typer.echo(f"Workspace: {workspace_dir}")
+    config_path = project.config_path
+    typer.echo(f"Workspace: {project.root}")
     typer.echo(f"Config: {config_path}")
     typer.echo("Status: OK")
 

@@ -3,6 +3,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from ape.cli import app
+from ape.project import Project
 from ape.workspace import find_workspace_dir
 
 runner = CliRunner()
@@ -25,6 +26,30 @@ def test_find_workspace_dir_discovers_workspace_from_child_directory(tmp_path) -
     child_dir.mkdir()
 
     assert find_workspace_dir(child_dir) == workspace_dir
+
+
+def test_project_load_discovers_workspace_from_parent_directory(tmp_path) -> None:
+    workspace_dir = tmp_path / "workspace"
+    workspace_dir.mkdir()
+    (workspace_dir / ".ape").mkdir()
+    (workspace_dir / ".ape" / "config.toml").write_text("[ape]\n", encoding="utf-8")
+
+    child_dir = workspace_dir / "child"
+    child_dir.mkdir()
+
+    project = Project.load(child_dir)
+
+    assert project.root == workspace_dir
+    assert project.config_path == workspace_dir / ".ape" / "config.toml"
+    assert project.exists() is True
+
+
+def test_project_load_uses_path_when_workspace_is_missing(tmp_path) -> None:
+    project = Project.load(tmp_path)
+
+    assert project.root == tmp_path
+    assert project.config_path == tmp_path / ".ape" / "config.toml"
+    assert project.exists() is False
 
 
 def test_init_command_creates_ape_directory_and_config(tmp_path, monkeypatch) -> None:
