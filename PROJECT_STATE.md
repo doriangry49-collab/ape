@@ -12,6 +12,7 @@
 ## Repository Status
 - Active
 - Documentation and implementation are aligned
+- Workspace discovery is completed and extracted into `src/ape/workspace.py`
 
 ## Primary Branch
 - main
@@ -30,6 +31,7 @@
 ## Quality Status
 - Ruff checks passing
 - Pytest passing
+- 8 tests passing
 
 ## Next Goal
 - Define the internal project abstraction for future CLI commands

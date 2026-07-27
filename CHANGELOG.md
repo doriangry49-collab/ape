@@ -27,5 +27,6 @@
 - Workspace discovery
 - Parent directory lookup
 - Shared workspace module
-- Refactoring
+- CLI refactoring for workspace lookup
 - Regression tests
+- Verified `ape doctor`, `ape version`, `ape init`, and `ape config`

@@ -17,3 +17,4 @@
 - Expanded regression tests for workspace discovery behavior.
 - Verified the implementation with Ruff and pytest; all validation passed.
 - Changes were committed and pushed.
+- Documented the completed Sprint 4 work and prepared the repository for Sprint 5 planning.

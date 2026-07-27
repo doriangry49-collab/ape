@@ -21,6 +21,7 @@ Design the internal project abstraction used by future CLI commands.
 Do not redesign the existing CLI.
 Keep the architecture simple.
 Do not introduce new dependencies without approval.
+Continue to preserve the current command behavior and test coverage.
 
 ## Development Rules
 
