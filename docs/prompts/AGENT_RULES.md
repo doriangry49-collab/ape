@@ -27,6 +27,7 @@
 
 ## Sprint Workflow
 
+- Begin every implementation by reading [PROJECT_SNAPSHOT.md](../../PROJECT_SNAPSHOT.md).
 - Complete one sprint before starting another.
 - Every sprint must end with a working system.
 - Update PROJECT_CONTEXT.md after every sprint.

@@ -84,11 +84,12 @@ Planned work:
 
 When starting a new ChatGPT session:
 
-1. Read this file first.
-2. Read `docs/architecture.md`.
-3. Read `docs/roadmap.md`.
-4. Read `docs/prompts/AGENT_RULES.md`.
-5. Continue from the current sprint without redesigning completed components.
+1. Read [PROJECT_SNAPSHOT.md](../../PROJECT_SNAPSHOT.md) first.
+2. Read this file next.
+3. Read `docs/architecture.md`.
+4. Read `docs/roadmap.md`.
+5. Read `docs/prompts/AGENT_RULES.md`.
+6. Continue from the current sprint without redesigning completed components.
 
 ## Repository
 
