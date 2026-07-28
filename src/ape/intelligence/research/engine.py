@@ -10,6 +10,7 @@ from ape.intelligence.research.models import ResearchReport
 from ape.intelligence.research.providers.audience import HeuristicAudienceProvider
 from ape.intelligence.research.providers.hackernews import HackerNewsResearchProvider
 from ape.project import Project
+from ape.utils import append_to_evidence
 
 
 class ResearchEngine:
@@ -93,17 +94,18 @@ class ResearchEngine:
         return report
 
     def _save_artifacts(self, report: ResearchReport) -> None:
-        """Write JSON and MD files under .build/research/."""
+        """Write JSON and MD files under .build/research/.
+
+        Current state  -> .build/research/<slug>.json   (mutable, overwritten each run)
+        Immutable log  -> .governance/evidence/research.jsonl  (append-only)
+        """
         build_dir = self._project.root / ".build" / "research"
         build_dir.mkdir(parents=True, exist_ok=True)
 
-        # Sanitize name
         slug = re.sub(r'[^a-z0-9_]', '', report.topic.lower().replace(" ", "_"))
         if not slug:
             slug = "unnamed_topic"
 
-        # 1. JSON output
-        json_file = build_dir / f"{slug}.json"
         json_data = {
             "metadata": report.metadata,
             "topic": report.topic,
@@ -119,9 +121,16 @@ class ResearchEngine:
             "suggested_mvp": report.suggested_mvp,
             "timestamp": report.timestamp.isoformat()
         }
+
+        # 1. Current state (canonical pointer - mutable)
+        json_file = build_dir / f"{slug}.json"
         json_file.write_text(json.dumps(json_data, indent=2), encoding="utf-8")
 
-        # 2. Markdown output
+        # 2. Evidence history (append-only)
+        evidence_dir = self._project.root / ".governance" / "evidence"
+        append_to_evidence(evidence_dir, "research", json_data)
+
+        # 3. Markdown output (current state - mutable)
         md_file = build_dir / f"{slug}.md"
         
         disc_lines = []

@@ -80,9 +80,12 @@ def test_cli_research_command_execution(tmp_path, monkeypatch) -> None:
     assert result.exit_code == 0
     assert "Researching: 'AI tools'" in result.output
 
-    # Check for artifacts in .build/research
+    # Check for artifacts in .build/research (canonical pointer - no timestamp)
     research_dir = tmp_path / ".build" / "research"
     assert research_dir.is_dir()
-    
     assert (research_dir / "ai_tools.json").is_file()
     assert (research_dir / "ai_tools.md").is_file()
+
+    # Check evidence log exists
+    evidence = tmp_path / ".governance" / "evidence" / "research.jsonl"
+    assert evidence.is_file()
