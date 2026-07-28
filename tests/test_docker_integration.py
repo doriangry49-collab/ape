@@ -5,7 +5,10 @@ If Docker is missing, they are skipped.
 """
 import os
 import shutil
+from unittest import mock
+
 import pytest
+
 from ape.intelligence.execution.executor import DockerSandboxExecutor
 
 DOCKER_AVAILABLE = shutil.which("docker") is not None
@@ -47,8 +50,11 @@ class TestDockerIntegration:
         
         assert result.exit_code != 0
         assert result.status == "FAILED"
-        # ping network unreachable message
-        assert "unreachable" in result.error.lower() or "unreachable" in result.output.lower() or "network is down" in result.error.lower()
+        assert (
+            "unreachable" in result.error.lower()
+            or "unreachable" in result.output.lower()
+            or "network is down" in result.error.lower()
+        )
 
     def test_timeout_constraint(self):
         """The container should enforce the execution timeout."""

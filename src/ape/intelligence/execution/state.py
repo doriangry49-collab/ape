@@ -15,9 +15,13 @@ class InvalidTransitionError(Exception):
 
 # Valid transitions: from_status -> set of allowed to_status
 _TRANSITIONS: dict[TaskStatus, set[TaskStatus]] = {
-    TaskStatus.PENDING:            {TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED},
-    TaskStatus.IN_PROGRESS:        {TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.PAUSED,
-                                    TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED},
+    TaskStatus.PENDING: {
+        TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED
+    },
+    TaskStatus.IN_PROGRESS: {
+        TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.PAUSED,
+        TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED
+    },
     TaskStatus.FAILED:             {TaskStatus.IN_PROGRESS},
     TaskStatus.PAUSED:             {TaskStatus.IN_PROGRESS},
     TaskStatus.REQUIRES_APPROVAL:  {TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL},
