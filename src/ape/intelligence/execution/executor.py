@@ -56,7 +56,7 @@ class DockerSandboxExecutor(TaskExecutor):
             raise RuntimeError(f"Sandbox Error: {result.error}")
         return result.output
 
-    def execute_command(self, cmd: str, cwd: str) -> SandboxResult:
+    def execute_command(self, cmd: str, cwd: str, timeout: int = 60) -> SandboxResult:
         if not shutil.which("docker"):
             return SandboxResult(
                 exit_code=-1,
@@ -81,8 +81,8 @@ class DockerSandboxExecutor(TaskExecutor):
                 docker_cmd,
                 capture_output=True,
                 text=True,
-                timeout=60,
-                env={} # No host env vars
+                timeout=timeout,
+                env={}  # No host env vars
             )
             status = "COMPLETED" if proc.returncode == 0 else "FAILED"
             return SandboxResult(

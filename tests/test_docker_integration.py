@@ -1,12 +1,10 @@
 """
-RFC-009: Docker Sandbox Integration Tests
-These tests run REAL Docker commands if Docker is available.
-If Docker is missing, they are skipped.
+RFC-009/RFC-010: Docker Sandbox Integration Tests
+These tests run REAL Docker commands. They are skipped locally if Docker is
+unavailable and run unconditionally in CI (ubuntu-latest runner has Docker).
 """
 import os
 import shutil
-import subprocess
-from unittest import mock
 
 import pytest
 
@@ -15,6 +13,7 @@ from ape.intelligence.execution.executor import DockerSandboxExecutor
 DOCKER_AVAILABLE = shutil.which("docker") is not None
 
 
+@pytest.mark.integration
 @pytest.mark.skipif(
     not DOCKER_AVAILABLE, reason="Docker is not installed or available on PATH"
 )
@@ -30,7 +29,7 @@ class TestDockerIntegration:
         assert "hello world" in result.output
 
     def test_environment_isolation(self):
-        """Host environment variables should NOT leak into the sandbox."""
+        """Host environment variables must NOT leak into the sandbox."""
         os.environ["SECRET_TEST_VAR"] = "SUPER_SECRET"
         try:
             executor = DockerSandboxExecutor()
@@ -43,7 +42,7 @@ class TestDockerIntegration:
             del os.environ["SECRET_TEST_VAR"]
 
     def test_network_isolation(self):
-        """The container should not have external network access."""
+        """The container must not have external network access."""
         executor = DockerSandboxExecutor()
         result = executor.execute_command("ping -c 1 1.1.1.1", cwd="/tmp")
 
@@ -56,17 +55,20 @@ class TestDockerIntegration:
         )
 
     def test_timeout_constraint(self):
-        """The container should enforce the execution timeout."""
+        """Execution must be terminated and return FAILED when timeout is exceeded."""
         executor = DockerSandboxExecutor()
-        original_run = subprocess.run
+        # Use the real timeout parameter: 1 second, container sleeps 5
+        result = executor.execute_command("sleep 5", cwd="/tmp", timeout=1)
 
-        def run_with_short_timeout(*args, **kwargs):
-            kwargs["timeout"] = 1  # 1 second timeout forces early timeout
-            return original_run(*args, **kwargs)
+        assert result.exit_code == -1
+        assert result.status == "FAILED"
+        assert "timed out" in result.error
 
-        with mock.patch("subprocess.run", side_effect=run_with_short_timeout):
-            result = executor.execute_command("sleep 3", cwd="/tmp")
+    def test_exit_code_propagation(self):
+        """Container exit code must propagate faithfully through SandboxResult."""
+        executor = DockerSandboxExecutor()
+        # sh -c "exit 42" produces exit code 42
+        result = executor.execute_command("exit 42", cwd="/tmp")
 
-            assert result.exit_code == -1
-            assert result.status == "FAILED"
-            assert "timed out" in result.error
+        assert result.exit_code == 42
+        assert result.status == "FAILED"
