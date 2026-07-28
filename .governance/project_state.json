@@ -1,0 +1,25 @@
+{
+  "version": "v0.1.0",
+  "current_sprint": "Sprint 7.0 – Governance Engine",
+  "last_completed_sprint": "Sprint 6.9 – Lightweight Project Factory",
+  "repository_status": "Active",
+  "primary_branch": "main",
+  "source_of_truth": "GitHub",
+  "current_features": [
+    "ape doctor",
+    "ape version",
+    "ape init",
+    "ape config",
+    "ape context",
+    "ape validate"
+  ],
+  "quality_status": {
+    "ruff": "passing",
+    "pytest": "passing",
+    "test_count": 35
+  },
+  "constitution": [
+    "Every module must increase at least one of the following: Knowledge, Revenue, Decision Quality. If it increases none of them, it does not belong in APE."
+  ],
+  "next_goal": "Governance Engine and Self-Governing Repository"
+}

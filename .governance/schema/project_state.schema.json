@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProjectState",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "current_sprint": {
+      "type": "string"
+    },
+    "last_completed_sprint": {
+      "type": "string"
+    },
+    "repository_status": {
+      "type": "string"
+    },
+    "primary_branch": {
+      "type": "string"
+    },
+    "source_of_truth": {
+      "type": "string"
+    },
+    "current_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quality_status": {
+      "type": "object",
+      "properties": {
+        "ruff": {
+          "type": "string"
+        },
+        "pytest": {
+          "type": "string"
+        },
+        "test_count": {
+          "type": "integer"
+        }
+      },
+      "required": ["ruff", "pytest", "test_count"]
+    },
+    "constitution": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_goal": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "current_sprint",
+    "last_completed_sprint",
+    "repository_status",
+    "primary_branch",
+    "source_of_truth",
+    "current_features",
+    "quality_status",
+    "constitution",
+    "next_goal"
+  ]
+}
