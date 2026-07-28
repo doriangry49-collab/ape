@@ -149,5 +149,49 @@ def scan() -> None:
         typer.echo("   ─────────────────────────────────────")
 
 
+@app.command("research")
+def research(
+    topic: str = typer.Argument(..., help="The opportunity topic to research")
+) -> None:
+    """Analyze audience, competitors, and discussions for a tech topic."""
+    from ape.intelligence.research.engine import ResearchEngine
+
+    project = load_project()
+    engine = ResearchEngine(project)
+
+    typer.echo(f"Researching: '{topic}'...")
+    report = engine.run_research(topic)
+
+    typer.echo("")
+    typer.echo("Research Summary Report")
+    typer.echo("────────────────────────────────────────")
+    typer.echo(f"Topic       : {report.topic}")
+    typer.echo(f"Action      : {report.next_recommended_action}")
+    typer.echo(f"Confidence  : {report.confidence:.0%}")
+    typer.echo(f"Sources     : {', '.join(report.sources)}")
+    typer.echo("")
+    typer.echo("Target Audience:")
+    for a in report.target_audience[:3]:
+        typer.echo(f" - {a}")
+    typer.echo("")
+    typer.echo("Competitors:")
+    for c in report.competitors[:3]:
+        typer.echo(f" - {c}")
+    typer.echo("")
+    typer.echo("Pain Points:")
+    for p in report.pain_points[:3]:
+        typer.echo(f" - {p}")
+    typer.echo("")
+    typer.echo("Market Signals:")
+    for s in report.market_signals[:3]:
+        typer.echo(f" - {s}")
+    typer.echo("")
+    typer.echo("Suggested MVP:")
+    for m in report.suggested_mvp[:3]:
+        typer.echo(f" - {m}")
+    typer.echo("────────────────────────────────────────")
+    typer.echo("Saved report artifacts in `.build/research/`.")
+
+
 if __name__ == "__main__":
     app()

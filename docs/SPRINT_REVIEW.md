@@ -1,13 +1,13 @@
 # SPRINT_REVIEW.md
 
-## Sprint 8 — Opportunity Scanner MVP
+## Sprint 9 — Research Engine MVP
 
 ---
 
 | Field              | Value                                               |
 |--------------------|-----------------------------------------------------|
-| **Sprint**         | Sprint 8                                            |
-| **Goal**           | Intelligence Track — Opportunity Scanner MVP        |
+| **Sprint**         | Sprint 9                                            |
+| **Goal**           | Intelligence Track — Research Engine MVP            |
 | **Ship Date**      | 2026-07-28                                          |
 | **Score**          | 19 / 20                                             |
 
@@ -15,14 +15,13 @@
 
 ## What Shipped
 
-- `ape scan` command fully operational.
-- **GitHub Trending Scanner:** Scrapes GitHub's trending page via `urllib` + regex. Zero new dependencies.
-- **HackerNews Scanner:** Queries the official Firebase HN API for top 5 stories.
-- **Opportunity Model:** Normalized `Opportunity` dataclass with `title`, `description`, `url`, `source`, `score`, `confidence`, `published_at`, `tags`.
-- **Scoring Engine:** Simple heuristic scorer (`popularity × time_decay + AI keyword boost`) → `score` (0–100) + `confidence` (0.0–1.0).
-- **OpportunityEngine:** Aggregates and sorts all scanner results by score.
-- **RFC-002:** Archived to `.governance/rfc/`.
-- **Provider Boundary:** `BaseScanner` abstract interface established. Adding a new provider = one new file.
+- `ape research` command fully operational for Automated Market & Audience Research.
+- **HackerNews Research Provider:** Queries Algolia search API to extract relevant HN developer discussions.
+- **Audience & Competitor Heuristics Provider:** Categorizes target audience personas, potential competitors, and risk factors based on query context rules.
+- **Unified ResearchReport Model:** Normalized report dataclass mapping pain points, risks, confidence, sources, and top threads.
+- **Offline / Local Fallback:** Implemented deterministic local provider fallback mapping fixtures/mock values if network is unavailable or during test suite runs.
+- **Artifact Generator:** Outputs reusable JSON and Markdown report files under `.build/research/`.
+- **RFC-003:** Archived under `.governance/rfc/`.
 
 ---
 
@@ -43,42 +42,38 @@
 
 ## Lessons Learned
 
-- **Zero-dependency scraping is viable at MVP scale.** No BeautifulSoup needed for this phase. Regex fallback with mocked data makes offline testing possible.
-- **`datetime.utcnow()` is deprecated in Python 3.12+.** All datetimes must use timezone-aware `datetime.now(UTC)` going forward — added as an implicit standard.
-- **Provider pattern pays off immediately.** Adding a third scanner (Reddit, ProductHunt) requires only a new file implementing `BaseScanner.scan()`.
+- **Decoupling Data Retrieval & Interpretive Summarization works best.** Research provider extracts and normalizes structured metrics (evidence), keeping the core engine deterministic and reproducible.
+- **Heuristic Audience Profiling provides stable baselines.** For an MVP, heuristic matching on keywords yields faster, predictable competitor maps than raw LLM generation.
 
 ---
 
 ## Architecture Changes
 
-- New package: `src/ape/intelligence/` (Intelligence Track, first module).
-- `BaseScanner` protocol established as extension point for future providers.
-- `cli.py` extended with `ape scan` command (lazy-loaded Intelligence engine).
-- No changes to Core, Governance, or Services layers.
+- New package: `src/ape/intelligence/research/` containing the engine, models, and providers.
+- `BaseResearchProvider` interface added under `providers/base.py`.
+- `cli.py` extended with the `ape research` command.
 
 ---
 
 ## Technical Debt Created
 
-- GitHub Trending scraper depends on HTML structure; could break if GitHub changes markup.
-- Scoring is entirely heuristic — no real calibration data yet. Evolution Track will fix this.
-- No caching: every `ape scan` call makes live network requests.
+- Heuristic keyword mapping is simple; complex queries might yield default audience personas.
+- Caching logic is local-only per execution. No persistent cache database.
 
 ## Technical Debt Removed
 
-- None removed this sprint (purely additive).
+- None (purely additive feature).
 
 ---
 
 ## Next Sprint
 
-**Sprint 9 — Research Engine**
+**Sprint 10 — Opportunity Scorer**
 
 Structured scoring with multi-signal input:
-- Competition analysis
-- Revenue potential estimate
-- Time-to-market indicator
-- Feeds directly into Evolution Track's Evidence Base.
+- Feasibility analysis
+- Competition score
+- Automated revenue potential calculator
 
 ---
 
@@ -91,9 +86,8 @@ Structured scoring with multi-signal input:
 | North Star             | ✔ Passed |
 
 **Evidence Produced:**
-- 43 tests passing
+- 47 tests passing
 - Ruff clean
-- Opportunity Scanner MVP shipped
+- Research Engine MVP shipped
 
-**Sprint Score: 17/20**
-
+**Sprint Score: 19/20**
