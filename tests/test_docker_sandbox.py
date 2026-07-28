@@ -16,7 +16,7 @@ def test_docker_unavailable_fails_closed_no_fallback():
 
         assert result.exit_code != 0
         assert "Docker unavailable" in result.error
-        assert result.status == "FAILED"
+        assert result.status == "BLOCKED"  # BLOCKED = stopped before execution, not FAILED
 
 
 def test_docker_unavailable_logs_to_evidence(tmp_path):

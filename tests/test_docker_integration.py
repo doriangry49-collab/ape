@@ -42,22 +42,48 @@ class TestDockerIntegration:
             del os.environ["SECRET_TEST_VAR"]
 
     def test_network_isolation(self):
-        """The container must not have external network access."""
-        executor = DockerSandboxExecutor()
-        result = executor.execute_command("ping -c 1 1.1.1.1", cwd="/tmp")
+        """
+        Container must not have external network access (--network=none).
 
-        assert result.exit_code != 0
+        Uses 'wget' (available in Alpine busybox) rather than 'ping' to
+        distinguish between two failure modes:
+          - "binary not found"  → would mean the test is vacuous
+          - "network unreachable" → proves --network=none is effective
+
+        Alpine busybox wget exits non-zero and writes to stderr:
+            wget: can't connect to remote host (1.1.1.1): Network is unreachable
+        whereas a missing binary produces:
+            sh: wget: not found
+        """
+        executor = DockerSandboxExecutor()
+        result = executor.execute_command(
+            "wget -q --timeout=3 -O /dev/null http://1.1.1.1",
+            cwd="/tmp",
+        )
+
+        # wget must fail (network blocked)
+        assert result.exit_code != 0, "Expected wget to fail with network unreachable"
         assert result.status == "FAILED"
+
+        # Failure must be network-related, NOT a missing binary
+        combined = (result.error + result.output).lower()
+        assert "not found" not in combined, (
+            "wget binary appears to be missing in Alpine — "
+            "test is vacuous and does not prove network isolation."
+        )
         assert (
-            "unreachable" in result.error.lower()
-            or "unreachable" in result.output.lower()
-            or "network is down" in result.error.lower()
+            "unreachable" in combined
+            or "network" in combined
+            or "connect" in combined
+        ), (
+            f"Expected network-related error. Got stderr={result.error!r} "
+            f"stdout={result.output!r}"
         )
 
     def test_timeout_constraint(self):
         """Execution must be terminated and return FAILED when timeout is exceeded."""
         executor = DockerSandboxExecutor()
-        # Use the real timeout parameter: 1 second, container sleeps 5
+        # Real Docker container sleeps 5 seconds; Python timeout is 1 second
         result = executor.execute_command("sleep 5", cwd="/tmp", timeout=1)
 
         assert result.exit_code == -1
@@ -67,8 +93,21 @@ class TestDockerIntegration:
     def test_exit_code_propagation(self):
         """Container exit code must propagate faithfully through SandboxResult."""
         executor = DockerSandboxExecutor()
-        # sh -c "exit 42" produces exit code 42
         result = executor.execute_command("exit 42", cwd="/tmp")
 
         assert result.exit_code == 42
         assert result.status == "FAILED"
+
+    def test_blocked_status_when_docker_unavailable(self, monkeypatch):
+        """
+        When Docker is unavailable, execute_command must return status=BLOCKED.
+        BLOCKED = task stopped before execution began (environment failure).
+        FAILED  = task started but failed during execution.
+        """
+        monkeypatch.setattr("shutil.which", lambda _: None)
+        executor = DockerSandboxExecutor()
+        result = executor.execute_command("echo test", cwd="/tmp")
+
+        assert result.status == "BLOCKED"
+        assert "Docker unavailable" in result.error
+        assert result.exit_code == -1

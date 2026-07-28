@@ -48,10 +48,9 @@ class DockerSandboxExecutor(TaskExecutor):
     """
 
     def execute(self, task_description: str, deliverables: list[str]) -> str:
-        # High level execute mapped from task_description.
-        # In a real system, the task_description would be translated to a command.
-        # Here we just run a placeholder command representing the task.
         result = self.execute_command("echo " + task_description, cwd="/tmp")
+        if result.status == "BLOCKED":
+            raise RuntimeError(f"Docker unavailable. Sandbox execution blocked: {result.error}")
         if result.exit_code != 0:
             raise RuntimeError(f"Sandbox Error: {result.error}")
         return result.output
@@ -62,7 +61,7 @@ class DockerSandboxExecutor(TaskExecutor):
                 exit_code=-1,
                 output="",
                 error="Docker unavailable. Sandbox execution blocked.",
-                status="FAILED"
+                status="BLOCKED"
             )
         
         # Build strict docker command
