@@ -16,6 +16,21 @@ from ape.services.factory import load_project
 
 app = typer.Typer(help="APE foundation CLI")
 
+# Platform-safe horizontal rule. Unicode box-drawing chars (U+2500 etc.) cause
+# UnicodeEncodeError on Windows terminals with non-UTF-8 codepages (e.g. CP1254).
+# We detect the terminal's encoding at runtime and fall back to ASCII hyphens.
+def _hr() -> str:
+    """Return a horizontal rule safe for the current terminal encoding."""
+    import sys
+    enc = getattr(sys.stdout, "encoding", "ascii") or "ascii"
+    bar = "\u2500" * 40
+    try:
+        bar.encode(enc)
+        return bar
+    except (UnicodeEncodeError, LookupError):
+        return "-" * 40
+
+
 
 @app.callback()
 def main() -> None:
@@ -133,7 +148,7 @@ def scan() -> None:
 
     typer.echo("")
     typer.echo("Today's Opportunities")
-    typer.echo("────────────────────────────────────────")
+    typer.echo(_hr())
 
     if not opportunities:
         typer.echo("No opportunities found. Check your network connection.")
@@ -146,7 +161,7 @@ def scan() -> None:
         typer.echo(f"   Score      : {op.score}/100")
         typer.echo(f"   Confidence : {op.confidence:.0%}")
         typer.echo(f"   Published  : {op.published_at.strftime('%Y-%m-%d %H:%M')} UTC")
-        typer.echo("   ─────────────────────────────────────")
+        typer.echo(f"   {_hr()}")
 
 
 @app.command("research")
@@ -164,7 +179,7 @@ def research(
 
     typer.echo("")
     typer.echo("Research Summary Report")
-    typer.echo("────────────────────────────────────────")
+    typer.echo(_hr())
     typer.echo(f"Topic       : {report.topic}")
     typer.echo(f"Action      : {report.next_recommended_action}")
     typer.echo(f"Confidence  : {report.confidence:.0%}")
@@ -189,8 +204,114 @@ def research(
     typer.echo("Suggested MVP:")
     for m in report.suggested_mvp[:3]:
         typer.echo(f" - {m}")
-    typer.echo("────────────────────────────────────────")
+    typer.echo(_hr())
     typer.echo("Saved report artifacts in `.build/research/`.")
+
+
+@app.command("decide")
+def decide(
+    topic: str = typer.Argument(..., help="The researched topic to decide on (e.g. 'AI Agents')")
+) -> None:
+    """Evaluate a researched topic and output a concrete action decision."""
+    from ape.intelligence.decision.engine import DecisionEngine
+    from ape.utils import slugify
+
+    project = load_project()
+    engine = DecisionEngine(project.root)
+    topic_slug = slugify(topic)
+
+    typer.echo(f"Evaluating research data for: '{topic}' (slug: {topic_slug})...")
+    report = engine.run_decision(topic, topic_slug)
+
+    typer.echo("")
+    typer.echo("Decision Report")
+    typer.echo(_hr())
+    typer.echo(f"Topic       : {report.topic}")
+    typer.echo(f"Decision    : {report.decision}")
+    typer.echo(f"Policy      : {report.policy}")
+    typer.echo(f"Score       : {report.overall_score}/100")
+    typer.echo(f"Confidence  : {report.confidence}%")
+    typer.echo(f"Next Step   : {report.next_step}")
+    typer.echo(_hr())
+    typer.echo("Rationale Breakdown:")
+    for line in report.rationale:
+        typer.echo(f"  {line}")
+    typer.echo(_hr())
+    typer.echo(f"Saved report artifacts to `.build/decisions/{topic_slug}.*`")
+    typer.echo("Appended to evidence at `.governance/evidence/decisions.jsonl`")
+
+
+@app.command("plan")
+def plan(
+    topic: str = typer.Argument(..., help="The topic to generate a roadmap for (e.g. 'AI Agents')")
+) -> None:
+    """Generate an execution roadmap based on the latest decision."""
+    from ape.intelligence.roadmap.engine import RoadmapGenerator
+    from ape.utils import slugify
+
+    project = load_project()
+    generator = RoadmapGenerator(project.root)
+    topic_slug = slugify(topic)
+
+    typer.echo(f"Generating execution roadmap for: '{topic}' (slug: {topic_slug})...")
+    
+    try:
+        roadmap = generator.generate_roadmap(topic, topic_slug)
+    except Exception as e:
+        typer.echo(f"Error: {e}")
+        return
+
+    typer.echo("")
+    typer.echo("Execution Roadmap")
+    typer.echo(_hr())
+    typer.echo(f"Goal        : {roadmap.goal}")
+    typer.echo(f"Estimated   : {roadmap.estimated_time}")
+    typer.echo(_hr())
+    for ms in roadmap.milestones:
+        typer.echo(f"Milestone: {ms.title}")
+        for t in ms.tasks:
+            typer.echo(f"  - {t.description} ({t.estimated_effort})")
+    typer.echo(_hr())
+    typer.echo(f"Saved roadmap artifacts to `.build/roadmaps/{topic_slug}.*`")
+
+
+
+
+@app.command("execute")
+def execute(
+    topic: str = typer.Argument(..., help="Topic to execute (e.g. 'AI Agents')"),
+    dry_run: bool = typer.Option(
+        True, "--dry-run/--no-dry-run",
+        help="Simulation mode (default). Use --no-dry-run to attempt real execution."
+    ),
+) -> None:
+    """Execute the roadmap for a topic (simulation-first by default)."""
+    from ape.intelligence.execution.engine import ExecutionEngine
+    from ape.utils import slugify
+
+    project = load_project()
+    topic_slug = slugify(topic)
+
+    mode = "DRY-RUN (simulation)" if dry_run else "REAL EXECUTION"
+    typer.echo(f"Executing roadmap for: '{topic}' [{mode}]")
+
+    engine = ExecutionEngine(project.root, dry_run=dry_run)
+    try:
+        summary = engine.execute(topic, topic_slug)
+    except FileNotFoundError as exc:
+        typer.echo(f"Error: {exc}")
+        raise typer.Exit(code=1)
+
+    typer.echo("")
+    typer.echo("Execution Summary")
+    typer.echo(_hr())
+    typer.echo(f"Executed  : {len(summary['executed'])} tasks")
+    typer.echo(f"Retried   : {len(summary['retried'])} tasks")
+    typer.echo(f"Skipped   : {len(summary['skipped'])} tasks (already completed)")
+    typer.echo(f"Paused    : {len(summary['paused'])} tasks")
+    typer.echo(_hr())
+    typer.echo(f"State     : .build/execution/{topic_slug}/current.json")
+    typer.echo("Evidence  : .governance/evidence/execution.jsonl")
 
 
 if __name__ == "__main__":
