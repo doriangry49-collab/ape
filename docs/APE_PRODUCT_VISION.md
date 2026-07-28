@@ -1,5 +1,5 @@
 # APE — Product Vision
-## Founding Manifesto v1.0
+## Founding Manifesto v1.1
 
 *This document is not a technical specification. It is the founding vision of a long-term software company. It exists to answer the single most important question any team member or tool can ask: "Why does APE exist?"*
 
@@ -136,7 +136,7 @@ Every module must be at most two steps from generating or protecting revenue. Pu
 ---
 
 ### Track 1: Core
-**Mission:** Build and maintain the invisible infrastructure that makes every other module possible. Core is never the product — it is the foundation that lets the product exist.
+**Mission:** Core exists only as long as it accelerates the other four tracks. The moment a Core sprint cannot be justified by its downstream impact on Intelligence, Products, Business, or Evolution — it must be rejected. Core is never the product. It is the foundation that makes every other product possible.
 
 **Success Metrics:**
 - Time from `ape init` to functional workspace: under 60 seconds.
@@ -168,6 +168,7 @@ Every module must be at most two steps from generating or protecting revenue. Pu
 - Knowledge Base (persistent, queryable user knowledge store)
 - Release Watcher (monitoring competitor product updates)
 - Prompt Evolver (A/B testing and improvement of internal AI prompts)
+- World Model (a current-state map of the AI and technology landscape — relating trends, API changes, competitor moves, and market shifts into a single queryable picture of the world as it stands today)
 
 ---
 
@@ -209,12 +210,21 @@ Every module must be at most two steps from generating or protecting revenue. Pu
 ---
 
 ### Track 5: Evolution
-**Mission:** Make APE learn from its own history. This track is not about observing the market — it is about observing APE itself and the user's track record. Every prompt, every product, every failure, and every success becomes a data point that shapes the next decision.
+**Mission:** Make APE learn from its own history. This track is not about observing the market — it is about observing APE itself and the user's track record. Every prompt, every product, every failure, and every success becomes evidence that shapes the next decision.
 
-This is not a Knowledge Base. A Knowledge Base stores facts. An Experience Base stores outcomes, causality, and patterns over time. The difference is the difference between a library and a mentor.
+The key distinction: APE does not *remember*. APE *proves*.
+
+A Knowledge Base stores facts: *"GPT-5 was released."*
+An Evidence Base stores outcomes and causality: *"Prompt X was used 12 times. It succeeded 9 times. Claude succeeded. Gemini failed. Success rate has declined since July 2026."*
+
+This transforms APE from a tool that recalls the past into a system that derives policy from evidence. The long-term arc of this track is:
+
+> Evidence → Insight → Policy
+
+APE collects data, forms evidence, and eventually updates its own behavior based on what has been proven to work.
 
 **The questions this track must continuously answer:**
-- Which prompts produced better results?
+- Which prompts produced better results, and under what conditions?
 - Which AI models performed best for which task types?
 - Which tools or APIs have become obsolete or unavailable?
 - Which workflows consistently fail and why?
@@ -229,8 +239,8 @@ This is not a Knowledge Base. A Knowledge Base stores facts. An Experience Base 
 
 **Example Future Modules:**
 - Experience Base (persistent, queryable record of outcomes — not just facts)
-- Prompt Performance Tracker (A/B tracking of prompt effectiveness across sessions)
-- Model Intelligence Monitor (track which AI model excels at which task type)
+- Prompt Performance Tracker (evidence-based A/B tracking of prompt effectiveness)
+- Model Intelligence Monitor (which AI model excels at which task type, proven by outcomes)
 - Failure Analyst (structured post-mortem logging for products and ideas)
 - Workflow Health Monitor (detect broken or degraded automation pipelines)
 - Tool Freshness Scanner (detect deprecated APIs, abandoned libraries, dead endpoints)
@@ -269,7 +279,48 @@ A score of 5 means the sprint will produce falsifiable insights that change our 
 
 ---
 
-## 10. The North Star
+## 10. The APE Constitution
+
+> **Every module must increase at least one of the following:**
+> - Knowledge
+> - Revenue
+> - Decision Quality
+>
+> **If it increases none of them, it does not belong in APE.**
+
+This is the filter applied before every sprint, every module, and every architectural decision. It is shorter than the North Star and faster to apply. When in doubt, use this first.
+
+---
+
+## 11. The Principle of Shipping
+
+> **APE never earns value from unfinished perfection.**
+>
+> Every major capability should become usable before it becomes complete.
+>
+> Shipping creates evidence. Evidence improves APE. Improvement creates leverage.
+
+The loop is:
+
+```
+Ship → Learn → Improve → Ship Again
+```
+
+This principle exists to permanently prevent the most common failure mode of technical founders: spending 12 months building infrastructure, emerging with nothing a user can touch, and calling it "foundational work."
+
+There is no foundational work. There is only work that ships and work that doesn't.
+
+---
+
+## 12. Governance
+
+APE's rules, architecture decisions, manifesto, and roadmap form a governance layer above the five development tracks. This layer changes slower than code, and only when experience provides sufficient evidence.
+
+> *Governance defines how APE evolves. It is not a product. It is not a track. It is the system by which all other decisions are made — and it earns the right to change only when the Evidence Base demands it.*
+
+---
+
+## 13. The North Star
 
 > **APE exists so that one person, with one machine, can find the right problem, build the right product, and reach the right customer — faster than a team of ten could five years ago.**
 
