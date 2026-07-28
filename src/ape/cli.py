@@ -97,7 +97,7 @@ def context(
     """Generate project context files for AI and humans."""
     project = load_project()
     service = GovernanceService(project)
-    
+
     format_choice = "md"
     if all_opt:
         format_choice = "all"
@@ -105,7 +105,7 @@ def context(
         format_choice = "json"
     elif xml_opt:
         format_choice = "xml"
-        
+
     service.generate_context_files(format_option=format_choice)
     typer.echo(f"Context compiled successfully in format: {format_choice}")
 
@@ -118,6 +118,35 @@ def validate() -> None:
     evidence = service.run_governance_validation()
     typer.echo("Validation finished successfully.")
     typer.echo(f"Evidence updated: {evidence}")
+
+
+@app.command("scan")
+def scan() -> None:
+    """Scan top daily tech opportunities from GitHub Trending and Hacker News."""
+    from ape.intelligence.engine import OpportunityEngine
+
+    project = load_project()
+    engine = OpportunityEngine(project)
+
+    typer.echo("Scanning for opportunities...")
+    opportunities = engine.run_scans()
+
+    typer.echo("")
+    typer.echo("Today's Opportunities")
+    typer.echo("────────────────────────────────────────")
+
+    if not opportunities:
+        typer.echo("No opportunities found. Check your network connection.")
+        return
+
+    for i, op in enumerate(opportunities, start=1):
+        typer.echo(f"\n{i}. {op.title}")
+        typer.echo(f"   Source     : {op.source}")
+        typer.echo(f"   URL        : {op.url}")
+        typer.echo(f"   Score      : {op.score}/100")
+        typer.echo(f"   Confidence : {op.confidence:.0%}")
+        typer.echo(f"   Published  : {op.published_at.strftime('%Y-%m-%d %H:%M')} UTC")
+        typer.echo("   ─────────────────────────────────────")
 
 
 if __name__ == "__main__":
