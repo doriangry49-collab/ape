@@ -12,3 +12,7 @@ Actions must be classified prior to run via `ExecutionPolicy.classify(action)`:
 - Execution default state is `SimulationTaskExecutor`.
 - Dry-run modes must mock operations and must not write mutations to git or project code.
 - Verification checks that deliverables exist, but in dry-run mode, verification is auto-passed.
+
+## 3. Secret Non-Disclosure
+- **SECRET NON-DISCLOSURE:** API keys, PATs, OAuth tokens, passwords, private keys, and credentials must never be pasted into AI conversations, logs, artifacts, evidence files, screenshots, commits, or handoff reports. If a credential is exposed, immediately treat it as compromised and revoke/rotate it.
+
