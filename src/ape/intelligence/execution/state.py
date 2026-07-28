@@ -15,12 +15,13 @@ class InvalidTransitionError(Exception):
 
 # Valid transitions: from_status -> set of allowed to_status
 _TRANSITIONS: dict[TaskStatus, set[TaskStatus]] = {
-    TaskStatus.PENDING:            {TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL},
+    TaskStatus.PENDING:            {TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED},
     TaskStatus.IN_PROGRESS:        {TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.PAUSED,
-                                    TaskStatus.REQUIRES_APPROVAL},
+                                    TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED},
     TaskStatus.FAILED:             {TaskStatus.IN_PROGRESS},
     TaskStatus.PAUSED:             {TaskStatus.IN_PROGRESS},
     TaskStatus.REQUIRES_APPROVAL:  {TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL},
+    TaskStatus.BLOCKED:            set(),  # terminal state if docker missing, requires restart
     TaskStatus.COMPLETED:          set(),  # terminal
 }
 
@@ -47,6 +48,10 @@ class TaskStateMachine:
     def fail(self, error: str = "") -> None:
         self._task.error = error
         self._transition(TaskStatus.FAILED)
+
+    def block(self, reason: str = "") -> None:
+        self._task.error = reason
+        self._transition(TaskStatus.BLOCKED)
 
     def retry(self) -> None:
         """FAILED -> IN_PROGRESS."""

@@ -53,10 +53,11 @@ def get_artifact_history(evidence_dir: Path, track: str) -> Path:
     """
     Returns the path of the append-only evidence JSONL log for a given track.
     Creates parent dirs if needed; does NOT create the file itself.
-    Evidence naming: .governance/evidence/<track>.jsonl
+    Evidence naming: .governance/evidence/<track>-YYYY-MM.jsonl
     """
     evidence_dir.mkdir(parents=True, exist_ok=True)
-    return evidence_dir / f"{track}.jsonl"
+    partition = datetime.now(timezone.utc).strftime("%Y-%m")
+    return evidence_dir / f"{track}-{partition}.jsonl"
 
 
 def append_to_evidence(evidence_dir: Path, track: str, payload: dict) -> None:

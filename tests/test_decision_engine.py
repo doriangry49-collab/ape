@@ -101,7 +101,9 @@ def test_decision_engine_integration(tmp_path):
 
     
     # Check history (append-only evidence log)
-    history = tmp_path / ".governance" / "evidence" / "decisions.jsonl"
+    from ape.utils import get_artifact_history
+    evidence_dir = tmp_path / ".governance" / "evidence"
+    history = get_artifact_history(evidence_dir, "decisions")
     assert history.exists()
     with open(history, "r") as f:
         line = f.readline()

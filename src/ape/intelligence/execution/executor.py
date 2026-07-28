@@ -8,6 +8,9 @@ No LLM provider dependency.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import shutil
+import subprocess
+from dataclasses import dataclass
 
 
 class TaskExecutor(ABC):
@@ -29,17 +32,76 @@ class SimulationTaskExecutor(TaskExecutor):
         return f"[SIMULATED] Would execute: {task_description}"
 
 
-class ShellTaskExecutor(TaskExecutor):
+@dataclass
+class SandboxResult:
+    exit_code: int
+    output: str
+    error: str
+    status: str
+
+
+class DockerSandboxExecutor(TaskExecutor):
     """
-    Real shell executor — DISABLED by default in MVP.
-    Only instantiated if caller explicitly requests it.
-    Kept as interface-ready for future opt-in mechanism.
+    Real executor utilizing a Docker sandbox.
+    Fails closed if Docker is unavailable.
+    Applies strict constraints: network=none, resource limits, clean env.
     """
 
     def execute(self, task_description: str, deliverables: list[str]) -> str:
-        # Real implementation intentionally left as stub in MVP.
-        # To enable: replace with subprocess.run logic behind explicit opt-in flag.
-        raise NotImplementedError(
-            "ShellTaskExecutor is not enabled in MVP. "
-            "Use SimulationTaskExecutor (default) instead."
-        )
+        # High level execute mapped from task_description.
+        # In a real system, the task_description would be translated to a command.
+        # Here we just run a placeholder command representing the task.
+        result = self.execute_command("echo " + task_description, cwd="/tmp")
+        if result.exit_code != 0:
+            raise RuntimeError(f"Sandbox Error: {result.error}")
+        return result.output
+
+    def execute_command(self, cmd: str, cwd: str) -> SandboxResult:
+        if not shutil.which("docker"):
+            return SandboxResult(
+                exit_code=-1,
+                output="",
+                error="Docker unavailable. Sandbox execution blocked.",
+                status="FAILED"
+            )
+        
+        # Build strict docker command
+        docker_cmd = [
+            "docker", "run", "--rm",
+            "--network=none",
+            "--memory=512m",
+            "--cpus=1.0",
+            "-w", cwd,
+            "alpine", "sh", "-c", cmd
+        ]
+        
+        try:
+            # We explicitly do NOT pass host environment (env=None)
+            proc = subprocess.run(
+                docker_cmd,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                env={} # No host env vars
+            )
+            status = "COMPLETED" if proc.returncode == 0 else "FAILED"
+            return SandboxResult(
+                exit_code=proc.returncode,
+                output=proc.stdout,
+                error=proc.stderr,
+                status=status
+            )
+        except subprocess.TimeoutExpired as e:
+            return SandboxResult(
+                exit_code=-1,
+                output="",
+                error=f"Execution timed out: {str(e)}",
+                status="FAILED"
+            )
+        except Exception as e:
+            return SandboxResult(
+                exit_code=-1,
+                output="",
+                error=f"Execution failed: {str(e)}",
+                status="FAILED"
+            )

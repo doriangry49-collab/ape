@@ -14,6 +14,7 @@ class TaskStatus(str, Enum):
     FAILED = "FAILED"
     REQUIRES_APPROVAL = "REQUIRES_APPROVAL"
     PAUSED = "PAUSED"
+    BLOCKED = "BLOCKED"
 
 
 class ExecutionStatus(str, Enum):

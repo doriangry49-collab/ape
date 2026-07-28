@@ -275,7 +275,8 @@ class TestCtrlCPause:
         state = json.loads(state_file.read_text())
         assert state["status"] == "PAUSED"
 
-        evidence = tmp_path / ".governance" / "evidence" / "execution.jsonl"
+        from ape.utils import get_artifact_history
+        evidence = get_artifact_history(tmp_path / ".governance" / "evidence", "execution")
         assert evidence.exists()
         events = [json.loads(line) for line in evidence.read_text().splitlines() if line]
         event_types = [e.get("event") for e in events]
@@ -318,7 +319,8 @@ class TestEvidenceLog:
         engine = ExecutionEngine(tmp_path, dry_run=True)
         engine.execute("Evidence Topic", "ev_topic")
 
-        evidence = tmp_path / ".governance" / "evidence" / "execution.jsonl"
+        from ape.utils import get_artifact_history
+        evidence = get_artifact_history(tmp_path / ".governance" / "evidence", "execution")
         assert evidence.exists()
         events = [json.loads(line) for line in evidence.read_text().splitlines() if line]
         event_types = {e.get("event") for e in events}

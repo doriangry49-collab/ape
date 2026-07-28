@@ -87,5 +87,6 @@ def test_cli_research_command_execution(tmp_path, monkeypatch) -> None:
     assert (research_dir / "ai_tools.md").is_file()
 
     # Check evidence log exists
-    evidence = tmp_path / ".governance" / "evidence" / "research.jsonl"
+    from ape.utils import get_artifact_history
+    evidence = get_artifact_history(tmp_path / ".governance" / "evidence", "research")
     assert evidence.is_file()

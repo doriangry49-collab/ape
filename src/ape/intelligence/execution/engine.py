@@ -14,7 +14,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from ape.intelligence.execution.executor import SimulationTaskExecutor, TaskExecutor
+from ape.intelligence.execution.executor import (
+    DockerSandboxExecutor,
+    SimulationTaskExecutor,
+    TaskExecutor,
+)
 from ape.intelligence.execution.models import (
     ExecutionState,
     ExecutionStatus,
@@ -75,7 +79,12 @@ class ExecutionEngine:
         self._interrupt_after = interrupt_after_tasks
         self._auto_deny = auto_deny_approvals
         self._policy = ExecutionPolicy()
-        self._executor = executor or SimulationTaskExecutor()
+        if executor:
+            self._executor = executor
+        elif dry_run:
+            self._executor = SimulationTaskExecutor()
+        else:
+            self._executor = DockerSandboxExecutor()
         self._verifier = DeliverableVerifier(project_root, dry_run=dry_run)
 
     # ------------------------------------------------------------------
@@ -249,8 +258,20 @@ class ExecutionEngine:
                         self._emit(topic_slug, "STARTED", task.task_id)
                         summary["executed"].append(task.task_id)
 
-                # Execute (simulation in MVP)
-                self._executor.execute(task.description, task.deliverables)
+                # Execute
+                try:
+                    self._executor.execute(task.description, task.deliverables)
+                except RuntimeError as e:
+                    if "Docker unavailable" in str(e):
+                        sm.block(reason=str(e))
+                        self._emit(topic_slug, "BLOCKED", task.task_id, reason=str(e))
+                        self._save_state(topic_slug, state)
+                        continue
+                    else:
+                        sm.fail(error=str(e))
+                        self._emit(topic_slug, "FAILED", task.task_id, error=str(e))
+                        self._save_state(topic_slug, state)
+                        continue
 
                 # Verify deliverables
                 ok, missing = self._verifier.verify(task.deliverables)

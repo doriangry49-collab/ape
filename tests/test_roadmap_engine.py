@@ -29,7 +29,8 @@ def test_roadmap_generator_integration(tmp_path):
     assert (tmp_path / ".build" / "roadmaps" / "ai_agents.md").exists()
 
     # Immutable evidence log
-    evidence = tmp_path / ".governance" / "evidence" / "roadmaps.jsonl"
+    from ape.utils import get_artifact_history
+    evidence = get_artifact_history(tmp_path / ".governance" / "evidence", "roadmaps")
     assert evidence.exists()
     with open(evidence, "r") as f:
         data = json.loads(f.readline())
