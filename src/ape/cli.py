@@ -136,14 +136,51 @@ def validate() -> None:
 
 
 @app.command("scan")
-def scan() -> None:
+def scan(
+    mode: str = typer.Option("tech", "--mode", help="Scan mode: 'tech' or 'business'"),
+    offline: bool = typer.Option(
+        False, "--offline", help="Run in offline mock mode (business mode only)"
+    ),
+) -> None:
     """Scan top daily tech opportunities from GitHub Trending and Hacker News."""
     from ape.intelligence.engine import OpportunityEngine
 
     project = load_project()
+
+    if mode == "business":
+        typer.echo(f"Scanning for opportunities in {mode} mode (offline={offline})...")
+        if offline:
+            from ape.intelligence.scanner.business import OfflineFileAdapter
+            adapter = OfflineFileAdapter("dummy_path.json")
+            opportunities = adapter.scan()
+        else:
+            typer.echo("Online business mode not implemented yet.")
+            opportunities = []
+
+        typer.echo("")
+        typer.echo("Business Signals & Pain Points")
+        typer.echo(_hr())
+
+        if not opportunities:
+            typer.echo("No opportunities found.")
+            return
+
+        for i, op in enumerate(opportunities, start=1):
+            typer.echo(f"\n{i}. {op.title}")
+            typer.echo(f"   Source     : {op.source}")
+            typer.echo(f"   URL        : {op.url}")
+            if op.pain_point:
+                typer.echo(f"   Domain     : {op.pain_point.domain}")
+                typer.echo(f"   Pain       : {op.pain_point.description}")
+            typer.echo(f"   Score      : {op.score}/100")
+            typer.echo(f"   {_hr()}")
+
+        return
+
+    # Tech mode (default)
     engine = OpportunityEngine(project)
 
-    typer.echo("Scanning for opportunities...")
+    typer.echo("Scanning for tech opportunities...")
     opportunities = engine.run_scans()
 
     typer.echo("")
