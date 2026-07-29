@@ -20,15 +20,8 @@ app = typer.Typer(help="APE foundation CLI")
 # UnicodeEncodeError on Windows terminals with non-UTF-8 codepages (e.g. CP1254).
 # We detect the terminal's encoding at runtime and fall back to ASCII hyphens.
 def _hr() -> str:
-    """Return a horizontal rule safe for the current terminal encoding."""
-    import sys
-    enc = getattr(sys.stdout, "encoding", "ascii") or "ascii"
-    bar = "\u2500" * 40
-    try:
-        bar.encode(enc)
-        return bar
-    except (UnicodeEncodeError, LookupError):
-        return "-" * 40
+    """Return a horizontal rule safe for any terminal encoding."""
+    return "-" * 40
 
 
 
@@ -398,6 +391,112 @@ def release(
         typer.echo("Successfully staged and committed release.")
     else:
         typer.echo("Release aborted or failed.")
+        raise typer.Exit(code=1)
+
+
+@app.command("build")
+def build(
+    topic: str = typer.Argument(..., help="Natural-language task or topic to build (e.g. 'Calculator App')"),
+    auto_approve: bool = typer.Option(
+        False, "--yes", "-y", help="Auto-approve release staging and commit if quality check passes."
+    ),
+) -> None:
+    """Run end-to-end governed autonomous build: decide -> plan -> execute -> release."""
+    from ape.intelligence.decision.engine import DecisionEngine
+    from ape.intelligence.roadmap.engine import RoadmapGenerator
+    from ape.intelligence.execution.engine import ExecutionEngine
+    from ape.intelligence.execution.release import ReleaseGate
+    from ape.utils import slugify
+
+    project = load_project()
+    topic_slug = slugify(topic)
+
+    typer.echo(f"Starting governed autonomous build for: '{topic}' (slug: {topic_slug})")
+    typer.echo(_hr())
+
+    # Step 0: Ensure research artifact exists (auto-run research if missing)
+    from ape.utils import get_current_artifact
+    research_file = get_current_artifact(project.root / ".build" / "research", topic_slug)
+    if not research_file:
+        typer.echo("Step 0/4: Gathering initial research signals...")
+        from ape.intelligence.research.engine import ResearchEngine
+        res_engine = ResearchEngine(project, offline=True)
+        res_engine.run_research(topic)
+
+    # Step 1: Decision Gate
+    typer.echo("Step 1/4: Evaluating Decision Gate...")
+    dec_engine = DecisionEngine(project.root)
+    dec_report = dec_engine.run_decision(topic, topic_slug)
+    typer.echo(f"  Decision: {dec_report.decision} (Policy: {dec_report.policy})")
+    if str(dec_report.decision) not in ("BUILD", "VALIDATE"):
+        typer.echo(f"Build halted by Decision Gate: Decision '{dec_report.decision}' does not allow execution.")
+        raise typer.Exit(code=1)
+
+    # Step 2: Intelligent Planning
+    typer.echo("Step 2/4: Generating Execution Roadmap...")
+    roadmap_gen = RoadmapGenerator(project.root)
+    try:
+        roadmap = roadmap_gen.generate_roadmap(topic, topic_slug)
+        typer.echo(f"  Roadmap Goal: {roadmap.goal}")
+    except Exception as e:
+        typer.echo(f"Build halted during roadmap generation: {e}")
+        raise typer.Exit(code=1)
+
+    # Step 3: Governed Execution Engine (no-dry-run)
+    typer.echo("Step 3/4: Executing Tasks via Execution Engine...")
+    from ape.intelligence.execution.engine import LineageMismatchError
+    exec_engine = ExecutionEngine(project.root, dry_run=False)
+    try:
+        exec_summary = exec_engine.execute(topic, topic_slug)
+    except LineageMismatchError:
+        typer.echo("  Notice: Previous execution state has outdated decision lineage. Resetting execution state...")
+        state_file = project.root / ".build" / "execution" / topic_slug / "current.json"
+        if state_file.exists():
+            state_file.unlink()
+        exec_summary = exec_engine.execute(topic, topic_slug)
+    except Exception as e:
+        typer.echo(f"Build halted during execution: {e}")
+        raise typer.Exit(code=1)
+
+    typer.echo(f"  Executed: {len(exec_summary['executed'])} tasks, Skipped: {len(exec_summary['skipped'])} tasks")
+    if exec_summary.get("failed") or exec_summary.get("blocked"):
+        typer.echo("Build execution encountered failed or blocked tasks.")
+
+    # Step 4: Governed Release Gate
+    typer.echo("Step 4/4: Evaluating Release Gate...")
+    gate = ReleaseGate(project.root)
+    try:
+        proposal = gate.prepare_release(topic_slug)
+    except (FileNotFoundError, ValueError) as exc:
+        typer.echo(f"Release Error: {exc}")
+        raise typer.Exit(code=1)
+
+    typer.echo("Release Proposal")
+    typer.echo(_hr())
+    typer.echo(f"Execution ID : {proposal.execution_id}")
+    typer.echo(f"Decision ID  : {proposal.decision_id}")
+    typer.echo(f"Policy       : {proposal.policy_decision}")
+    typer.echo(f"Evidence Hash: {proposal.evidence_hash}")
+    typer.echo(f"Quality Check: {'PASSED' if proposal.quality_check_passed else 'FAILED'}")
+    if proposal.quality_errors:
+        typer.echo(f"Quality Errors: {', '.join(proposal.quality_errors)}")
+    typer.echo(f"Changed Files: {', '.join(proposal.changed_files) if proposal.changed_files else 'None'}")
+    typer.echo(_hr())
+
+    if not proposal.quality_check_passed:
+        typer.echo("Release aborted due to quality check failure.")
+        gate.execute_release(proposal, user_approved=False)
+        raise typer.Exit(code=1)
+
+    user_approved = auto_approve
+    if not auto_approve:
+        user_approved = typer.confirm("Proceed with git commit?", default=False)
+
+    success = gate.execute_release(proposal, user_approved=user_approved)
+    if success:
+        typer.echo("Successfully completed governed autonomous build and committed release.")
+    else:
+        typer.echo("Release commit aborted by user or policy.")
         raise typer.Exit(code=1)
 
 

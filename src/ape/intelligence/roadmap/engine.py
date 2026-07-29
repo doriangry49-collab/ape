@@ -237,15 +237,17 @@ class RoadmapGenerator:
                     tasks=[
                         Task(
                             task_id="tsk_3_1",
-                            description="Deploy to production environment",
-                            deliverables=["Live URL", "Deployment scripts"],
-                            estimated_effort="1 day"
+                            description="Verify build artifacts and run test suite",
+                            deliverables=["Test Verification Log"],
+                            estimated_effort="1 day",
+                            action="run_tests"
                         ),
                         Task(
                             task_id="tsk_3_2",
                             description="Monitor analytics and gather feedback",
                             deliverables=["Analytics Dashboard", "User Feedback Report"],
-                            estimated_effort="Ongoing"
+                            estimated_effort="Ongoing",
+                            action="read_file"
                         ),
                     ],
                     dependencies=["ms_2"]

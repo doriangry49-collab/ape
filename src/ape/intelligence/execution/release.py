@@ -167,8 +167,9 @@ class ReleaseGate:
             full_path = self._root / file_path
             if full_path.suffix == ".py" and full_path.exists():
                 try:
+                    import sys
                     res = subprocess.run(
-                        ["python", "-m", "py_compile", str(full_path)],
+                        [sys.executable, "-m", "py_compile", str(full_path)],
                         capture_output=True,
                         text=True,
                     )
