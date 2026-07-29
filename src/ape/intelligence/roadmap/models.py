@@ -12,14 +12,18 @@ class Task:
     description: str
     deliverables: List[str]
     estimated_effort: str
+    action: str = ""
 
     def to_dict(self) -> dict:
-        return {
+        d = {
             "task_id": self.task_id,
             "description": self.description,
             "deliverables": self.deliverables,
             "estimated_effort": self.estimated_effort
         }
+        if self.action:
+            d["action"] = self.action
+        return d
 
 @dataclass(frozen=True)
 class Milestone:

@@ -126,12 +126,19 @@ def test_planner_lineage_mismatch_rejected(setup_project, monkeypatch):
     # Should fallback
     assert roadmap.metadata["generator"] == "heuristic-template"
 
-def test_planner_unauthorized_action_rejected(setup_project, monkeypatch):
-    # Planner tries to propose a shell command
+@pytest.mark.parametrize("action", [
+    "run_bash_script",
+    "system_call",
+    "eval",
+    "arbitrary_unknown_action",
+    "shell_command",
+    "exec",
+])
+def test_planner_adversarial_actions_rejected(setup_project, monkeypatch, action):
     malicious_response = {
         "decision_id": "dec_mock_01",
         "policy_decision": "BUILD",
-        "reasoning": "Looks good",
+        "reasoning": "Adversarial proposal",
         "milestones": [
             {
                 "milestone_id": "m1",
@@ -140,8 +147,8 @@ def test_planner_unauthorized_action_rejected(setup_project, monkeypatch):
                 "tasks": [
                     {
                         "task_id": "t1",
-                        "description": "Hack",
-                        "action": "shell_command",
+                        "description": "Exploit",
+                        "action": action,
                         "deliverables": [],
                         "estimated_effort": "1 day"
                     }
@@ -158,8 +165,50 @@ def test_planner_unauthorized_action_rejected(setup_project, monkeypatch):
     generator = RoadmapGenerator(setup_project)
     roadmap = generator.generate_roadmap("test_topic", "test_topic")
     
-    # Should fallback
+    # Must fallback to deterministic template when unknown/adversarial action is proposed
     assert roadmap.metadata["generator"] == "heuristic-template"
+
+
+@pytest.mark.parametrize("action", [
+    "create_file", "modify_file", "delete_file", "read_file",
+    "run_tests", "git_diff", "git_commit", "git_push",
+    "deploy", "external_api_write", "search", "analyze"
+])
+def test_planner_canonical_actions_accepted(setup_project, monkeypatch, action):
+    valid_response = {
+        "decision_id": "dec_mock_01",
+        "policy_decision": "BUILD",
+        "reasoning": "Valid canonical task proposal",
+        "milestones": [
+            {
+                "milestone_id": "m1",
+                "title": "Test Milestone",
+                "dependencies": [],
+                "tasks": [
+                    {
+                        "task_id": "t1",
+                        "description": "Legitimate step",
+                        "action": action,
+                        "deliverables": ["output.txt"],
+                        "estimated_effort": "1 day"
+                    }
+                ]
+            }
+        ]
+    }
+    
+    def mock_init(*args, **kwargs):
+        return MockPlannerModel(valid_response)
+        
+    monkeypatch.setattr("ape.intelligence.roadmap.engine.OpenAICompatibleProvider", mock_init)
+    
+    generator = RoadmapGenerator(setup_project)
+    roadmap = generator.generate_roadmap("test_topic", "test_topic")
+    
+    # Must accept canonical actions at the proposal level
+    assert roadmap.metadata["generator"] == "intelligent-planner"
+    assert roadmap.milestones[0].tasks[0].action == action
+
 
 def test_planner_fallback_on_api_error(setup_project, monkeypatch):
     def mock_init(*args, **kwargs):

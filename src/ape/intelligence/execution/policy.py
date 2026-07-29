@@ -23,6 +23,22 @@ _POLICY_TABLE: dict[str, str] = {
     "credential_exposure": "FORBIDDEN",
 }
 
+# Single source of truth for canonical action vocabulary
+CANONICAL_ACTIONS: set[str] = {
+    "create_file",
+    "modify_file",
+    "delete_file",
+    "read_file",
+    "run_tests",
+    "git_diff",
+    "git_commit",
+    "git_push",
+    "deploy",
+    "external_api_write",
+    "search",
+    "analyze",
+}
+
 
 class ExecutionPolicy:
     """Classify an action name into a safety level.

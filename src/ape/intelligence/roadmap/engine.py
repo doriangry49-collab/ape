@@ -2,6 +2,7 @@ import json
 import uuid
 from pathlib import Path
 
+from ape.intelligence.execution.policy import CANONICAL_ACTIONS
 from ape.intelligence.roadmap.models import Milestone, Roadmap, Task
 from ape.intelligence.roadmap.planner import IntelligentPlanner
 from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
@@ -80,11 +81,12 @@ class RoadmapGenerator:
                 if proposal.policy_decision != decision_val:
                     raise ValueError(f"Policy mutation: Planner changed policy_decision to {proposal.policy_decision}")
                 
-                # Action whitelist validation
+                # Action whitelist validation against Canonical Action Vocabulary
+                # Prevent prompt injection from crafting arbitrary execution steps.
                 for ms in proposal.milestones:
                     for tsk in ms.tasks:
-                        if "shell_command" in tsk.action or "exec" in tsk.action:
-                            raise ValueError(f"Unauthorized action proposed: {tsk.action}")
+                        if tsk.action not in CANONICAL_ACTIONS:
+                            raise ValueError(f"Unauthorized action proposed: {tsk.action}. Must be one of {CANONICAL_ACTIONS}")
 
                 milestones = []
                 for p_ms in proposal.milestones:
