@@ -55,7 +55,7 @@ class DockerSandboxExecutor(TaskExecutor):
             raise RuntimeError(f"Sandbox Error: {result.error}")
         return result.output
 
-    def execute_command(self, cmd: str, cwd: str, timeout: int = 60) -> SandboxResult:
+    def execute_command(self, cmd: str, cwd: str = "/tmp", timeout: int = 60, workspace_dir: str | None = None) -> SandboxResult:
         if not shutil.which("docker"):
             return SandboxResult(
                 exit_code=-1,
@@ -70,9 +70,15 @@ class DockerSandboxExecutor(TaskExecutor):
             "--network=none",
             "--memory=512m",
             "--cpus=1.0",
+        ]
+        
+        if workspace_dir:
+            docker_cmd.extend(["-v", f"{workspace_dir}:/workspace:rw"])
+
+        docker_cmd.extend([
             "-w", cwd,
             "alpine", "sh", "-c", cmd
-        ]
+        ])
         
         try:
             # We explicitly do NOT pass host environment (env=None)
