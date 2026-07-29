@@ -313,3 +313,59 @@ def test_regression_wn2_override_path_preserves_reference_urls(tmp_path: Path):
     assert report.reference_urls == ["https://example.com/market-report"], (
         "reference_urls supplied alongside evidence_flags override must appear in DecisionReport"
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RFC-013 POST-PUSH CORRECTION — validate() canonical delegation
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_regression_validate_delegates_to_evaluate_policy_single_source_of_truth():
+    """
+    Post-push correction regression: validate() MUST contain zero independent
+    policy branching. Its output MUST be structurally identical to what
+    evaluate_policy() returns directly for the same inputs.
+
+    Before the correction, validate() had its own parallel if/elif tree.
+    After the correction, it is a thin wrapper that delegates to evaluate_policy().
+    """
+    validator = ConstitutionValidator()
+
+    test_cases = [
+        # (overall_score, vector_scores, expected_decision, description)
+        (85, {"feasibility": 50, "demand": 80}, "BUILD",    "high score → BUILD"),
+        (65, {"feasibility": 60, "demand": 75}, "BUILD",    "mid score + high demand → BUILD"),
+        (65, {"feasibility": 60, "demand": 60}, "VALIDATE", "mid score + low demand → VALIDATE"),
+        (45, {"feasibility": 50, "demand": 40}, "WATCH",    "low-mid score → WATCH"),
+        (30, {"feasibility": 50, "demand": 30}, "IGNORE",   "low score → IGNORE"),
+        (90, {"feasibility": 10, "demand": 100}, "IGNORE",  "low feasibility constitutional veto"),
+    ]
+
+    for overall_score, vector_scores, expected_decision, description in test_cases:
+        # Call via legacy wrapper
+        legacy_dec, legacy_pol, legacy_msg = validator.validate(overall_score, vector_scores)
+
+        # Call evaluate_policy() directly (the canonical gate)
+        gate = validator.evaluate_policy(
+            overall_score=overall_score,
+            vector_scores=vector_scores,
+            bridge_result=None,
+        )
+
+        # validate() MUST produce identical decision to the canonical path
+        assert legacy_dec == gate.decision.value, (
+            f"[{description}] validate() returned decision '{legacy_dec}' "
+            f"but evaluate_policy() returned '{gate.decision.value}'. "
+            "validate() must delegate — zero independent branching allowed."
+        )
+        assert legacy_pol == gate.policy_code, (
+            f"[{description}] validate() policy_code '{legacy_pol}' != "
+            f"evaluate_policy() policy_code '{gate.policy_code}'."
+        )
+        assert legacy_msg == gate.message, (
+            f"[{description}] validate() message diverges from evaluate_policy() message."
+        )
+
+        # Also verify the expected outcome
+        assert legacy_dec == expected_decision, (
+            f"[{description}] Expected decision '{expected_decision}', got '{legacy_dec}'"
+        )

@@ -167,29 +167,19 @@ class ConstitutionValidator:
 
     def validate(self, overall_score: int, vector_scores: Dict[str, int]) -> Tuple[str, str, str]:
         """
-        Legacy interface (Returns decision, policy, next_step).
+        Legacy interface — returns (decision, policy_code, next_step) tuple.
         Preserved for backward compatibility.
+
+        IMPORTANT: Contains zero independent policy branching.
+        Delegates entirely to evaluate_policy() which is the sole canonical
+        policy evaluator per RFC-013 / SPEC-0013.
         """
-        feasibility = vector_scores.get("feasibility", 0)
-        demand = vector_scores.get("demand", 0)
-
-        # Constitutional checks
-        if feasibility < 20:
-            return ("IGNORE", "IGNORE", "Do not pursue. Feasibility is catastrophically low.")
-
-        if overall_score >= 80:
-            return ("BUILD", "BUILD_NOW", "Generate MVP Plan and begin execution.")
-        elif overall_score >= 60:
-            if demand >= 70:
-                msg = "High demand compensates for lower overall score. Build MVP."
-                return ("BUILD", "BUILD_NOW", msg)
-            else:
-                msg = "Create a landing page or survey to validate demand."
-                return ("VALIDATE", "VALIDATE_WITH_USERS", msg)
-        elif overall_score >= 40:
-            return ("WATCH", "WAIT_FOR_SIGNAL", "Set up alerts for competitor or market movement.")
-        else:
-            return ("IGNORE", "IGNORE", "Score is too low. Discard this opportunity.")
+        result = self.evaluate_policy(
+            overall_score=overall_score,
+            vector_scores=vector_scores,
+            bridge_result=None,
+        )
+        return (result.decision.value, result.policy_code, result.message)
 
     def evaluate_business_gate(
         self,
