@@ -25,6 +25,7 @@ from ape.intelligence.execution.models import (
     ExecutionTask,
     TaskStatus,
 )
+from ape.intelligence.execution.exceptions import PolicyExecutionBlockedError
 from ape.intelligence.execution.policy import ExecutionPolicy
 from ape.intelligence.execution.state import TaskStateMachine
 from ape.intelligence.execution.verifier import DeliverableVerifier
@@ -94,8 +95,14 @@ class ExecutionEngine:
     def execute(self, topic: str, topic_slug: str) -> dict:
         """
         Main entry point for `ape execute`.
-        Loads or creates ExecutionState from Roadmap, then runs the task queue.
+
+        RFC-014: Decision gate is verified BEFORE any task is loaded or run.
+        This is a second safety layer: even if `ape plan` was bypassed, a
+        WATCH/IGNORE/BLOCKED decision cannot reach execution.
         """
+        # 0. RFC-014: Verify PolicyDecision — raises on WATCH/IGNORE/BLOCKED
+        decision_data = self._verify_decision_gate(topic_slug)
+
         # 1. Load roadmap
         roadmap_file = get_current_artifact(
             self._root / ".build" / "roadmaps", topic_slug
@@ -107,8 +114,8 @@ class ExecutionEngine:
 
         roadmap = json.loads(roadmap_file.read_text(encoding="utf-8"))
 
-        # 2. Load or create state
-        state = self._load_or_create_state(topic, topic_slug, roadmap)
+        # 2. Load or create state (passes decision_data for lineage)
+        state = self._load_or_create_state(topic, topic_slug, roadmap, decision_data)
 
         # 3. Persist initial/current state
         self._save_state(topic_slug, state)
@@ -131,8 +138,40 @@ class ExecutionEngine:
     # Internal helpers
     # ------------------------------------------------------------------
 
+    def _verify_decision_gate(self, topic_slug: str) -> dict:
+        """
+        RFC-014 Policy Gate: reads the decision artifact and blocks execution
+        for WATCH, IGNORE, or BLOCKED decisions.
+
+        Returns the parsed decision_data dict for downstream lineage use.
+        Raises:
+            FileNotFoundError: if no decision artifact exists.
+            PolicyExecutionBlockedError: if decision is not BUILD or VALIDATE.
+        """
+        decision_file = get_current_artifact(
+            self._root / ".build" / "decisions", topic_slug
+        )
+        if not decision_file:
+            raise FileNotFoundError(
+                f"No decision artifact found for: {topic_slug}. "
+                "Run `ape decide` first."
+            )
+        decision_data = json.loads(decision_file.read_text(encoding="utf-8"))
+        decision_val = str(decision_data.get("decision", "")).upper()
+        if decision_val in ("WATCH", "IGNORE", "BLOCKED"):
+            raise PolicyExecutionBlockedError(
+                f"Execution blocked: PolicyDecision is '{decision_val}'. "
+                "Only BUILD or VALIDATE decisions may be executed. "
+                "(RFC-014 / SPEC-0014 §3)"
+            )
+        return decision_data
+
     def _load_or_create_state(
-        self, topic: str, topic_slug: str, roadmap: dict
+        self,
+        topic: str,
+        topic_slug: str,
+        roadmap: dict,
+        decision_data: Optional[dict] = None,
     ) -> ExecutionState:
         existing = self._load_state(topic_slug)
         if existing is not None:
@@ -150,9 +189,14 @@ class ExecutionEngine:
                     action=action,
                 ))
 
+        # RFC-014: Propagate audit lineage from decision artifact into ExecutionState.
+        dd = decision_data or {}
         return ExecutionState(
             execution_id=f"exec_{uuid.uuid4().hex[:8]}",
             roadmap_id=roadmap.get("roadmap_id", "UNKNOWN"),
+            decision_id=dd.get("decision_id", roadmap.get("decision_id", "UNKNOWN")),
+            policy_decision=str(dd.get("decision", roadmap.get("policy_decision", "UNKNOWN"))).upper(),
+            evidence_hash=dd.get("evidence_hash", ""),
             topic=topic,
             tasks=tasks,
         )
@@ -187,12 +231,28 @@ class ExecutionEngine:
             json.dumps(state.to_dict(), indent=2), encoding="utf-8"
         )
 
-    def _emit(self, topic_slug: str, event: str, task_id: str, **extra: object) -> None:
+    def _emit(
+        self,
+        topic_slug: str,
+        event: str,
+        task_id: str,
+        state: Optional["ExecutionState"] = None,
+        **extra: object,
+    ) -> None:
+        # RFC-014: Include decision lineage in every execution event.
+        lineage: dict = {}
+        if state is not None:
+            lineage = {
+                "decision_id": state.decision_id,
+                "policy_decision": state.policy_decision,
+                "evidence_hash": state.evidence_hash,
+            }
         payload = {
             "event": event,
             "task_id": task_id,
             "topic_slug": topic_slug,
             "timestamp": _utcnow(),
+            **lineage,
             **extra,
         }
         append_to_evidence(
@@ -216,11 +276,11 @@ class ExecutionEngine:
 
                 if task.status == TaskStatus.FAILED:
                     sm.retry()
-                    self._emit(topic_slug, "STARTED", task.task_id, retry=True)
+                    self._emit(topic_slug, "STARTED", task.task_id, state=state, retry=True)
                     summary["retried"].append(task.task_id)
                 elif task.status in (TaskStatus.PAUSED, TaskStatus.IN_PROGRESS):
                     sm.resume()
-                    self._emit(topic_slug, "STARTED", task.task_id, resumed=True)
+                    self._emit(topic_slug, "STARTED", task.task_id, state=state, resumed=True)
                     summary["executed"].append(task.task_id)
                 else:
                     # PENDING or REQUIRES_APPROVAL
@@ -229,14 +289,14 @@ class ExecutionEngine:
                     if safety == "FORBIDDEN":
                         sm.fail(error="Action is FORBIDDEN by ExecutionPolicy.")
                         self._emit(topic_slug, "FAILED", task.task_id,
-                                   reason="FORBIDDEN")
+                                   state=state, reason="FORBIDDEN")
                         self._save_state(topic_slug, state)
                         continue
 
                     if safety == "REQUIRES_APPROVAL":
                         sm.request_approval()
                         self._save_state(topic_slug, state)
-                        self._emit(topic_slug, "REQUIRES_APPROVAL", task.task_id)
+                        self._emit(topic_slug, "REQUIRES_APPROVAL", task.task_id, state=state)
 
                         if self._auto_deny:
                             sm.deny()
@@ -250,12 +310,12 @@ class ExecutionEngine:
                             self._save_state(topic_slug, state)
                             continue
                         sm.approve()
-                        self._emit(topic_slug, "APPROVED", task.task_id)
+                        self._emit(topic_slug, "APPROVED", task.task_id, state=state)
 
                     else:
                         # SAFE
                         sm.start()
-                        self._emit(topic_slug, "STARTED", task.task_id)
+                        self._emit(topic_slug, "STARTED", task.task_id, state=state)
                         summary["executed"].append(task.task_id)
 
                 # Execute
@@ -264,12 +324,12 @@ class ExecutionEngine:
                 except RuntimeError as e:
                     if "Docker unavailable" in str(e):
                         sm.block(reason=str(e))
-                        self._emit(topic_slug, "BLOCKED", task.task_id, reason=str(e))
+                        self._emit(topic_slug, "BLOCKED", task.task_id, state=state, reason=str(e))
                         self._save_state(topic_slug, state)
                         continue
                     else:
                         sm.fail(error=str(e))
-                        self._emit(topic_slug, "FAILED", task.task_id, error=str(e))
+                        self._emit(topic_slug, "FAILED", task.task_id, state=state, error=str(e))
                         self._save_state(topic_slug, state)
                         continue
 
@@ -277,13 +337,13 @@ class ExecutionEngine:
                 ok, missing = self._verifier.verify(task.deliverables)
                 if ok:
                     sm.complete()
-                    self._emit(topic_slug, "COMPLETED", task.task_id)
+                    self._emit(topic_slug, "COMPLETED", task.task_id, state=state)
                     self._emit(topic_slug, "VERIFIED", task.task_id,
-                               deliverables=task.deliverables)
+                               state=state, deliverables=task.deliverables)
                 else:
                     sm.fail(error=f"Missing deliverables: {missing}")
                     self._emit(topic_slug, "FAILED", task.task_id,
-                               missing=missing)
+                               state=state, missing=missing)
 
                 self._save_state(topic_slug, state)
                 tasks_run += 1
@@ -301,7 +361,7 @@ class ExecutionEngine:
 
             state.status = ExecutionStatus.PAUSED
             self._save_state(topic_slug, state)
-            self._emit(topic_slug, "PAUSED", "engine", reason="KeyboardInterrupt")
+            self._emit(topic_slug, "PAUSED", "engine", state=state, reason="KeyboardInterrupt")
 
         else:
             all_done = all(t.status == TaskStatus.COMPLETED for t in state.tasks)

@@ -52,78 +52,148 @@ class RoadmapGenerator:
 
         roadmap_id = f"rm_{uuid.uuid4().hex[:8]}"
 
-        milestones = [
-            Milestone(
-                milestone_id="ms_1",
-                title="Design & Architecture",
-                tasks=[
-                    Task(
-                        task_id="tsk_1_1",
-                        description="Define core data models and architecture",
-                        deliverables=["Architecture Document", "Data Models"],
-                        estimated_effort="1 day"
-                    ),
-                    Task(
-                        task_id="tsk_1_2",
-                        description="Setup project repository and CI/CD",
-                        deliverables=["Git Repo", "Github Actions"],
-                        estimated_effort="4 hours"
-                    )
-                ],
-                dependencies=[]
-            ),
-            Milestone(
-                milestone_id="ms_2",
-                title="MVP Development",
-                tasks=[
-                    Task(
-                        task_id="tsk_2_1",
-                        description="Implement core backend logic",
-                        deliverables=["API Endpoints", "Core Engine"],
-                        estimated_effort="3 days"
-                    ),
-                    Task(
-                        task_id="tsk_2_2",
-                        description="Implement basic CLI or Web UI",
-                        deliverables=["User Interface"],
-                        estimated_effort="2 days"
-                    )
-                ],
-                dependencies=["ms_1"]
-            ),
-            Milestone(
-                milestone_id="ms_3",
-                title="Launch & Validation",
-                tasks=[
-                    Task(
-                        task_id="tsk_3_1",
-                        description="Deploy to production environment",
-                        deliverables=["Live URL", "Deployment scripts"],
-                        estimated_effort="1 day"
-                    ),
-                    Task(
-                        task_id="tsk_3_2",
-                        description="Monitor analytics and gather feedback",
-                        deliverables=["Analytics Dashboard", "User Feedback Report"],
-                        estimated_effort="Ongoing"
-                    )
-                ],
-                dependencies=["ms_2"]
-            )
-        ]
+        # RFC-014: Generate policy-appropriate milestones.
+        # BUILD → MVP development track. VALIDATE → Market validation track.
+        if decision_val == "VALIDATE":
+            milestones = [
+                Milestone(
+                    milestone_id="ms_1",
+                    title="Problem Validation",
+                    tasks=[
+                        Task(
+                            task_id="tsk_1_1",
+                            description="Conduct user interviews to validate pain points",
+                            deliverables=["Interview Notes", "Pain Point Summary"],
+                            estimated_effort="3 days"
+                        ),
+                        Task(
+                            task_id="tsk_1_2",
+                            description="Map identified pain points to potential solution areas",
+                            deliverables=["Pain Point Map"],
+                            estimated_effort="1 day"
+                        ),
+                    ],
+                    dependencies=[]
+                ),
+                Milestone(
+                    milestone_id="ms_2",
+                    title="Signal Testing",
+                    tasks=[
+                        Task(
+                            task_id="tsk_2_1",
+                            description="Build and deploy a landing page with waitlist sign-up",
+                            deliverables=["Landing Page URL", "Waitlist Form"],
+                            estimated_effort="2 days"
+                        ),
+                        Task(
+                            task_id="tsk_2_2",
+                            description="Deploy targeted survey to potential customer segment",
+                            deliverables=["Survey Results Report"],
+                            estimated_effort="3 days"
+                        ),
+                    ],
+                    dependencies=["ms_1"]
+                ),
+                Milestone(
+                    milestone_id="ms_3",
+                    title="Evidence Review",
+                    tasks=[
+                        Task(
+                            task_id="tsk_3_1",
+                            description="Collect and analyze validation metrics (sign-ups, survey responses)",
+                            deliverables=["Metrics Report"],
+                            estimated_effort="2 days"
+                        ),
+                        Task(
+                            task_id="tsk_3_2",
+                            description="Produce go/no-go recommendation based on evidence",
+                            deliverables=["Go/No-Go Decision Document"],
+                            estimated_effort="1 day"
+                        ),
+                    ],
+                    dependencies=["ms_2"]
+                ),
+            ]
+            estimated_time = "1-2 weeks"
+            risks = ["Low survey response rate", "Unclear customer segment definition"]
+        else:
+            # BUILD (default — already gate-checked above)
+            milestones = [
+                Milestone(
+                    milestone_id="ms_1",
+                    title="Design & Architecture",
+                    tasks=[
+                        Task(
+                            task_id="tsk_1_1",
+                            description="Define core data models and architecture",
+                            deliverables=["Architecture Document", "Data Models"],
+                            estimated_effort="1 day"
+                        ),
+                        Task(
+                            task_id="tsk_1_2",
+                            description="Setup project repository and CI/CD",
+                            deliverables=["Git Repo", "Github Actions"],
+                            estimated_effort="4 hours"
+                        ),
+                    ],
+                    dependencies=[]
+                ),
+                Milestone(
+                    milestone_id="ms_2",
+                    title="MVP Development",
+                    tasks=[
+                        Task(
+                            task_id="tsk_2_1",
+                            description="Implement core backend logic",
+                            deliverables=["API Endpoints", "Core Engine"],
+                            estimated_effort="3 days"
+                        ),
+                        Task(
+                            task_id="tsk_2_2",
+                            description="Implement basic CLI or Web UI",
+                            deliverables=["User Interface"],
+                            estimated_effort="2 days"
+                        ),
+                    ],
+                    dependencies=["ms_1"]
+                ),
+                Milestone(
+                    milestone_id="ms_3",
+                    title="Launch & Validation",
+                    tasks=[
+                        Task(
+                            task_id="tsk_3_1",
+                            description="Deploy to production environment",
+                            deliverables=["Live URL", "Deployment scripts"],
+                            estimated_effort="1 day"
+                        ),
+                        Task(
+                            task_id="tsk_3_2",
+                            description="Monitor analytics and gather feedback",
+                            deliverables=["Analytics Dashboard", "User Feedback Report"],
+                            estimated_effort="Ongoing"
+                        ),
+                    ],
+                    dependencies=["ms_2"]
+                ),
+            ]
+            estimated_time = "1-2 weeks"
+            risks = ["Scope creep during MVP", "Technical debt accumulation"]
 
         roadmap = Roadmap(
             roadmap_id=roadmap_id,
             decision_id=decision_id,
+            policy_decision=decision_val,
             goal=f"Execute {policy} for {topic}",
             milestones=milestones,
-            estimated_time="1-2 weeks",
-            risks=["Scope creep during MVP", "Technical debt accumulation"],
-            metadata={"generator": "heuristic-template", "version": "1.0"}
+            estimated_time=estimated_time,
+            risks=risks,
+            metadata={"generator": "heuristic-template", "version": "1.1"}
         )
 
         self._save_artifacts(topic_slug, roadmap)
         return roadmap
+
 
     def _save_artifacts(self, topic_slug: str, roadmap: Roadmap) -> None:
         roadmaps_dir = self.project_root / ".build" / "roadmaps"

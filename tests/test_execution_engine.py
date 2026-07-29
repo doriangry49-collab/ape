@@ -265,6 +265,11 @@ class TestCtrlCPause:
         )
 
         # Use interrupt_after to simulate KeyboardInterrupt after first task
+        # RFC-014: execute() now requires a decision artifact to exist.
+        decision_file = tmp_path / ".build" / "decisions" / "test_topic.json"
+        decision_file.parent.mkdir(parents=True, exist_ok=True)
+        decision_file.write_text(json.dumps({"decision": "BUILD"}))
+
         engine = ExecutionEngine(
             tmp_path, dry_run=True, interrupt_after_tasks=1
         )
@@ -317,6 +322,11 @@ class TestEvidenceLog:
         )
 
         engine = ExecutionEngine(tmp_path, dry_run=True)
+        # RFC-014: execute() requires a decision artifact
+        decision_file = tmp_path / ".build" / "decisions" / "ev_topic.json"
+        decision_file.parent.mkdir(parents=True, exist_ok=True)
+        decision_file.write_text(json.dumps({"decision": "BUILD"}))
+        
         engine.execute("Evidence Topic", "ev_topic")
 
         from ape.utils import get_artifact_history
@@ -362,6 +372,11 @@ class TestDryRun:
         )
 
         engine = ExecutionEngine(tmp_path, dry_run=True)
+        # RFC-014: execute() requires a decision artifact
+        decision_file = tmp_path / ".build" / "decisions" / "dry_topic.json"
+        decision_file.parent.mkdir(parents=True, exist_ok=True)
+        decision_file.write_text(json.dumps({"decision": "BUILD"}))
+        
         engine.execute("Dry Topic", "dry_topic")
 
         # The deliverable must NOT actually be created in dry-run
@@ -395,6 +410,11 @@ class TestDryRun:
         )
 
         engine = ExecutionEngine(tmp_path, dry_run=True)
+        # RFC-014: execute() requires a decision artifact
+        decision_file = tmp_path / ".build" / "decisions" / "dry_topic.json"
+        decision_file.parent.mkdir(parents=True, exist_ok=True)
+        decision_file.write_text(json.dumps({"decision": "BUILD"}))
+        
         engine.execute("Dry Topic", "dry_topic")
 
         state = json.loads((exec_dir / "current.json").read_text())
@@ -437,6 +457,11 @@ class TestApprovalGate:
 
         # Execute with auto_deny to simulate user saying N
         engine = ExecutionEngine(tmp_path, dry_run=True, auto_deny_approvals=True)
+        # RFC-014: execute() requires a decision artifact
+        decision_file = tmp_path / ".build" / "decisions" / "appr_topic.json"
+        decision_file.parent.mkdir(parents=True, exist_ok=True)
+        decision_file.write_text(json.dumps({"decision": "BUILD"}))
+        
         engine.execute("Approval Topic", "appr_topic")
 
         state_file = (

@@ -44,6 +44,9 @@ class Roadmap:
     milestones: List[Milestone]
     estimated_time: str
     risks: List[str]
+    # RFC-014: Carries the originating PolicyDecision ("BUILD" | "VALIDATE") so
+    # ExecutionEngine can read policy semantics without re-opening the decision artifact.
+    policy_decision: str = ""
     metadata: Dict[str, str] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=_now_utc)
 
@@ -51,6 +54,7 @@ class Roadmap:
         return {
             "roadmap_id": self.roadmap_id,
             "decision_id": self.decision_id,
+            "policy_decision": self.policy_decision,
             "goal": self.goal,
             "milestones": [m.to_dict() for m in self.milestones],
             "estimated_time": self.estimated_time,
@@ -58,3 +62,4 @@ class Roadmap:
             "metadata": self.metadata,
             "timestamp": self.timestamp.isoformat() + "Z"
         }
+

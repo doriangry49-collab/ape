@@ -66,6 +66,11 @@ class ExecutionState:
     roadmap_id: str
     topic: str
     tasks: List[ExecutionTask]
+    # RFC-014: Decision audit lineage — carried from DecisionReport via Roadmap.
+    # Defaults to "UNKNOWN" for backward compatibility with existing state files.
+    decision_id: str = "UNKNOWN"
+    policy_decision: str = "UNKNOWN"  # "BUILD" | "VALIDATE" | "UNKNOWN"
+    evidence_hash: str = ""
     status: ExecutionStatus = ExecutionStatus.IN_PROGRESS
     created_at: str = field(default_factory=_utcnow)
     updated_at: str = field(default_factory=_utcnow)
@@ -74,6 +79,9 @@ class ExecutionState:
         return {
             "execution_id": self.execution_id,
             "roadmap_id": self.roadmap_id,
+            "decision_id": self.decision_id,
+            "policy_decision": self.policy_decision,
+            "evidence_hash": self.evidence_hash,
             "topic": self.topic,
             "status": self.status.value,
             "tasks": [t.to_dict() for t in self.tasks],
@@ -88,6 +96,9 @@ class ExecutionState:
             roadmap_id=d["roadmap_id"],
             topic=d["topic"],
             tasks=[ExecutionTask.from_dict(t) for t in d.get("tasks", [])],
+            decision_id=d.get("decision_id", "UNKNOWN"),
+            policy_decision=d.get("policy_decision", "UNKNOWN"),
+            evidence_hash=d.get("evidence_hash", ""),
             status=ExecutionStatus(d.get("status", "IN_PROGRESS")),
             created_at=d.get("created_at", _utcnow()),
             updated_at=d.get("updated_at", _utcnow()),

@@ -369,3 +369,160 @@ def test_regression_validate_delegates_to_evaluate_policy_single_source_of_truth
         assert legacy_dec == expected_decision, (
             f"[{description}] Expected decision '{expected_decision}', got '{legacy_dec}'"
         )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RFC-014 — Execution Engine Policy Gate (S-2)
+# ─────────────────────────────────────────────────────────────────────────────
+
+from ape.intelligence.execution.engine import ExecutionEngine
+from ape.intelligence.execution.exceptions import PolicyExecutionBlockedError
+
+
+def _write_decision(decisions_dir: Path, slug: str, decision: str, policy: str = "") -> None:
+    """Helper: write a minimal decision artifact for ExecutionEngine tests."""
+    data = {
+        "decision_id": f"dec_{slug}",
+        "decision": decision,
+        "policy": policy or decision,
+        "evidence_hash": f"hash_{slug}",
+        "overall_score": 75,
+        "confidence": 80,
+    }
+    decisions_dir.mkdir(parents=True, exist_ok=True)
+    (decisions_dir / f"{slug}.json").write_text(json.dumps(data), encoding="utf-8")
+
+
+def test_execution_engine_blocked_by_watch_decision(tmp_path: Path):
+    """RFC-014 S-2: WATCH decision must raise PolicyExecutionBlockedError before any execution."""
+    _write_decision(tmp_path / ".build" / "decisions", "watch-topic", "WATCH")
+    engine = ExecutionEngine(tmp_path, dry_run=True)
+    with pytest.raises(PolicyExecutionBlockedError, match="WATCH"):
+        engine.execute("Watch Topic", "watch-topic")
+
+
+def test_execution_engine_blocked_by_ignore_decision(tmp_path: Path):
+    """RFC-014 S-2: IGNORE decision must raise PolicyExecutionBlockedError before any execution."""
+    _write_decision(tmp_path / ".build" / "decisions", "ignore-topic", "IGNORE")
+    engine = ExecutionEngine(tmp_path, dry_run=True)
+    with pytest.raises(PolicyExecutionBlockedError, match="IGNORE"):
+        engine.execute("Ignore Topic", "ignore-topic")
+
+
+def test_execution_engine_blocked_by_blocked_decision(tmp_path: Path):
+    """RFC-014 S-2: BLOCKED decision must raise PolicyExecutionBlockedError before any execution."""
+    _write_decision(tmp_path / ".build" / "decisions", "blocked-topic", "BLOCKED")
+    engine = ExecutionEngine(tmp_path, dry_run=True)
+    with pytest.raises(PolicyExecutionBlockedError, match="BLOCKED"):
+        engine.execute("Blocked Topic", "blocked-topic")
+
+
+def test_execution_engine_blocked_without_decision_artifact(tmp_path: Path):
+    """RFC-014 S-2: Missing decision artifact must raise FileNotFoundError (no silent bypass)."""
+    # No decision artifact written — decisions dir is empty / missing
+    engine = ExecutionEngine(tmp_path, dry_run=True)
+    with pytest.raises(FileNotFoundError):
+        engine.execute("No Decision Topic", "no-decision-topic")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RFC-014 — Execution State Audit Lineage (S-1)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _write_build_roadmap(roadmaps_dir: Path, slug: str, decision_id: str) -> None:
+    """Helper: write a minimal BUILD roadmap artifact for ExecutionEngine tests."""
+    data = {
+        "roadmap_id": f"rm_{slug}",
+        "decision_id": decision_id,
+        "policy_decision": "BUILD",
+        "goal": f"Execute BUILD for {slug}",
+        "milestones": [
+            {
+                "milestone_id": "ms_1",
+                "title": "Design",
+                "tasks": [
+                    {
+                        "task_id": "tsk_1_1",
+                        "description": "Define architecture",
+                        "deliverables": [],
+                        "estimated_effort": "1 day",
+                    }
+                ],
+                "dependencies": [],
+            }
+        ],
+        "estimated_time": "1 week",
+        "risks": [],
+        "metadata": {},
+        "timestamp": "2026-07-29T00:00:00Z",
+    }
+    roadmaps_dir.mkdir(parents=True, exist_ok=True)
+    (roadmaps_dir / f"{slug}.json").write_text(json.dumps(data), encoding="utf-8")
+
+
+def test_execution_state_carries_decision_lineage(tmp_path: Path):
+    """
+    RFC-014 S-1: ExecutionState must carry decision_id, policy_decision, evidence_hash
+    from the originating DecisionReport so audit lineage is not lost at the execution boundary.
+    """
+    slug = "lineage-topic"
+    _write_decision(
+        tmp_path / ".build" / "decisions", slug,
+        decision="BUILD", policy="BUILD_NOW"
+    )
+    _write_build_roadmap(tmp_path / ".build" / "roadmaps", slug, decision_id="dec_lineage-topic")
+
+    engine = ExecutionEngine(tmp_path, dry_run=True, auto_deny_approvals=True)
+    engine.execute("Lineage Topic", slug)
+
+    # Read persisted execution state
+    state_file = tmp_path / ".build" / "execution" / slug / "current.json"
+    assert state_file.exists(), "ExecutionState file must be persisted"
+    state_data = json.loads(state_file.read_text(encoding="utf-8"))
+
+    assert state_data["decision_id"] == "dec_lineage-topic", (
+        "ExecutionState must carry the decision_id from the DecisionReport"
+    )
+    assert state_data["policy_decision"] == "BUILD", (
+        "ExecutionState must carry the policy_decision"
+    )
+    assert state_data["evidence_hash"] == "hash_lineage-topic", (
+        "ExecutionState must carry the evidence_hash from the DecisionReport"
+    )
+
+
+def test_execution_log_events_include_decision_lineage(tmp_path: Path):
+    """
+    RFC-014 S-1: Every execution.jsonl governance event must include
+    decision_id, policy_decision, and evidence_hash for full audit lineage.
+    """
+    from datetime import datetime, timezone
+
+    slug = "log-lineage-topic"
+    _write_decision(
+        tmp_path / ".build" / "decisions", slug,
+        decision="BUILD", policy="BUILD_NOW"
+    )
+    _write_build_roadmap(tmp_path / ".build" / "roadmaps", slug, decision_id="dec_log-lineage-topic")
+
+    engine = ExecutionEngine(tmp_path, dry_run=True, auto_deny_approvals=True)
+    engine.execute("Log Lineage Topic", slug)
+
+    # Read governance log
+    partition = datetime.now(timezone.utc).strftime("%Y-%m")
+    log_file = tmp_path / ".governance" / "evidence" / f"execution-{partition}.jsonl"
+    assert log_file.exists(), f"{log_file.name} must be written"
+
+    events = [json.loads(line) for line in log_file.read_text(encoding="utf-8").splitlines() if line.strip()]
+    assert len(events) > 0, "At least one execution event must be emitted"
+
+    for event in events:
+        assert "decision_id" in event, (
+            f"Event '{event.get('event')}' is missing decision_id"
+        )
+        assert "policy_decision" in event, (
+            f"Event '{event.get('event')}' is missing policy_decision"
+        )
+        assert "evidence_hash" in event, (
+            f"Event '{event.get('event')}' is missing evidence_hash"
+        )
