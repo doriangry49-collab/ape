@@ -348,5 +348,58 @@ def execute(
     typer.echo("Evidence  : .governance/evidence/execution.jsonl")
 
 
+@app.command("release")
+def release(
+    topic: str = typer.Argument(..., help="Topic or topic slug to release (e.g. 'calc_app')"),
+    auto_approve: bool = typer.Option(
+        False, "--yes", "-y", help="Auto-approve release staging and commit if pre-check passes."
+    ),
+) -> None:
+    """Stage and commit completed execution output into git with lineage metadata."""
+    from ape.intelligence.execution.release import ReleaseGate
+    from ape.utils import slugify
+
+    project = load_project()
+    topic_slug = slugify(topic)
+
+    gate = ReleaseGate(project.root)
+    try:
+        proposal = gate.prepare_release(topic_slug)
+    except (FileNotFoundError, ValueError) as exc:
+        typer.echo(f"Release Error: {exc}")
+        raise typer.Exit(code=1)
+
+    typer.echo("Release Proposal")
+    typer.echo(_hr())
+    typer.echo(f"Execution ID : {proposal.execution_id}")
+    typer.echo(f"Decision ID  : {proposal.decision_id}")
+    typer.echo(f"Policy       : {proposal.policy_decision}")
+    typer.echo(f"Evidence Hash: {proposal.evidence_hash}")
+    typer.echo(f"Quality Check: {'PASSED' if proposal.quality_check_passed else 'FAILED'}")
+    if proposal.quality_errors:
+        typer.echo(f"Quality Errors: {', '.join(proposal.quality_errors)}")
+    typer.echo(f"Changed Files: {', '.join(proposal.changed_files) if proposal.changed_files else 'None'}")
+    typer.echo(_hr())
+    typer.echo("Commit Message:")
+    typer.echo(proposal.commit_message)
+    typer.echo(_hr())
+
+    if not proposal.quality_check_passed:
+        typer.echo("Release aborted due to quality check failure.")
+        gate.execute_release(proposal, user_approved=False)
+        raise typer.Exit(code=1)
+
+    user_approved = auto_approve
+    if not auto_approve:
+        user_approved = typer.confirm("Proceed with git commit?", default=False)
+
+    success = gate.execute_release(proposal, user_approved=user_approved)
+    if success:
+        typer.echo("Successfully staged and committed release.")
+    else:
+        typer.echo("Release aborted or failed.")
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()
