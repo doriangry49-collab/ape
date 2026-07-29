@@ -374,13 +374,41 @@ class ExecutionEngine:
                             lineage=lineage,
                             sandbox_executor=self._executor,
                         )
+                        # Emit audit logging for each agent step into execution_agent evidence
+                        evidence_dir = self._root / ".governance" / "evidence"
+                        for step in res.steps:
+                            append_to_evidence(
+                                evidence_dir,
+                                "execution_agent",
+                                {
+                                    "task_id": task.task_id,
+                                    "topic_slug": topic_slug,
+                                    "attempt": step.attempt,
+                                    "thought": step.thought,
+                                    "action": step.action,
+                                    "params": step.params,
+                                    "exit_code": step.exit_code,
+                                    "stdout": step.stdout,
+                                    "stderr": step.stderr,
+                                    "status": step.status,
+                                    "decision_id": state.decision_id,
+                                    "policy_decision": state.policy_decision,
+                                    "evidence_hash": state.evidence_hash,
+                                    "timestamp": _utcnow(),
+                                }
+                            )
+
                         if res.status == "FAILED":
                             sm.fail(error=res.error or "Agent execution failed")
+                            if task.task_id in summary["executed"]:
+                                summary["executed"].remove(task.task_id)
                             self._emit(topic_slug, "FAILED", task.task_id, state=state, error=res.error)
                             self._save_state(topic_slug, state)
                             continue
                         elif res.status == "BLOCKED":
                             sm.block(reason=res.error or "Agent execution blocked")
+                            if task.task_id in summary["executed"]:
+                                summary["executed"].remove(task.task_id)
                             self._emit(topic_slug, "BLOCKED", task.task_id, state=state, reason=res.error)
                             self._save_state(topic_slug, state)
                             continue
@@ -389,11 +417,15 @@ class ExecutionEngine:
                 except RuntimeError as e:
                     if "Docker unavailable" in str(e):
                         sm.block(reason=str(e))
+                        if task.task_id in summary["executed"]:
+                            summary["executed"].remove(task.task_id)
                         self._emit(topic_slug, "BLOCKED", task.task_id, state=state, reason=str(e))
                         self._save_state(topic_slug, state)
                         continue
                     else:
                         sm.fail(error=str(e))
+                        if task.task_id in summary["executed"]:
+                            summary["executed"].remove(task.task_id)
                         self._emit(topic_slug, "FAILED", task.task_id, state=state, error=str(e))
                         self._save_state(topic_slug, state)
                         continue

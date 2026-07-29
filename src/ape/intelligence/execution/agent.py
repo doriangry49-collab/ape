@@ -149,9 +149,25 @@ class ApeCoderAgent:
 
                 if sandbox_executor:
                     try:
-                        # Execute in real/mock sandbox
+                        # Construct appropriate shell command based on action & params
+                        cmd = params.get("command")
+                        if not cmd:
+                            if proposed_action in ("create_file", "modify_file") and params.get("path") and "content" in params:
+                                path = params["path"]
+                                content = params["content"]
+                                # Use python inline script inside container to safely write text file
+                                escaped_content = json.dumps(content)
+                                cmd = f'python -c "import pathlib, json; pathlib.Path({json.dumps(path)}).write_text(json.loads({escaped_content}))"'
+                            elif proposed_action == "read_file" and params.get("path"):
+                                cmd = f'cat {json.dumps(params["path"])}'
+                            elif proposed_action == "run_tests":
+                                cmd = "pytest"
+                            else:
+                                cmd = f"echo {proposed_action}"
+
+                        # Execute in sandbox
                         res = sandbox_executor.execute_command(
-                            cmd=params.get("command") or f"echo {proposed_action}",
+                            cmd=cmd,
                             cwd="/workspace"
                         )
                         exit_code = res.exit_code
