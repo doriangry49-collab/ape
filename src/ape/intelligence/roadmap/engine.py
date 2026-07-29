@@ -3,6 +3,10 @@ import uuid
 from pathlib import Path
 
 from ape.intelligence.roadmap.models import Milestone, Roadmap, Task
+from ape.intelligence.roadmap.planner import IntelligentPlanner
+from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
+from ape.project import Project
+from ape.services.config_service import ConfigService
 from ape.utils import append_to_evidence, get_current_artifact
 
 
@@ -18,6 +22,7 @@ class RoadmapGenerator:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
+        self.config_service = ConfigService(Project.load(project_root))
 
     def generate_roadmap(self, topic: str, topic_slug: str) -> Roadmap:
         decisions_dir = self.project_root / ".build" / "decisions"
@@ -52,6 +57,78 @@ class RoadmapGenerator:
 
         roadmap_id = f"rm_{uuid.uuid4().hex[:8]}"
 
+        # Attempt to use IntelligentPlanner if configured
+        api_key = self.config_service.planner_api_key
+        if api_key:
+            provider = OpenAICompatibleProvider(
+                api_key=api_key,
+                model=self.config_service.planner_model,
+                base_url=self.config_service.planner_base_url or "https://api.openai.com/v1"
+            )
+            planner = IntelligentPlanner(provider)
+            try:
+                proposal = planner.generate_proposal(
+                    topic=topic,
+                    decision_id=decision_id,
+                    policy_decision=decision_val,
+                    evidence_context=json.dumps(decision_data.get("evidence", {}))
+                )
+                
+                # Lineage & Policy Check
+                if proposal.decision_id != decision_id:
+                    raise ValueError(f"Lineage mismatch: Planner changed decision_id to {proposal.decision_id}")
+                if proposal.policy_decision != decision_val:
+                    raise ValueError(f"Policy mutation: Planner changed policy_decision to {proposal.policy_decision}")
+                
+                # Action whitelist validation
+                for ms in proposal.milestones:
+                    for tsk in ms.tasks:
+                        if "shell_command" in tsk.action or "exec" in tsk.action:
+                            raise ValueError(f"Unauthorized action proposed: {tsk.action}")
+
+                milestones = []
+                for p_ms in proposal.milestones:
+                    tasks = []
+                    for p_tsk in p_ms.tasks:
+                        tasks.append(
+                            Task(
+                                task_id=p_tsk.task_id,
+                                description=p_tsk.description,
+                                deliverables=p_tsk.deliverables,
+                                estimated_effort=p_tsk.estimated_effort,
+                                action=p_tsk.action
+                            )
+                        )
+                    milestones.append(
+                        Milestone(
+                            milestone_id=p_ms.milestone_id,
+                            title=p_ms.title,
+                            tasks=tasks,
+                            dependencies=p_ms.dependencies
+                        )
+                    )
+                
+                estimated_time = "Dynamic Plan (LLM Estimated)"
+                risks = ["LLM proposed plan - monitor execution"]
+                generator_meta = "intelligent-planner"
+                
+                return self._finalize_roadmap(
+                    roadmap_id, decision_id, decision_val, policy, topic, topic_slug,
+                    milestones, estimated_time, risks, generator_meta
+                )
+
+            except Exception as e:
+                print(f"Intelligent planning failed ({e}). Falling back to deterministic templates.")
+                # Fallthrough to deterministic generator
+
+        # Deterministic Fallback
+        return self._generate_deterministic_fallback(
+            roadmap_id, decision_id, decision_val, policy, topic, topic_slug
+        )
+
+    def _generate_deterministic_fallback(
+        self, roadmap_id: str, decision_id: str, decision_val: str, policy: str, topic: str, topic_slug: str
+    ) -> Roadmap:
         # RFC-014: Generate policy-appropriate milestones.
         # BUILD → MVP development track. VALIDATE → Market validation track.
         if decision_val == "VALIDATE":
@@ -100,24 +177,19 @@ class RoadmapGenerator:
                     tasks=[
                         Task(
                             task_id="tsk_3_1",
-                            description="Collect and analyze validation metrics (sign-ups, survey responses)",
-                            deliverables=["Metrics Report"],
-                            estimated_effort="2 days"
-                        ),
-                        Task(
-                            task_id="tsk_3_2",
-                            description="Produce go/no-go recommendation based on evidence",
-                            deliverables=["Go/No-Go Decision Document"],
+                            description="Analyze collected signals against success criteria",
+                            deliverables=["Validation Decision Document"],
                             estimated_effort="1 day"
                         ),
                     ],
                     dependencies=["ms_2"]
                 ),
             ]
-            estimated_time = "1-2 weeks"
-            risks = ["Low survey response rate", "Unclear customer segment definition"]
+            estimated_time = "1 week"
+            risks = ["Low engagement on landing page", "Survey bias"]
+
         else:
-            # BUILD (default — already gate-checked above)
+            # BUILD
             milestones = [
                 Milestone(
                     milestone_id="ms_1",
@@ -180,6 +252,16 @@ class RoadmapGenerator:
             estimated_time = "1-2 weeks"
             risks = ["Scope creep during MVP", "Technical debt accumulation"]
 
+        return self._finalize_roadmap(
+            roadmap_id, decision_id, decision_val, policy, topic, topic_slug,
+            milestones, estimated_time, risks, "heuristic-template"
+        )
+
+    def _finalize_roadmap(
+        self, roadmap_id: str, decision_id: str, decision_val: str, policy: str,
+        topic: str, topic_slug: str, milestones: list, estimated_time: str,
+        risks: list, generator_meta: str
+    ) -> Roadmap:
         roadmap = Roadmap(
             roadmap_id=roadmap_id,
             decision_id=decision_id,
@@ -188,7 +270,7 @@ class RoadmapGenerator:
             milestones=milestones,
             estimated_time=estimated_time,
             risks=risks,
-            metadata={"generator": "heuristic-template", "version": "1.1"}
+            metadata={"generator": generator_meta, "version": "1.2"}
         )
 
         self._save_artifacts(topic_slug, roadmap)

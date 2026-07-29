@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from pathlib import Path
 
 from ape.project import Project
@@ -26,3 +28,20 @@ class ConfigService:
     @property
     def config_path(self) -> Path:
         return self._project.config_path
+
+    # RFC-015: Planner Configurations
+    @property
+    def planner_provider(self) -> str:
+        return os.environ.get("APE_PLANNER_PROVIDER") or self.config.get("ape", {}).get("planner", {}).get("provider", "openai")
+        
+    @property
+    def planner_model(self) -> str:
+        return os.environ.get("APE_PLANNER_MODEL") or self.config.get("ape", {}).get("planner", {}).get("model", "gpt-4o")
+
+    @property
+    def planner_api_key(self) -> str | None:
+        return os.environ.get("APE_PLANNER_API_KEY") or self.config.get("ape", {}).get("planner", {}).get("api_key")
+
+    @property
+    def planner_base_url(self) -> str | None:
+        return os.environ.get("APE_PLANNER_BASE_URL") or self.config.get("ape", {}).get("planner", {}).get("base_url")
