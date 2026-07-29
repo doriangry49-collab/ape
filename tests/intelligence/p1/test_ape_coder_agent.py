@@ -110,3 +110,18 @@ def test_ape_coder_repair_loop_failure_limit(sample_task):
     assert result.attempts == 3
     assert len(result.steps) == 3
     assert "failed after 3 attempts" in result.error
+
+
+def test_execution_engine_with_ape_coder(tmp_path):
+    from ape.intelligence.execution.engine import ExecutionEngine
+
+    model = MockAgentModel([
+        {
+            "thought": "Execute via agent",
+            "action": "create_file",
+            "params": {"path": "test.txt", "content": "hello"}
+        }
+    ])
+    agent = ApeCoderAgent(model=model)
+    engine = ExecutionEngine(project_root=tmp_path, dry_run=True, agent=agent)
+    assert engine._agent is agent

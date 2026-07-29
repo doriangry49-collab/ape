@@ -77,6 +77,7 @@ class ExecutionEngine:
         interrupt_after_tasks: Optional[int] = None,
         auto_deny_approvals: bool = False,
         executor: Optional[TaskExecutor] = None,
+        agent: Optional[Any] = None,
     ) -> None:
         self._root = project_root
         self._dry_run = dry_run
@@ -90,6 +91,27 @@ class ExecutionEngine:
         else:
             self._executor = DockerSandboxExecutor()
         self._verifier = DeliverableVerifier(project_root, dry_run=dry_run)
+
+        # RFC-016: Wire ApeCoderAgent if provided or if ConfigService has API Key configured
+        self._agent = agent
+        if not self._agent:
+            try:
+                from ape.project import Project
+                from ape.services.config_service import ConfigService
+                from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
+                from ape.intelligence.execution.agent import ApeCoderAgent
+
+                config_service = ConfigService(Project.load(project_root))
+                api_key = config_service.planner_api_key
+                if api_key:
+                    provider = OpenAICompatibleProvider(
+                        api_key=api_key,
+                        model=config_service.planner_model,
+                        base_url=config_service.planner_base_url or "https://api.openai.com/v1"
+                    )
+                    self._agent = ApeCoderAgent(model=provider)
+            except Exception:
+                self._agent = None
 
     # ------------------------------------------------------------------
     # Public API
@@ -339,9 +361,31 @@ class ExecutionEngine:
                         self._emit(topic_slug, "STARTED", task.task_id, state=state)
                         summary["executed"].append(task.task_id)
 
-                # Execute
+                # Execute via ApeCoderAgent if wired, or fall back to standard executor
                 try:
-                    self._executor.execute(task.description, task.deliverables)
+                    if self._agent:
+                        lineage = {
+                            "decision_id": state.decision_id,
+                            "policy_decision": state.policy_decision,
+                        }
+                        res = self._agent.execute_task(
+                            task,
+                            workspace_context=f"Topic: {topic_slug}",
+                            lineage=lineage,
+                            sandbox_executor=self._executor,
+                        )
+                        if res.status == "FAILED":
+                            sm.fail(error=res.error or "Agent execution failed")
+                            self._emit(topic_slug, "FAILED", task.task_id, state=state, error=res.error)
+                            self._save_state(topic_slug, state)
+                            continue
+                        elif res.status == "BLOCKED":
+                            sm.block(reason=res.error or "Agent execution blocked")
+                            self._emit(topic_slug, "BLOCKED", task.task_id, state=state, reason=res.error)
+                            self._save_state(topic_slug, state)
+                            continue
+                    else:
+                        self._executor.execute(task.description, task.deliverables)
                 except RuntimeError as e:
                     if "Docker unavailable" in str(e):
                         sm.block(reason=str(e))
