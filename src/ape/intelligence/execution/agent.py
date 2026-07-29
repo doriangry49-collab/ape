@@ -8,7 +8,7 @@ Enforces strict canonical action vocabulary, MVP action restrictions, and max re
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from ape.intelligence.execution.models import ExecutionTask

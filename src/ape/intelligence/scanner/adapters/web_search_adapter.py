@@ -3,8 +3,11 @@ import json
 import os
 from datetime import datetime
 from typing import List
-from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, UNKNOWN
+
 import requests
+
+from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
+
 
 class BudgetExhaustedError(Exception):
     pass

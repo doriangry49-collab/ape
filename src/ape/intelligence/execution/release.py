@@ -15,7 +15,7 @@ from typing import List, Optional, Tuple
 
 from ape.intelligence.execution.models import ExecutionState, ExecutionStatus
 from ape.intelligence.execution.policy import ExecutionPolicy
-from ape.utils import append_to_evidence, get_artifact_history
+from ape.utils import append_to_evidence
 
 
 @dataclass

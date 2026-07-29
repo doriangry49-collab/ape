@@ -3,7 +3,7 @@ APE Artifact Utilities
 
 Architecture:
   - Current State: .build/<track>/<slug>.json  (O(1) readable, mutable canonical pointer)
-  - Immutable History: .governance/evidence/<track>.jsonl  (append-only, audit trail)
+  - Immutable History: .governance/evidence/<track>-YYYY-MM.jsonl  (append-only, audit trail)
   - Artifact ID: separate from timestamp; collision-safe via microsecond + 4-char hex suffix.
 
 Design decision on collision-safe IDs:

@@ -2,8 +2,7 @@
 Intelligent Planner that coordinates the LLM model and generates proposals.
 (RFC-015)
 """
-from typing import Optional
-from ape.intelligence.roadmap.contracts import PlannerProposal, PLANNER_PROPOSAL_SCHEMA
+from ape.intelligence.roadmap.contracts import PLANNER_PROPOSAL_SCHEMA, PlannerProposal
 from ape.intelligence.roadmap.llm import PlannerModel
 
 

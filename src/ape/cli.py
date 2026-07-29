@@ -265,7 +265,7 @@ def decide(
         typer.echo(f"  {line}")
     typer.echo(_hr())
     typer.echo(f"Saved report artifacts to `.build/decisions/{topic_slug}.*`")
-    typer.echo("Appended to evidence at `.governance/evidence/decisions.jsonl`")
+    typer.echo("Appended to evidence at `.governance/evidence/decisions-YYYY-MM.jsonl`")
 
 
 @app.command("plan")
@@ -338,7 +338,7 @@ def execute(
     typer.echo(f"Paused    : {len(summary['paused'])} tasks")
     typer.echo(_hr())
     typer.echo(f"State     : .build/execution/{topic_slug}/current.json")
-    typer.echo("Evidence  : .governance/evidence/execution.jsonl")
+    typer.echo("Evidence  : .governance/evidence/execution-YYYY-MM.jsonl")
 
 
 @app.command("release")
@@ -403,9 +403,9 @@ def build(
 ) -> None:
     """Run end-to-end governed autonomous build: decide -> plan -> execute -> release."""
     from ape.intelligence.decision.engine import DecisionEngine
-    from ape.intelligence.roadmap.engine import RoadmapGenerator
     from ape.intelligence.execution.engine import ExecutionEngine
     from ape.intelligence.execution.release import ReleaseGate
+    from ape.intelligence.roadmap.engine import RoadmapGenerator
     from ape.utils import slugify
 
     project = load_project()

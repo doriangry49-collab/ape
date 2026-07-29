@@ -1,10 +1,11 @@
-from typing import List
 from datetime import datetime
+from typing import List
 
 from ape.intelligence.models import Opportunity
-from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
 from ape.intelligence.scanner.adapters.complaint_adapter import ComplaintAdapter
 from ape.intelligence.scanner.adapters.maps_review_adapter import MapsReviewAdapter
+from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
+
 
 class DiscoveryOrchestrator:
     SEGMENTS = [

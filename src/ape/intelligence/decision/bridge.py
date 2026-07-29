@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Any
-from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, UNKNOWN
+from typing import Any, Dict, List
+
+from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
+
 
 @dataclass(frozen=True)
 class BridgeResult:

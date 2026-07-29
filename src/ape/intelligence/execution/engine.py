@@ -2,7 +2,7 @@
 Execution Engine — orchestrates the full execution lifecycle.
 
 Canonical state:  .build/execution/<slug>/current.json  (mutable)
-Immutable history: .governance/evidence/execution.jsonl  (append-only)
+Immutable history: .governance/evidence/execution-YYYY-MM.jsonl  (append-only)
 
 No LLM provider dependency. No direct shell execution in MVP.
 """
@@ -12,8 +12,12 @@ import json
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
+from ape.intelligence.execution.exceptions import (
+    LineageMismatchError,
+    PolicyExecutionBlockedError,
+)
 from ape.intelligence.execution.executor import (
     DockerSandboxExecutor,
     SimulationTaskExecutor,
@@ -24,10 +28,6 @@ from ape.intelligence.execution.models import (
     ExecutionStatus,
     ExecutionTask,
     TaskStatus,
-)
-from ape.intelligence.execution.exceptions import (
-    PolicyExecutionBlockedError,
-    LineageMismatchError,
 )
 from ape.intelligence.execution.policy import ExecutionPolicy
 from ape.intelligence.execution.state import TaskStateMachine
@@ -96,10 +96,10 @@ class ExecutionEngine:
         self._agent = agent
         if not self._agent:
             try:
+                from ape.intelligence.execution.agent import ApeCoderAgent
+                from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
                 from ape.project import Project
                 from ape.services.config_service import ConfigService
-                from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
-                from ape.intelligence.execution.agent import ApeCoderAgent
 
                 config_service = ConfigService(Project.load(project_root))
                 api_key = config_service.planner_api_key

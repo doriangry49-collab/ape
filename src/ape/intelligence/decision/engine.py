@@ -25,7 +25,7 @@ class DecisionEngine:
         Reads the current-state research artifact (O(1) canonical pointer),
         runs InferenceBridge, evaluates against Constitution Policy Gate, and saves:
           - Current state  -> .build/decisions/<slug>.json  (mutable)
-          - Evidence log   -> .governance/evidence/decisions.jsonl  (append-only)
+          - Evidence log   -> .governance/evidence/decisions-YYYY-MM.jsonl  (append-only)
         """
         research_dir = self.project_root / ".build" / "research"
         research_file = get_current_artifact(research_dir, topic_slug)
@@ -148,7 +148,7 @@ class DecisionEngine:
     def _save_artifacts(self, topic_slug: str, report: DecisionReport) -> None:
         """
         Current state  -> .build/decisions/<slug>.json   (mutable, overwritten)
-        Immutable log  -> .governance/evidence/decisions.jsonl  (append-only)
+        Immutable log  -> .governance/evidence/decisions-YYYY-MM.jsonl  (append-only)
         """
         decisions_dir = self.project_root / ".build" / "decisions"
         decisions_dir.mkdir(parents=True, exist_ok=True)

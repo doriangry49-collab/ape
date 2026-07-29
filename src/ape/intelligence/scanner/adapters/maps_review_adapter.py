@@ -1,5 +1,7 @@
 from typing import List
-from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, UNKNOWN
+
+from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
+
 
 class MapsReviewAdapter:
     def scan_segment(self, segment: str) -> List[BusinessEvidence]:

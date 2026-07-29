@@ -97,7 +97,7 @@ class ResearchEngine:
         """Write JSON and MD files under .build/research/.
 
         Current state  -> .build/research/<slug>.json   (mutable, overwritten each run)
-        Immutable log  -> .governance/evidence/research.jsonl  (append-only)
+        Immutable log  -> .governance/evidence/research-YYYY-MM.jsonl  (append-only)
         """
         build_dir = self._project.root / ".build" / "research"
         build_dir.mkdir(parents=True, exist_ok=True)

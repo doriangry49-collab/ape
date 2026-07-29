@@ -5,7 +5,7 @@ LLM Provider Abstractions for the Intelligent Planning Boundary.
 import json
 import urllib.request
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class PlannerModel(ABC):

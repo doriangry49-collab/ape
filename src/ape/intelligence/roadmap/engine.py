@@ -3,9 +3,9 @@ import uuid
 from pathlib import Path
 
 from ape.intelligence.execution.policy import CANONICAL_ACTIONS
+from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
 from ape.intelligence.roadmap.models import Milestone, Roadmap, Task
 from ape.intelligence.roadmap.planner import IntelligentPlanner
-from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
 from ape.project import Project
 from ape.services.config_service import ConfigService
 from ape.utils import append_to_evidence, get_current_artifact
@@ -18,7 +18,7 @@ class RoadmapGenerator:
 
     Artifact model:
       Current state  -> .build/roadmaps/<slug>.json   (mutable)
-      Immutable log  -> .governance/evidence/roadmaps.jsonl  (append-only)
+      Immutable log  -> .governance/evidence/roadmaps-YYYY-MM.jsonl  (append-only)
     """
 
     def __init__(self, project_root: Path):
