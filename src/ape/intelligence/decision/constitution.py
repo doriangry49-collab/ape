@@ -69,12 +69,12 @@ class ConstitutionValidator:
         Enforces Score != Decision logic.
         Requires critical evidence to be True for a BUILD policy.
         """
-        willingness = evidence_flags.get("willingness_to_pay_signal")
-        target_customer = evidence_flags.get("identifiable_target_customer")
+        payment_signal = evidence_flags.get("payment_signal")
+        target_customer = evidence_flags.get("identifiable_customer")
         ai_solvable = evidence_flags.get("ai_solvability")
 
         # Must have ALL critical evidence to build, regardless of score
-        if willingness is not True or target_customer is not True or ai_solvable is not True:
+        if payment_signal is not True or target_customer is not True or ai_solvable is not True:
             if overall_score >= 60:
                 return BusinessDecision(
                     policy="VALIDATE",

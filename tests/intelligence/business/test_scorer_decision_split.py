@@ -1,4 +1,4 @@
-﻿from ape.intelligence.decision.constitution import ConstitutionValidator
+from ape.intelligence.decision.constitution import ConstitutionValidator
 
 
 def test_high_score_without_evidence_blocks_go():
@@ -6,8 +6,8 @@ def test_high_score_without_evidence_blocks_go():
     validator = ConstitutionValidator()
     overall_score = 95  # Very high numeric score
     evidence_flags = {
-        "willingness_to_pay_signal": "UNKNOWN",
-        "identifiable_target_customer": True,
+        "payment_signal": "UNKNOWN",
+        "identifiable_customer": True,
         "ai_solvability": True
     }
     
@@ -23,8 +23,8 @@ def test_low_score_with_evidence_does_not_go():
     validator = ConstitutionValidator()
     overall_score = 40  # Low score
     evidence_flags = {
-        "willingness_to_pay_signal": True,
-        "identifiable_target_customer": True,
+        "payment_signal": True,
+        "identifiable_customer": True,
         "ai_solvability": True
     }
     
@@ -36,8 +36,8 @@ def test_high_score_with_full_evidence_is_go():
     validator = ConstitutionValidator()
     overall_score = 85
     evidence_flags = {
-        "willingness_to_pay_signal": True,
-        "identifiable_target_customer": True,
+        "payment_signal": True,
+        "identifiable_customer": True,
         "ai_solvability": True
     }
     

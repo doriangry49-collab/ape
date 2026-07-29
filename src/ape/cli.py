@@ -149,13 +149,10 @@ def scan(
 
     if mode == "business":
         typer.echo(f"Scanning for opportunities in {mode} mode (offline={offline})...")
-        if offline:
-            from ape.intelligence.scanner.business import OfflineFileAdapter
-            adapter = OfflineFileAdapter("dummy_path.json")
-            opportunities = adapter.scan()
-        else:
-            typer.echo("Online business mode not implemented yet.")
-            opportunities = []
+        from ape.intelligence.scanner.orchestrator import DiscoveryOrchestrator
+        
+        orchestrator = DiscoveryOrchestrator(offline=offline)
+        opportunities = orchestrator.run_segment_discovery()
 
         typer.echo("")
         typer.echo("Business Signals & Pain Points")
