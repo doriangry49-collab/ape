@@ -187,6 +187,9 @@ class TestResumeSemantics:
         state = {
             "execution_id": "exec_test01",
             "roadmap_id": "rm_test01",
+            "decision_id": "dec_test01",
+            "policy_decision": "BUILD",
+            "evidence_hash": "dummy_hash",
             "topic": "test_topic",
             "status": "IN_PROGRESS",
             "tasks": tasks,
@@ -197,6 +200,13 @@ class TestResumeSemantics:
         exec_dir.mkdir(parents=True)
         state_file = exec_dir / "current.json"
         state_file.write_text(json.dumps(state), encoding="utf-8")
+
+        # RFC-014: execute/resume_or_start requires a decision artifact
+        import json as _json
+        decision_file = tmp_path / ".build" / "decisions" / "test_topic.json"
+        decision_file.parent.mkdir(parents=True, exist_ok=True)
+        decision_file.write_text(_json.dumps({"decision": "BUILD", "decision_id": "dec_test01"}))
+
         return tmp_path
 
     def test_completed_tasks_are_skipped(self, tmp_path):
