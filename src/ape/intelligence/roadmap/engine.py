@@ -33,11 +33,19 @@ class RoadmapGenerator:
             decision_data = json.loads(f.read())
 
         decision_id = decision_data.get("decision_id", "UNKNOWN")
+        decision_val = str(decision_data.get("decision", "")).upper()
         policy = decision_data.get("policy", "")
 
-        if "BUILD" not in policy and "VALIDATE" not in policy:
+        if decision_val in ("WATCH", "IGNORE", "BLOCKED"):
             msg = (
-                f"Cannot generate roadmap for policy: {policy}. "
+                f"Cannot generate roadmap for policy decision: {decision_val}. "
+                "Must be BUILD or VALIDATE related."
+            )
+            raise ValueError(msg)
+
+        if "BUILD" not in policy and "VALIDATE" not in policy and decision_val not in ("BUILD", "VALIDATE"):
+            msg = (
+                f"Cannot generate roadmap for policy: {policy} (decision: {decision_val}). "
                 "Must be BUILD or VALIDATE related."
             )
             raise ValueError(msg)
