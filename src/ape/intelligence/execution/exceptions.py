@@ -19,3 +19,11 @@ class PolicyExecutionBlockedError(Exception):
     RFC-014 adds a second gate so that even if `ape plan` is bypassed,
     `ape execute` cannot run on a non-BUILD/VALIDATE decision.
     """
+
+
+class LineageMismatchError(Exception):
+    """
+    Raised when the ExecutionState loaded from disk has a different decision_id
+    than the currently active Decision artifact.
+    Prevents emitting governance events with stale or forged lineage.
+    """

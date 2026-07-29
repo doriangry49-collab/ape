@@ -25,7 +25,10 @@ from ape.intelligence.execution.models import (
     ExecutionTask,
     TaskStatus,
 )
-from ape.intelligence.execution.exceptions import PolicyExecutionBlockedError
+from ape.intelligence.execution.exceptions import (
+    PolicyExecutionBlockedError,
+    LineageMismatchError,
+)
 from ape.intelligence.execution.policy import ExecutionPolicy
 from ape.intelligence.execution.state import TaskStateMachine
 from ape.intelligence.execution.verifier import DeliverableVerifier
@@ -129,9 +132,21 @@ class ExecutionEngine:
         Used in tests to inject a pre-built state.
         Returns dict with keys: executed, retried, skipped, paused.
         """
+        # RFC-014 Fix: Never allow execution without verifying policy gate
+        decision_data = self._verify_decision_gate(topic_slug)
+
         state = self._load_state(topic_slug)
         if state is None:
             return {"executed": [], "retried": [], "skipped": [], "paused": []}
+            
+        # Enforce lineage match on resume
+        if decision_data and state.decision_id != decision_data.get("decision_id"):
+            raise LineageMismatchError(
+                f"Lineage mismatch on resume: ExecutionState decision_id '{state.decision_id}' "
+                f"does not match current artifact decision_id '{decision_data.get('decision_id')}'. "
+                "Cannot resume."
+            )
+
         return self._run_queue(topic_slug, state)
 
     # ------------------------------------------------------------------
@@ -175,6 +190,12 @@ class ExecutionEngine:
     ) -> ExecutionState:
         existing = self._load_state(topic_slug)
         if existing is not None:
+            if decision_data and existing.decision_id != decision_data.get("decision_id"):
+                raise LineageMismatchError(
+                    f"Lineage mismatch on resume: ExecutionState decision_id '{existing.decision_id}' "
+                    f"does not match current artifact decision_id '{decision_data.get('decision_id')}'. "
+                    "Cannot resume."
+                )
             return existing
 
         # Build fresh task list from roadmap
