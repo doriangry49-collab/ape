@@ -109,12 +109,25 @@ class WebSearchAdapter:
             raise AdapterError(f"Failed to parse SerpAPI response JSON: {e}") from e
 
         organic_results = data.get("organic_results", [])
+        
+        # Extract primary reference link if available
+        first_link = None
+        if organic_results and isinstance(organic_results, list):
+            first_item = organic_results[0]
+            if isinstance(first_item, dict) and first_item.get("link"):
+                first_link = str(first_item.get("link"))
+
+        structured_observations = []
         combined_text = ""
         for result in organic_results:
-            title = result.get("title", "")
-            snippet = result.get("snippet", "")
-            combined_text += f" {title} {snippet}"
+            if isinstance(result, dict):
+                title = result.get("title", "")
+                snippet = result.get("snippet", "")
+                link = result.get("link", "")
+                structured_observations.append(f"Title: {title} | Snippet: {snippet} | Link: {link}")
+                combined_text += f" {title} {snippet}"
             
+        raw_obs = "\n".join(structured_observations) if structured_observations else combined_text
         combined_text_lower = combined_text.lower()
 
         # Evidence-first: raw observations mapping
@@ -125,7 +138,8 @@ class WebSearchAdapter:
 
         prov = EvidenceProvenance(
             source_adapter="serpapi_web_search",
-            raw_observation=combined_text[:1000],  # Limit size for provenance safety
+            raw_observation=raw_obs[:1000],  # Limit size for provenance safety
+            reference_url=first_link,
             request_context=query,
             retrieval_timestamp=datetime.now()
         )
