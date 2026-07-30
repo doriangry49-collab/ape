@@ -1,0 +1,59 @@
+{
+  "decision": "GO",
+  "winner_topic": "home_local_services",
+  "winner_score": 77.8,
+  "rankings": [
+    {
+      "topic": "home_local_services",
+      "total_score": 77.8,
+      "action": "VALIDATE"
+    },
+    {
+      "topic": "real_estate",
+      "total_score": 77.8,
+      "action": "VALIDATE"
+    },
+    {
+      "topic": "ai_agents",
+      "total_score": 74.35,
+      "action": "VALIDATE"
+    }
+  ],
+  "opportunity_card": {
+    "product_name": "APE Home_Local_Services Automation Tool",
+    "target_customer": [
+      "Solo Founders",
+      "Indie Hackers",
+      "Software Developers"
+    ],
+    "problem": "High API pricing and pricing model complexity Difficult local setup and installation overhead for home_local_services Integration support missing for major development tools",
+    "existing_alternatives": [
+      "Generic home_local_services API Providers",
+      "Manual custom implementations"
+    ],
+    "specific_gap": "Manual scripts and fragmented market tools leave a gap for simple local automation.",
+    "proposed_solution": "Single-purpose automation workflow for home_local_services data extraction and report generation.",
+    "smallest_useful_mvp": "Local CLI interface for rapid prototype testing",
+    "core_features": [
+      "Local CLI interface for rapid prototype testing",
+      "Simple single-page web ui showing raw results",
+      "Export raw data format in JSON / CSV"
+    ],
+    "what_not_to_build": [
+      "Do NOT build complex cloud infrastructure",
+      "Do NOT build web dashboard in MVP"
+    ],
+    "monetization_hypothesis": "$29 one-time CLI developer license.",
+    "first_customer_acquisition_hypothesis": "Direct community forum outreach.",
+    "validation_experiment": "Create landing page + survey.",
+    "success_criteria": "50 active developers using CLI tool within 14 days of launch with zero critical crashes.",
+    "evidence_lineage": {
+      "sources": [
+        "HackerNews",
+        "AudienceHeuristics"
+      ],
+      "evidence_hash": "sha256_evidence_home_local_services_ledger",
+      "challenge_score": 77.8
+    }
+  }
+}
