@@ -6,11 +6,9 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from ape.intelligence.models import Opportunity
+from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError
 from ape.intelligence.scanner.base import BaseScanner
 from ape.intelligence.scoring import calculate_heuristic_score
-
-if TYPE_CHECKING:
-    pass
 
 
 class HackerNewsScanner(BaseScanner):
@@ -71,21 +69,8 @@ class HackerNewsScanner(BaseScanner):
                     ))
                 except Exception:
                     continue
-        except Exception:
-            # Network fallback for offline running or API timeout
-            mock_time = datetime.now(UTC)
-            calc_score, confidence = calculate_heuristic_score(
-                50, 1.0, "Mock HN AI Opportunity"
-            )
-            opportunities.append(Opportunity(
-                title="Mock HN AI Opportunity",
-                description="Simulated HackerNews opportunity due to network timeout.",
-                url="https://news.ycombinator.com",
-                source="HackerNews",
-                score=calc_score,
-                confidence=confidence,
-                published_at=mock_time,
-                tags=["hackernews", "mock"]
-            ))
-            
+        except Exception as e:
+            # SPEC-0012: ERROR != UNKNOWN. Propagate AdapterError without synthetic evidence.
+            raise AdapterError(f"HackerNews scan failed: {e}") from e
+
         return opportunities

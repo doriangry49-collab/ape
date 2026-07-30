@@ -5,6 +5,7 @@ import urllib.request
 from datetime import UTC, datetime
 
 from ape.intelligence.models import Opportunity
+from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError
 from ape.intelligence.scanner.base import BaseScanner
 from ape.intelligence.scoring import calculate_heuristic_score
 
@@ -50,19 +51,8 @@ class GitHubTrendingScanner(BaseScanner):
                     tags=["github", "trending", clean_path.split("/")[-1]]
                 ))
 
-        except Exception:
-            # Network fallback / Parse failure fallback
-            mock_time = datetime.now(UTC)
-            calc_score, confidence = calculate_heuristic_score(200, 1.0, "Mock GitHub LLM Repo")
-            opportunities.append(Opportunity(
-                title="doriangry49-collab/ape",
-                description="GitHub repository: Autonomous Production Engine CLI system.",
-                url="https://github.com/doriangry49-collab/ape",
-                source="GitHub Trending",
-                score=calc_score,
-                confidence=confidence,
-                published_at=mock_time,
-                tags=["github", "trending", "mock", "ape"]
-            ))
+        except Exception as e:
+            # SPEC-0012: ERROR != UNKNOWN. Propagate AdapterError without synthetic evidence.
+            raise AdapterError(f"GitHub Trending scan failed: {e}") from e
 
         return opportunities

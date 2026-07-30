@@ -20,8 +20,11 @@ class OpportunityEngine:
         """Run all registered scanners and return merged, sorted results."""
         all_opportunities: list[Opportunity] = []
         for scanner in self._scanners:
-            results = scanner.scan()
-            all_opportunities.extend(results)
+            try:
+                results = scanner.scan()
+                all_opportunities.extend(results)
+            except Exception:
+                pass
 
         # Sort by score descending
         return sorted(all_opportunities, key=lambda o: o.score, reverse=True)
