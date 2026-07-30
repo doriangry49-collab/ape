@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 import typer
 
@@ -498,6 +499,51 @@ def build(
     else:
         typer.echo("Release commit aborted by user or policy.")
         raise typer.Exit(code=1)
+
+
+@app.command("status")
+def status(
+    topic: Optional[str] = typer.Argument(None, help="Natural-language task or topic to query (e.g. 'Calculator App')"),
+    all_topics: bool = typer.Option(False, "--all", "-a", help="List status for all build topics in workspace."),
+) -> None:
+    """Show read-only build status and history for a topic or all workspace topics."""
+    from ape.services.status_service import StatusService
+
+    project = load_project()
+    service = StatusService(project)
+
+    if all_topics or not topic:
+        summaries = service.list_all_topics()
+        if not summaries:
+            typer.echo("No build topics found in APE workspace.")
+            return
+
+        typer.echo("APE Build Workspace Topics Overview")
+        typer.echo(_hr())
+        typer.echo(f"{'SLUG':<20} {'DECISION':<10} {'EXECUTION':<12} {'RELEASE':<12} {'TOPIC'}")
+        typer.echo(_hr())
+        for s in summaries:
+            typer.echo(f"{s.slug:<20} {s.decision:<10} {s.execution:<12} {s.release:<12} {s.topic}")
+        typer.echo(_hr())
+        typer.echo(f"Total Topics: {len(summaries)}")
+        return
+
+    report = service.get_topic_status(topic)
+    if report.overall_status == "NOT_FOUND":
+        typer.echo(f"Topic '{topic}' (slug: {report.slug}) not found in workspace.")
+        return
+
+    typer.echo(f"APE Build Status: '{report.topic}' (slug: {report.slug})")
+    typer.echo(_hr())
+    typer.echo(f"Overall Status   : {report.overall_status}")
+    if not report.lineage_match:
+        typer.echo("Warning          : ⚠️ LINEAGE MISMATCH between Decision and Execution")
+
+    typer.echo(f"[0] Research     : {report.research.status}" + (f" (Action: {report.research.details.get('action')})" if report.research.details.get('action') else ""))
+    typer.echo(f"[1] Decision Gate: {report.decision.status}" + (f" (Policy: {report.decision.details.get('policy')}, Score: {report.decision.details.get('overall_score')}/100)" if report.decision.details.get('policy') else ""))
+    typer.echo(f"[2] Roadmap      : {report.roadmap.status}" + (f" (Tasks: {report.roadmap.details.get('task_count')})" if report.roadmap.details.get('task_count') is not None else ""))
+    typer.echo(f"[3] Execution    : {report.execution.status}" + (f" (Tasks: {report.execution.details.get('completed_tasks')}/{report.execution.details.get('total_tasks')})" if report.execution.details.get('total_tasks') is not None else ""))
+    typer.echo(f"[4] Release      : {report.release.status}" + (f" (Details: {report.release.details.get('details')})" if report.release.details.get('details') else ""))
 
 
 if __name__ == "__main__":
