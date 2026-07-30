@@ -44,7 +44,11 @@ class DecisionEngine:
 
         metadata = research_data.get("metadata", {})
         research_id = metadata.get("research_id", "UNKNOWN")
-        confidence = int(research_data.get("confidence", 50))
+        conf_raw = research_data.get("confidence", 0.80)
+        if isinstance(conf_raw, (int, float)):
+            confidence = int(conf_raw * 100) if conf_raw <= 1.0 else int(conf_raw)
+        else:
+            confidence = 80
 
         # Aggregate evidence via InferenceBridge
         has_business_data = (

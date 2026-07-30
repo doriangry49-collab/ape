@@ -546,5 +546,41 @@ def status(
     typer.echo(f"[4] Release      : {report.release.status}" + (f" (Details: {report.release.details.get('details')})" if report.release.details.get('details') else ""))
 
 
+@app.command("report")
+def report_cmd(
+    topic: str = typer.Argument(..., help="The topic or segment to generate an executive briefing for (e.g. 'home_local_services')"),
+    offline: bool = typer.Option(False, "--offline", help="Run in offline mock mode")
+) -> None:
+    """Generate an Executive Market Briefing & Decision Report from real/simulated signals."""
+    from ape.intelligence.report import MarketReportFormatter
+    from ape.utils import slugify
+
+    project = load_project()
+    topic_slug = slugify(topic)
+
+    typer.echo(f"Generating Executive Market Briefing for: '{topic}' (slug: {topic_slug}, offline={offline})...")
+    formatter = MarketReportFormatter(project, offline=offline)
+    data = formatter.generate_report(topic)
+
+    exec_sum = data["executive_summary"]
+    lineage = data["evidence_lineage"]
+
+    typer.echo("")
+    typer.echo("APE Executive Market Brief Summary")
+    typer.echo(_hr())
+    typer.echo(f"Topic / Segment  : {topic}")
+    typer.echo(f"Policy Decision  : {exec_sum['decision']} (Policy: {exec_sum['policy']})")
+    typer.echo(f"Opportunity Score: {exec_sum['overall_score']}/100")
+    typer.echo(f"Confidence       : {exec_sum['confidence']}%")
+    typer.echo(f"Next Recommended : {exec_sum['next_recommended_step']}")
+    typer.echo(_hr())
+    typer.echo(f"Evidence Ledger  : {lineage['ledger_file']}")
+    typer.echo(f"Evidence Hash    : {lineage['evidence_hash']}")
+    typer.echo(f"Report Markdown  : .build/reports/{topic_slug}-market-brief.md")
+    typer.echo(f"Report JSON      : .build/reports/{topic_slug}-market-brief.json")
+    typer.echo(_hr())
+    typer.echo("Status           : SUCCESS")
+
+
 if __name__ == "__main__":
     app()
