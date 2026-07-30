@@ -26,3 +26,4 @@ This directory defines the roles, protocols, and skills for AI agents collaborat
 - **[Artifact Lifecycle & Pointer Model](file:///.agents/skills/artifact_lifecycle.md):** Directory rules for state vs log.
 - **[Evidence & Audit Trail (Hafıza)](file:///.agents/skills/evidence.md):** Principles of immutable memory preservation.
 - **[Execution Safety Policy](file:///.agents/skills/execution_safety.md):** Rules mapping CLI execution limits and simulation-first defaults.
+- **[Context Intelligence](file:///.agents/skills/context-intelligence/SKILL.md):** Targeted symbol/section retrieval rules and Munch Pair routing.

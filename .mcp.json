@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "jcodemunch": {
+      "command": "uvx",
+      "args": ["jcodemunch-mcp==1.108.199"],
+      "disabled": false,
+      "alwaysAllow": []
+    },
+    "jdocmunch": {
+      "command": "uvx",
+      "args": ["jdocmunch-mcp==1.120.0"],
+      "disabled": false,
+      "alwaysAllow": []
+    }
+  }
+}
