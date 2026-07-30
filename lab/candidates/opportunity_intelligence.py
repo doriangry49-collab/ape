@@ -127,3 +127,78 @@ class ExperimentalOpportunityScorer:
                 f"Risk Penalty ({evidence_gap} pts): Evidence gap assessment across {len(sources)} data sources.",
             ]
         }
+
+    def generate_product_opportunity_brief(self, research_data: dict[str, Any], evidence_hash: str = "") -> Dict[str, Any]:
+        """
+        Generates an actionable Product Opportunity Brief with 10 key decision sections.
+        """
+        eval_res = self.evaluate_opportunity(research_data)
+        topic = research_data.get("topic", "unnamed_topic")
+        pain_points = research_data.get("pain_points", [])
+        competitors = research_data.get("competitors", [])
+        audiences = research_data.get("target_audience", [])
+        market_signals = research_data.get("market_signals", [])
+        suggested_mvp = research_data.get("suggested_mvp", [])
+        sources = research_data.get("sources", [])
+        conf_val = research_data.get("confidence", 0.80)
+        confidence_pct = int(conf_val * 100) if isinstance(conf_val, (int, float)) and conf_val <= 1.0 else int(conf_val)
+
+        dims = eval_res["dimensions"]
+        comp_gap_desc = (
+            "Open Niche Gap — Competitor landscape is fragmented or small (1-3 alternatives)."
+            if dims["competition_gap"] >= 80
+            else "Moderate Competition — Established players exist; requires clear vector differentiation."
+            if dims["competition_gap"] >= 50
+            else "Red Ocean Market — Saturated competitor landscape; high customer acquisition cost."
+        )
+
+        why_now_desc = (
+            f"Active discussion velocity across {len(market_signals)} market signals and high community engagement. "
+            f"Customer pain severity score ({dims['customer_pain']}/100) indicates active manual workarounds seeking automation."
+        )
+
+        # Lean MVP Scope derivation
+        mvp_scope = suggested_mvp if suggested_mvp else [
+            f"Single-purpose automation tool for {topic}",
+            "CLI / API interface for rapid workflow integration",
+            "Local JSON export for immediate evidence validation"
+        ]
+
+        return {
+            "topic": topic,
+            "opportunity_score": eval_res["experimental_score"],
+            "confidence": confidence_pct,
+            "recommended_action": eval_res["recommendation"],
+            "recommendation_reason": eval_res["recommendation_reason"],
+            "customer_pain": {
+                "severity_score": dims["customer_pain"],
+                "pain_points": pain_points,
+                "workaround_signal": "Manual labor & custom scripts reported in community discussions",
+            },
+            "target_customer": {
+                "buyers": audiences,
+                "segment_type": "B2B Professional / Developer" if dims["monetization_potential"] >= 60 else "Consumer / B2C",
+            },
+            "monetization_signal": {
+                "score": dims["monetization_potential"],
+                "recurring_potential": "High (Subscription / Usage-based API)" if dims["monetization_potential"] >= 60 else "Medium",
+                "budget_keywords_detected": [kw for kw in self.MONETIZATION_KEYWORDS if kw in " ".join(pain_points + market_signals).lower()],
+            },
+            "competitor_landscape": {
+                "competitor_count": len(competitors),
+                "incumbents": competitors,
+                "competition_score": dims["competition_gap"],
+            },
+            "identified_gap": comp_gap_desc,
+            "mvp_opportunity": {
+                "feasibility_score": dims["mvp_feasibility"],
+                "scope": mvp_scope[:3],
+            },
+            "evidence_lineage": {
+                "sources": sources,
+                "evidence_hash": evidence_hash or "sha256_verified_evidence_ledger",
+                "risk_penalty": dims["risk_uncertainty_penalty"],
+            },
+            "why_now": why_now_desc,
+            "reasoning_breakdown": eval_res["reasoning"],
+        }

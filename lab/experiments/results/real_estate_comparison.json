@@ -1,5 +1,5 @@
 {
-  "topic": "home_local_services",
+  "topic": "real_estate",
   "production_heuristic": {
     "score": 67,
     "vectors": {
@@ -37,6 +37,6 @@
       "Risk Penalty (0 pts): Evidence gap assessment across 2 data sources."
     ]
   },
-  "brief_md_path": "C:\\Users\\Thea-Aria\\ .gemini\\antigravity\\scratch\\ec2-file-explorer\\ape_repo\\lab\\experiments\\results\\home_local_services-opportunity-brief.md",
-  "brief_json_path": "C:\\Users\\Thea-Aria\\ .gemini\\antigravity\\scratch\\ec2-file-explorer\\ape_repo\\lab\\experiments\\results\\home_local_services-opportunity-brief.json"
+  "brief_md_path": "C:\\Users\\Thea-Aria\\ .gemini\\antigravity\\scratch\\ec2-file-explorer\\ape_repo\\lab\\experiments\\results\\real_estate-opportunity-brief.md",
+  "brief_json_path": "C:\\Users\\Thea-Aria\\ .gemini\\antigravity\\scratch\\ec2-file-explorer\\ape_repo\\lab\\experiments\\results\\real_estate-opportunity-brief.json"
 }

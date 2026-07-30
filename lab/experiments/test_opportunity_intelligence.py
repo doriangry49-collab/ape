@@ -95,3 +95,32 @@ def test_insufficient_evidence_triggers_reject_recommendation(scorer):
     result = scorer.evaluate_opportunity(data)
     assert result["recommendation"] == "REJECT"
     assert result["dimensions"]["risk_uncertainty_penalty"] >= 40
+
+
+def test_generate_product_opportunity_brief_contains_all_10_sections(scorer):
+    """Assert generate_product_opportunity_brief output contains all 10 key decision sections."""
+    data = {
+        "topic": "ai_agents",
+        "pain_points": ["Manual API integration is expensive and slow"],
+        "discussions": [{"title": "HN Thread", "points": 150}],
+        "competitors": ["LangChain"],
+        "target_audience": ["AI Engineers"],
+        "market_signals": ["High velocity"],
+        "risks": ["Minor risk"],
+        "sources": ["HackerNews"],
+        "confidence": 0.85,
+    }
+    brief = scorer.generate_product_opportunity_brief(data, evidence_hash="abc123sha")
+    
+    assert brief["topic"] == "ai_agents"
+    assert brief["opportunity_score"] >= 50
+    assert brief["confidence"] == 85
+    assert brief["recommended_action"] in ("BUILD", "VALIDATE", "WATCH", "REJECT")
+    assert "severity_score" in brief["customer_pain"]
+    assert "buyers" in brief["target_customer"]
+    assert "score" in brief["monetization_signal"]
+    assert "competitor_count" in brief["competitor_landscape"]
+    assert "Open Niche Gap" in brief["identified_gap"] or "Competition" in brief["identified_gap"]
+    assert "scope" in brief["mvp_opportunity"]
+    assert brief["evidence_lineage"]["evidence_hash"] == "abc123sha"
+    assert "Active discussion velocity" in brief["why_now"]

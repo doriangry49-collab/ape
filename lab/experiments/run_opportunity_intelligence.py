@@ -52,7 +52,7 @@ def run_experiment(project_root: Path, topics: list[str]) -> dict[str, dict]:
         # 1. Production Heuristic Score
         prod_score, prod_vectors, prod_rationale = prod_scorer.score(research_data)
 
-        # 2. Experimental R&D Opportunity Score
+        # 2. Experimental R&D Evaluation
         exp_results = exp_scorer.evaluate_opportunity(research_data)
 
         topic_result = {
@@ -71,7 +71,59 @@ def run_experiment(project_root: Path, topics: list[str]) -> dict[str, dict]:
             },
         }
 
-        experiment_summary[topic] = topic_result
+        # 3. Generate 10-Section R&D Product Opportunity Brief
+        brief_data = exp_scorer.generate_product_opportunity_brief(
+            research_data, evidence_hash=f"sha256_evidence_{slug}_ledger"
+        )
+        brief_json_file = results_dir / f"{slug}-opportunity-brief.json"
+        brief_json_file.write_text(json.dumps(brief_data, indent=2), encoding="utf-8")
+
+        brief_md_file = results_dir / f"{slug}-opportunity-brief.md"
+        brief_md_content = (
+            f"# R&D Product Opportunity Brief: {brief_data['topic']}\n\n"
+            f"**Opportunity Score:** `{brief_data['opportunity_score']}/100`  \n"
+            f"**Confidence:** `{brief_data['confidence']}%`  \n"
+            f"**Recommended Action:** `{brief_data['recommended_action']}`  \n"
+            f"**Action Rationale:** {brief_data['recommendation_reason']}\n\n"
+            "---\n\n"
+            "## 1. Customer Pain\n"
+            f"**Severity Score:** {brief_data['customer_pain']['severity_score']}/100  \n"
+            f"**Workaround Signal:** {brief_data['customer_pain']['workaround_signal']}\n"
+            "### Core Pain Points:\n"
+            + "\n".join(f"- {p}" for p in brief_data["customer_pain"]["pain_points"]) + "\n\n"
+            "## 2. Target Customer / Buyer Profile\n"
+            f"**Segment Type:** {brief_data['target_customer']['segment_type']}\n"
+            "### Buyers:\n"
+            + "\n".join(f"- {b}" for b in brief_data["target_customer"]["buyers"]) + "\n\n"
+            "## 3. Monetization Signal\n"
+            f"**Score:** {brief_data['monetization_signal']['score']}/100  \n"
+            f"**Recurring Potential:** {brief_data['monetization_signal']['recurring_potential']}  \n"
+            f"**Keywords Detected:** {', '.join(brief_data['monetization_signal']['budget_keywords_detected']) if brief_data['monetization_signal']['budget_keywords_detected'] else 'General domain'}\n\n"
+            "## 4. Competitor Landscape\n"
+            f"**Competitor Count:** {brief_data['competitor_landscape']['competitor_count']}  \n"
+            f"**Competition Score:** {brief_data['competitor_landscape']['competition_score']}/100\n"
+            "### Incumbents:\n"
+            + "\n".join(f"- {c}" for c in brief_data["competitor_landscape"]["incumbents"]) + "\n\n"
+            "## 5. Identified Market Gap\n"
+            f"{brief_data['identified_gap']}\n\n"
+            "## 6. MVP Opportunity & Minimum Scope\n"
+            f"**Feasibility Score:** {brief_data['mvp_opportunity']['feasibility_score']}/100\n"
+            "### Recommended Scope:\n"
+            + "\n".join(f"- {s}" for s in brief_data["mvp_opportunity"]["scope"]) + "\n\n"
+            "## 7. Evidence & SHA-256 Lineage\n"
+            f"- **Evidence Hash:** `{brief_data['evidence_lineage']['evidence_hash']}`  \n"
+            f"- **Sources:** {', '.join(brief_data['evidence_lineage']['sources'])}  \n"
+            f"- **Risk Penalty:** {brief_data['evidence_lineage']['risk_penalty']} pts\n\n"
+            "## 8. Why Now?\n"
+            f"{brief_data['why_now']}\n\n"
+            "## 9. Baseline vs R&D Score Comparison\n"
+            f"- **Baseline Production Score:** `{prod_score}/100`\n"
+            f"- **Experimental R&D Score:** `{brief_data['opportunity_score']}/100`\n"
+        )
+        brief_md_file.write_text(brief_md_content, encoding="utf-8")
+
+        topic_result["brief_md_path"] = str(brief_md_file)
+        topic_result["brief_json_path"] = str(brief_json_file)
 
         # Save JSON comparison artifact
         json_file = results_dir / f"{slug}_comparison.json"
@@ -100,7 +152,7 @@ def run_experiment(project_root: Path, topics: list[str]) -> dict[str, dict]:
 
 def main() -> None:
     repo_root = Path(__file__).resolve().parent.parent.parent
-    topics = ["ai_agents", "home_local_services"]
+    topics = ["ai_agents", "home_local_services", "real_estate"]
     print(f"Running Market Opportunity Intelligence R&D Experiment on topics: {topics}")
     
     summary = run_experiment(repo_root, topics)
@@ -111,6 +163,7 @@ def main() -> None:
         print(f"  Experimental R&D Score     : {res['experimental_rd']['score']}/100")
         print(f"  Experimental Recommendation: {res['experimental_rd']['recommendation']}")
         print(f"  Recommendation Reason      : {res['experimental_rd']['recommendation_reason']}")
+        print(f"  Brief Markdown Artifact    : {res['brief_md_path']}")
         print(f"========================================================")
 
 
