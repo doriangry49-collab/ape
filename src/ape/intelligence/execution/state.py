@@ -24,9 +24,10 @@ _TRANSITIONS: dict[TaskStatus, set[TaskStatus]] = {
     },
     TaskStatus.FAILED:             {TaskStatus.IN_PROGRESS},
     TaskStatus.PAUSED:             {TaskStatus.IN_PROGRESS},
-    TaskStatus.REQUIRES_APPROVAL:  {TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL},
+    TaskStatus.REQUIRES_APPROVAL:  {TaskStatus.IN_PROGRESS, TaskStatus.DENIED},
     TaskStatus.BLOCKED:            set(),  # terminal state if docker missing, requires restart
     TaskStatus.COMPLETED:          set(),  # terminal
+    TaskStatus.DENIED:             set(),  # terminal
 }
 
 
@@ -75,7 +76,8 @@ class TaskStateMachine:
         """REQUIRES_APPROVAL -> IN_PROGRESS (user said Y)."""
         self._transition(TaskStatus.IN_PROGRESS)
 
-    def deny(self) -> None:
-        """REQUIRES_APPROVAL -> REQUIRES_APPROVAL (user said N — stays blocked)."""
-        # Re-assign same status (no real transition needed, but we need to record the deny)
-        self._task.status = TaskStatus.REQUIRES_APPROVAL
+    def deny(self, reason: str = "") -> None:
+        """REQUIRES_APPROVAL -> DENIED (user said N — terminal)."""
+        if reason:
+            self._task.error = reason
+        self._transition(TaskStatus.DENIED)

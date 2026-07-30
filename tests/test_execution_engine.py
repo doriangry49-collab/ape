@@ -165,7 +165,7 @@ class TestTaskStateMachine:
         sm = TaskStateMachine(task)
         sm.request_approval()
         sm.deny()
-        assert task.status == TaskStatus.REQUIRES_APPROVAL
+        assert task.status == TaskStatus.DENIED
 
 
 # ---------------------------------------------------------------------------
@@ -479,4 +479,4 @@ class TestApprovalGate:
         )
         state = json.loads(state_file.read_text())
         task_statuses = {t["task_id"]: t["status"] for t in state["tasks"]}
-        assert task_statuses["tsk_appr_1"] == "REQUIRES_APPROVAL"
+        assert task_statuses["tsk_appr_1"] == "DENIED"

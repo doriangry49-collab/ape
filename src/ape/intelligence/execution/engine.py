@@ -373,14 +373,16 @@ class ExecutionEngine:
                         self._emit(topic_slug, "REQUIRES_APPROVAL", task.task_id, state=state)
 
                         if self._auto_deny:
-                            sm.deny()
+                            sm.deny(reason="AUTO_DENIED")
+                            self._emit(topic_slug, "DENIED", task.task_id, state=state, reason="AUTO_DENIED")
                             self._save_state(topic_slug, state)
                             continue
 
                         # In real CLI: would prompt user. In test/dry-run: auto-deny.
                         answer = self._prompt_approval(task)
                         if not answer:
-                            sm.deny()
+                            sm.deny(reason="USER_DENIED")
+                            self._emit(topic_slug, "DENIED", task.task_id, state=state, reason="USER_DENIED")
                             self._save_state(topic_slug, state)
                             continue
                         sm.approve()
