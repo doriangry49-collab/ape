@@ -1,0 +1,40 @@
+{
+  "topic": "home_local_services",
+  "production_heuristic": {
+    "score": 67,
+    "vectors": {
+      "demand": 65,
+      "feasibility": 70,
+      "competition": 60,
+      "revenue": 75
+    },
+    "rationale": [
+      "Demand +19 (from 3 pain points, 2 discussions, weight 0.3)",
+      "Feasibility +21 (from 2 risks, weight 0.3)",
+      "Competition +12 (from 2 competitors, weight 0.2)",
+      "Revenue +15 (from 3 audiences, weight 0.2)",
+      "Total = 67"
+    ]
+  },
+  "experimental_rd": {
+    "score": 73,
+    "recommendation": "VALIDATE",
+    "recommendation_reason": "Promising signals; requires targeted customer validation.",
+    "dimensions": {
+      "customer_pain": 70,
+      "market_signal": 71,
+      "competition_gap": 85,
+      "monetization_potential": 74,
+      "mvp_feasibility": 70,
+      "risk_uncertainty_penalty": 0
+    },
+    "reasoning": [
+      "Customer Pain Score (70/100): Found 3 pain points with 1 severity keywords.",
+      "Market Signal Score (71/100): Found 4 market signals (235 discussion points).",
+      "Competition Gap Score (85/100): Evaluated 2 competitors for niche differentiation.",
+      "Monetization Potential (74/100): Detected 2 commercial budget keywords (B2B=True).",
+      "MVP Feasibility (70/100): Evaluated 2 technical risks.",
+      "Risk Penalty (0 pts): Evidence gap assessment across 2 data sources."
+    ]
+  }
+}
