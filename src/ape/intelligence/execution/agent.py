@@ -9,13 +9,15 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ape.intelligence.execution.models import ExecutionTask
-from ape.intelligence.execution.policy import CANONICAL_ACTIONS
+from ape.intelligence.execution.policy import CANONICAL_ACTIONS, validate_path_containment
 from ape.intelligence.roadmap.llm import PlannerModel
 
 # Actions explicitly restricted in RFC-016 MVP
+
 MVP_RESTRICTED_ACTIONS: set[str] = {
     "git_push",
     "deploy",
@@ -88,7 +90,8 @@ class ApeCoderAgent:
         task: ExecutionTask,
         workspace_context: str = "",
         lineage: Optional[Dict[str, str]] = None,
-        sandbox_executor: Optional[Any] = None
+        sandbox_executor: Optional[Any] = None,
+        workspace_root: Optional[Path] = None,
     ) -> AgentExecutionResult:
         """
         Executes a task autonomously with bounded repair iterations.
@@ -141,6 +144,18 @@ class ApeCoderAgent:
                     steps.append(AgentStepResult(attempt, thought, proposed_action, params, -1, "", error_msg, "BLOCKED"))
                     last_error = error_msg
                     continue
+
+                # 2.5 Path Containment Check
+                if proposed_action in ("create_file", "modify_file") and params.get("path"):
+                    target_root = workspace_root or Path.cwd()
+                    is_valid, err_msg = validate_path_containment(target_root, params["path"])
+                    if not is_valid:
+                        steps.append(AgentStepResult(attempt, thought, proposed_action, params, -1, "", err_msg, "REJECTED"))
+                        last_error = err_msg
+                        continue
+
+
+
 
                 # 3. Sandbox / Simulation Execution
                 exit_code = 0

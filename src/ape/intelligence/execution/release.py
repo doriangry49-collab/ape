@@ -158,8 +158,12 @@ class ReleaseGate:
                     if len(parts) == 2:
                         files.append(parts[1].strip('"'))
             return files
-        except Exception:
-            return []
+        except subprocess.CalledProcessError as e:
+            err = (e.stderr or str(e)).strip()
+            raise RuntimeError(f"Git status inspection failed (exit code {e.returncode}): {err}") from e
+        except Exception as e:
+            raise RuntimeError(f"Git status inspection failed: {str(e)}") from e
+
 
     def _run_quality_precheck(self, files: List[str]) -> Tuple[bool, List[str]]:
         errors = []

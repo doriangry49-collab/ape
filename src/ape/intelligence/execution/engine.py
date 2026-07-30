@@ -94,6 +94,7 @@ class ExecutionEngine:
 
         # RFC-016: Wire ApeCoderAgent if provided or if ConfigService has API Key configured
         self._agent = agent
+        self.agent_init_error: Optional[str] = None
         if not self._agent:
             try:
                 from ape.intelligence.execution.agent import ApeCoderAgent
@@ -104,14 +105,24 @@ class ExecutionEngine:
                 config_service = ConfigService(Project.load(project_root))
                 api_key = config_service.planner_api_key
                 if api_key:
-                    provider = OpenAICompatibleProvider(
-                        api_key=api_key,
-                        model=config_service.planner_model,
-                        base_url=config_service.planner_base_url or "https://api.openai.com/v1"
-                    )
-                    self._agent = ApeCoderAgent(model=provider)
-            except Exception:
+                    try:
+                        provider = OpenAICompatibleProvider(
+                            api_key=api_key,
+                            model=config_service.planner_model,
+                            base_url=config_service.planner_base_url or "https://api.openai.com/v1"
+                        )
+                        self._agent = ApeCoderAgent(model=provider)
+                    except Exception as exc:
+                        self._agent = None
+                        err_msg = str(exc)
+                        if api_key in err_msg:
+                            err_msg = err_msg.replace(api_key, "[REDACTED_API_KEY]")
+                        self.agent_init_error = f"Agent provider wiring failed ({type(exc).__name__}): {err_msg}"
+                        print(f"Warning: {self.agent_init_error}")
+            except Exception as exc:
                 self._agent = None
+                self.agent_init_error = f"Agent configuration failed ({type(exc).__name__}): {str(exc)}"
+
 
     # ------------------------------------------------------------------
     # Public API
@@ -329,12 +340,32 @@ class ExecutionEngine:
                     # PENDING or REQUIRES_APPROVAL
                     safety = self._policy.classify(task.action)
 
+                    # Check path containment for deliverable targets
+                    if task.action in ("create_file", "modify_file"):
+                        from ape.intelligence.execution.policy import validate_path_containment
+                        path_blocked = False
+                        for d in task.deliverables:
+                            if d and isinstance(d, str):
+                                ok, err = validate_path_containment(self._root, d)
+                                if not ok:
+                                    sm.start()
+                                    sm.fail(error=err)
+                                    self._emit(topic_slug, "FAILED", task.task_id, state=state, reason="PATH_TRAVERSAL_REJECTED", error=err)
+                                    self._save_state(topic_slug, state)
+                                    path_blocked = True
+                                    break
+                        if path_blocked:
+                            continue
+
+
+
                     if safety == "FORBIDDEN":
                         sm.fail(error="Action is FORBIDDEN by ExecutionPolicy.")
                         self._emit(topic_slug, "FAILED", task.task_id,
                                    state=state, reason="FORBIDDEN")
                         self._save_state(topic_slug, state)
                         continue
+
 
                     if safety == "REQUIRES_APPROVAL":
                         sm.request_approval()
@@ -361,7 +392,12 @@ class ExecutionEngine:
                         self._emit(topic_slug, "STARTED", task.task_id, state=state)
                         summary["executed"].append(task.task_id)
 
+                if task.status != TaskStatus.IN_PROGRESS:
+                    continue
+
                 # Execute via ApeCoderAgent if wired, or fall back to standard executor
+
+
                 try:
                     if self._agent:
                         lineage = {
@@ -373,7 +409,9 @@ class ExecutionEngine:
                             workspace_context=f"Topic: {topic_slug}",
                             lineage=lineage,
                             sandbox_executor=self._executor,
+                            workspace_root=self._root,
                         )
+
                         # Emit audit logging for each agent step into execution_agent evidence
                         evidence_dir = self._root / ".governance" / "evidence"
                         for step in res.steps:
