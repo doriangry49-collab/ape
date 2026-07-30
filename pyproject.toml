@@ -29,8 +29,10 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+testpaths = ["tests"]
 markers = [
     "integration: marks tests requiring real external services (skip with -m 'not integration')",
+    "lab: marks experimental R&D lab tests (skip by default)",
 ]
 
 [tool.ruff]
