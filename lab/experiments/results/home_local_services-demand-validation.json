@@ -1,0 +1,148 @@
+{
+  "opportunity": "home_local_services",
+  "original_hypotheses": {
+    "pricing": "$29 one-time CLI developer license",
+    "acquisition": "Direct community forum outreach",
+    "success_target": "50 active developers / 14 days"
+  },
+  "validation_experiment": {
+    "landing_page_spec": {
+      "headline": "Automate Home Local Services Workflows with Zero Setup Complexity",
+      "subheadline": "Stop wasting developer hours on fragile custom scripts and high API pricing model overhead.",
+      "target_user": "Solo Founders, Indie Hackers, Software Developers",
+      "core_problem": "High API pricing and pricing model complexity",
+      "proposed_solution": "Single-command local CLI proxy for home_local_services with instant JSON output.",
+      "call_to_action": "Join Beta Waitlist / Try Local CLI Alpha",
+      "pricing_hypothesis_tested": "$29 one-time CLI license (TESTING HYPOTHESIS ONLY \u2014 NOT AN ESTABLISHED PRICE)"
+    },
+    "user_survey": [
+      {
+        "id": "Q1",
+        "question": "How do you currently handle home local services data extraction and setup in your projects?",
+        "type": "open_ended",
+        "purpose": "Measures existing behavior and workaround presence without leading."
+      },
+      {
+        "id": "Q2",
+        "question": "How often do you or your team encounter issues or delay caused by setup complexity?",
+        "type": "multiple_choice",
+        "options": [
+          "Daily",
+          "Weekly",
+          "Monthly",
+          "Rarely / Never"
+        ],
+        "purpose": "Measures problem frequency objectively."
+      },
+      {
+        "id": "Q3",
+        "question": "Are you currently paying for any tools, SaaS subscriptions, or developer hours to solve this problem?",
+        "type": "multiple_choice",
+        "options": [
+          "Yes (SaaS / API Subscription)",
+          "Yes (Custom Developer Hours)",
+          "No (Using Free / Internal Tools)"
+        ],
+        "purpose": "Measures active commercial spend vs free workaround intent."
+      },
+      {
+        "id": "Q4",
+        "question": "What is the single biggest drawback of your current solution?",
+        "type": "open_ended",
+        "purpose": "Identifies unaddressed competitor niche gaps."
+      },
+      {
+        "id": "Q5",
+        "question": "If a lightweight local CLI tool solved this with zero setup overhead, would you be open to testing an early alpha?",
+        "type": "multiple_choice",
+        "options": [
+          "Yes, immediately",
+          "Maybe, depending on docs",
+          "No interest"
+        ],
+        "purpose": "Measures genuine trial intent."
+      }
+    ],
+    "acquisition_experiment": {
+      "channel": "Developer Communities & Focused Subreddits / Show HN",
+      "target_audience": [
+        "Solo Founders",
+        "Indie Hackers",
+        "Software Developers"
+      ],
+      "outreach_message": "Built a lightweight local CLI tool to fix setup overhead in home_local_services. Looking for 10 alpha testers to give blunt feedback.",
+      "call_to_action": "Fill out 2-minute survey / Request Alpha Access",
+      "measurement": "Impressions -> Survey Visits -> Survey Completions -> Alpha Trial Opt-ins",
+      "success_threshold": "PROPOSED_THRESHOLD: 15% survey completion rate & 10 verified alpha trial opt-ins",
+      "failure_threshold": "PROPOSED_THRESHOLD: < 3% survey completion rate or zero trial opt-ins"
+    },
+    "pricing_experiment": {
+      "tested_hypothesis": "$29 one-time CLI developer license",
+      "evidence_status": "UNSUPPORTED",
+      "validation_method": "Van Westendorp Price Sensitivity Meter & Current Spend Audit",
+      "proposed_success_threshold": "PROPOSED_THRESHOLD: > 40% of survey respondents report paying > $25/mo for current workaround"
+    }
+  },
+  "evidence_collected": [
+    {
+      "item": "Scanner source: HackerNews",
+      "category": "EXTERNAL_SOURCE"
+    },
+    {
+      "item": "Scanner source: AudienceHeuristics",
+      "category": "EXTERNAL_SOURCE"
+    },
+    {
+      "item": "Market pain point: High API pricing and pricing model complexity",
+      "category": "EXTERNAL_SOURCE"
+    },
+    {
+      "item": "Market pain point: Difficult local setup and installation overhead for home_local_services",
+      "category": "EXTERNAL_SOURCE"
+    },
+    {
+      "item": "Market pain point: Integration support missing for major development tools",
+      "category": "EXTERNAL_SOURCE"
+    },
+    {
+      "item": "Pricing hypothesis: $29 license",
+      "category": "INFERRED"
+    },
+    {
+      "item": "Acquisition hypothesis: Direct community outreach",
+      "category": "INFERRED"
+    },
+    {
+      "item": "Proposed threshold: 50 active devs / 14 days",
+      "category": "PROPOSED_THRESHOLD"
+    }
+  ],
+  "observed_count": 0,
+  "inferred_count": 3,
+  "observed_vs_inferred_note": "INFERRED != OBSERVED invariant enforced. 0 observed user signals vs 3 inferred hypotheses.",
+  "decision": "VALIDATE_MORE",
+  "decision_reason": "Zero real user responses observed yet (user_response_count = 0). All pricing, acquisition, and conversion thresholds remain INFERRED hypotheses.",
+  "confidence": 40,
+  "evidence_quality": 45,
+  "what_we_know": [
+    "Scanner source: HackerNews",
+    "Scanner source: AudienceHeuristics",
+    "Market pain point: High API pricing and pricing model complexity",
+    "Market pain point: Difficult local setup and installation overhead for home_local_services",
+    "Market pain point: Integration support missing for major development tools"
+  ],
+  "what_we_still_dont_know": [
+    "Real willingness to pay $29 license (UNKNOWN / NOT YET OBSERVED)",
+    "Actual customer acquisition conversion rate (UNKNOWN / NOT YET OBSERVED)",
+    "14-day retention rate of local CLI users (UNKNOWN / NOT YET OBSERVED)"
+  ],
+  "next_action": "Deploy Landing Page Spec & User Survey to 2 developer subreddits to collect first 10 real user responses.",
+  "evidence_lineage": {
+    "sources": [
+      "HackerNews",
+      "AudienceHeuristics"
+    ],
+    "evidence_hash": "sha256_demand_validation_ledger",
+    "has_synthetic": false
+  }
+}
