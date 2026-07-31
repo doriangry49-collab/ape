@@ -138,10 +138,8 @@ def scan(
 ) -> None:
     """Scan top daily tech opportunities from GitHub Trending and Hacker News."""
     from ape.intelligence.engine import OpportunityEngine
-    from ape.intelligence.scanner.persistence import ScanPersistenceService
 
     project = load_project()
-    persistence_service = ScanPersistenceService(project.root)
 
     if mode == "business":
         typer.echo(f"Scanning for opportunities in {mode} mode (offline={offline})...")
@@ -150,12 +148,17 @@ def scan(
         orchestrator = DiscoveryOrchestrator(offline=offline)
         opportunities = orchestrator.run_segment_discovery()
 
+        from ape.intelligence.scanner.persistence import ScanPersistence
+        persistence = ScanPersistence(project.root)
+        json_path, md_path = persistence.save_scan(opportunities, mode="business")
+
         typer.echo("")
         typer.echo("Business Signals & Pain Points")
         typer.echo(_hr())
 
         if not opportunities:
             typer.echo("No opportunities found.")
+            typer.echo(f"Saved scan artifacts to `.build/scans/{json_path.name}`")
             return
 
         for i, op in enumerate(opportunities, start=1):
@@ -168,8 +171,7 @@ def scan(
             typer.echo(f"   Score      : {op.score}/100")
             typer.echo(f"   {_hr()}")
 
-        json_p, _ = persistence_service.save_scan(opportunities, mode="business")
-        typer.echo(f"Saved scan artifacts to {json_p.relative_to(project.root)}")
+        typer.echo(f"Saved scan artifacts to `.build/scans/{json_path.name}` and `.md`")
         return
 
     # Tech mode (default)
@@ -178,12 +180,17 @@ def scan(
     typer.echo("Scanning for tech opportunities...")
     opportunities = engine.run_scans()
 
+    from ape.intelligence.scanner.persistence import ScanPersistence
+    persistence = ScanPersistence(project.root)
+    json_path, md_path = persistence.save_scan(opportunities, mode="tech")
+
     typer.echo("")
     typer.echo("Today's Opportunities")
     typer.echo(_hr())
 
     if not opportunities:
         typer.echo("No opportunities found. Check your network connection.")
+        typer.echo(f"Saved scan artifacts to `.build/scans/{json_path.name}`")
         return
 
     for i, op in enumerate(opportunities, start=1):
@@ -195,8 +202,7 @@ def scan(
         typer.echo(f"   Published  : {op.published_at.strftime('%Y-%m-%d %H:%M')} UTC")
         typer.echo(f"   {_hr()}")
 
-    json_p, _ = persistence_service.save_scan(opportunities, mode="tech")
-    typer.echo(f"Saved scan artifacts to {json_p.relative_to(project.root)}")
+    typer.echo(f"Saved scan artifacts to `.build/scans/{json_path.name}` and `.md`")
 
 
 @app.command("research")

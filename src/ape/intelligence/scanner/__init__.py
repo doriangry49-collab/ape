@@ -1,5 +1,5 @@
 """Scanner subpackage for Intelligence track providers."""
 
-from ape.intelligence.scanner.persistence import ScanPersistenceService
+from ape.intelligence.scanner.persistence import ScanPersistence
 
-__all__ = ["ScanPersistenceService"]
+__all__ = ["ScanPersistence"]
