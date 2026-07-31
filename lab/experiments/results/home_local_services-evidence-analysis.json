@@ -1,0 +1,49 @@
+{
+  "opportunity": "home_local_services",
+  "observed_response_count": 0,
+  "target_response_threshold": 10,
+  "positive_evidence": [],
+  "negative_evidence": [],
+  "neutral_evidence": [],
+  "unknown_evidence": [],
+  "hypotheses": {
+    "H1_problem_exists": {
+      "statement": "Target customers experience severe setup complexity in home_local_services.",
+      "status": "UNKNOWN",
+      "positive_count": 0,
+      "negative_count": 0
+    },
+    "H2_payment_intent": {
+      "statement": "Target customers are willing to pay for a simpler local CLI automation tool.",
+      "status": "UNKNOWN",
+      "positive_count": 0,
+      "negative_count": 0
+    },
+    "H3_acquisition_trial_intent": {
+      "statement": "Developer community outreach yields qualified alpha trial users.",
+      "status": "UNKNOWN",
+      "positive_count": 0,
+      "negative_count": 0
+    }
+  },
+  "self_critique": {
+    "pricing_29_license": "UNSUPPORTED",
+    "developer_community_outreach": "UNSUPPORTED",
+    "target_50_devs_14_days": "PROPOSED_THRESHOLD_UNVERIFIED",
+    "inferred_vs_observed_note": "INFERRED != OBSERVED invariant enforced. 0 inferred hypotheses were converted to observed evidence without real user data."
+  },
+  "evidence_quality": 40,
+  "confidence": 35,
+  "decision": "VALIDATE_MORE",
+  "decision_reason": "Zero real user responses observed (observed_response_count = 0). GO decision is IMPOSSIBLE without real user evidence.",
+  "next_action": "Deploy outreach message & survey to developer communities to collect first 10 real user responses.",
+  "evidence_lineage": {
+    "sources": [
+      "HackerNews",
+      "AudienceHeuristics"
+    ],
+    "evidence_hash": "sha256_evidence_analysis_ledger",
+    "has_synthetic": false,
+    "input_file": "lab/experiments/input/user_responses.json"
+  }
+}
