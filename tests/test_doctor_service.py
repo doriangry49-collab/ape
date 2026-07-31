@@ -31,6 +31,8 @@ def test_doctor_service_reports_valid_project_state(tmp_path) -> None:
     assert service.warnings == []
     assert service.errors == []
     assert service.summary == "Project validation passed."
+    assert service.system_info["package"] == "ape"
+
 
 def test_doctor_service_reports_invalid_project_state(tmp_path) -> None:
     project = Project.load(tmp_path)

@@ -2,18 +2,28 @@ from __future__ import annotations
 
 from ape.project import Project
 from ape.services.project_validation_service import ProjectValidationService
+from ape.services.system_info_service import SystemInfoService
 
 
 class DoctorService:
-    """Lightweight read-only service that composes existing project diagnostics."""
+    """Lightweight read-only service that composes existing project & system diagnostics."""
 
-    def __init__(self, project: Project) -> None:
+    def __init__(
+        self,
+        project: Project,
+        system_info_service: SystemInfoService | None = None
+    ) -> None:
         self._project = project
         self._validation_service = ProjectValidationService(project)
+        self._system_info_service = system_info_service or SystemInfoService()
         self._status = "unknown"
         self._warnings: list[str] = []
         self._errors: list[str] = []
         self._summary = ""
+
+    @property
+    def system_info(self) -> dict[str, str]:
+        return self._system_info_service.status
 
     @property
     def status(self) -> str:
