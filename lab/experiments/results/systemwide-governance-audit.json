@@ -1,0 +1,42 @@
+{
+  "experiment": "ORION-046",
+  "status": "SYSTEM_WIDE_GOVERNANCE_VERIFIED",
+  "opportunity": "home_local_services",
+  "observed_real_user_count": 0,
+  "scope": "SYSTEM_WIDE_ALL_ROLES_AND_SUBSYSTEMS",
+  "roles_covered": [
+    "Lead Architect",
+    "Systems Engineer",
+    "Discovery Engine",
+    "Evidence Analyzer",
+    "Decision Engine",
+    "Governance Auditor"
+  ],
+  "allowed_recommendations": [
+    "STOP",
+    "DEFER",
+    "PROPOSE_ALTERNATIVE",
+    "DISAGREE",
+    "REVISE",
+    "AGREE"
+  ],
+  "mandatory_reporting_sections": [
+    "ne_yaptim",
+    "nasil_dogruladim",
+    "neye_itiraz_ediyorum",
+    "bir_sonraki_adim_onerim"
+  ],
+  "governance_rules": {
+    "domain_bounded_autonomy": true,
+    "is_artificial_churn_forbidden": true,
+    "is_human_authority_preserved": true,
+    "epistemic_separation_enforced": true
+  },
+  "ingestion_errors": [],
+  "mandatory_protocol_sections": {
+    "ne_yaptim": "Expanded the Engineering Judgment Protocol from an Orion-specific rule into a System-Wide APE Governance Protocol across .agents/AGENTS.md, .agents/roles/systems_engineer.md, and lab/candidates/systemwide_governance.py. Formalized the 6 recommendation types (AGREE, DISAGREE, REVISE, STOP, DEFER, PROPOSE_ALTERNATIVE), anti-churn rule, and non-binding human authority.",
+    "nasil_dogruladim": "Created minimal contract test lab/experiments/test_systemwide_governance_protocol.py (6 unit tests passing), verified AST import boundary isolation in src/ape/ ([OK] SUCCESS), and ran full non-integration test suite (230 passed).",
+    "neye_itiraz_ediyorum": "I object to any further extension or expansion of governance rules at this stage. Governance is 100% complete and codified. We MUST NOT invent artificial friction or write endless governance meta-code. APE MUST stop governance refactoring and await real customer data.",
+    "bir_sonraki_adim_onerim": "CLOSE GOVERNANCE PHASE PERMANENTLY. Maintain technical stopping line (user_responses.json = []). Transition to real product validation when external human customer responses arrive."
+  }
+}

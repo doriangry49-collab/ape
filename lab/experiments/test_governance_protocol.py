@@ -37,11 +37,11 @@ def test_four_mandatory_reporting_sections_defined(model):
 
 
 def test_agents_md_file_updated():
-    """4. Workspace rules file .agents/AGENTS.md exists and contains Orion Engineering Judgment Protocol."""
+    """4. Workspace rules file .agents/AGENTS.md exists and contains System-Wide Engineering Judgment Protocol."""
     agents_md = REPO_ROOT / ".agents" / "AGENTS.md"
     assert agents_md.exists()
     content = agents_md.read_text(encoding="utf-8")
-    assert "Orion Engineering Judgment Protocol" in content
+    assert "Engineering Judgment & Governance Protocol" in content
     assert "IMPLEMENT" in content
     assert "ENGINEERING JUDGMENT" in content
 
