@@ -45,5 +45,6 @@
     "evidence_hash": "sha256_evidence_analysis_ledger",
     "has_synthetic": false,
     "input_file": "lab/experiments/input/user_responses.json"
-  }
+  },
+  "ingestion_errors": []
 }

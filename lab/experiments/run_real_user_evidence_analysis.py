@@ -7,6 +7,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from lab.candidates.real_user_evidence_analysis import RealUserEvidenceAnalyzer
+from lab.candidates.real_user_evidence_ingestion import RealUserEvidenceIngestionValidator
 
 
 def run_evidence_analysis(repo_root: Path, topic: str = "home_local_services") -> dict:
@@ -16,11 +17,15 @@ def run_evidence_analysis(repo_root: Path, topic: str = "home_local_services") -
     input_file = repo_root / "lab" / "experiments" / "input" / "user_responses.json"
     if input_file.exists():
         try:
-            user_responses = json.loads(input_file.read_text(encoding="utf-8"))
+            raw_responses = json.loads(input_file.read_text(encoding="utf-8"))
         except Exception:
-            user_responses = []
+            raw_responses = []
     else:
-        user_responses = []
+        raw_responses = []
+
+    # Ingestion Validation Gate
+    validator = RealUserEvidenceIngestionValidator()
+    clean_responses, ingestion_errors = validator.validate_responses(raw_responses)
 
     # Load raw research evidence
     research_json = repo_root / ".build" / "research" / f"{topic}.json"
@@ -40,11 +45,24 @@ def run_evidence_analysis(repo_root: Path, topic: str = "home_local_services") -
         }
 
     analyzer = RealUserEvidenceAnalyzer()
-    analysis_report = analyzer.analyze_evidence(topic, raw_evidence, user_responses)
+    analysis_report = analyzer.analyze_evidence(topic, raw_evidence, clean_responses)
+    analysis_report["ingestion_errors"] = ingestion_errors
 
-    # Save JSON artifact
+    # Save JSON artifacts
     out_json = results_dir / f"{topic}-evidence-analysis.json"
     out_json.write_text(json.dumps(analysis_report, indent=2), encoding="utf-8")
+
+    status_json = results_dir / f"{topic}-evidence-collection-status.json"
+    status_payload = {
+        "opportunity": topic,
+        "observed_responses": len(clean_responses),
+        "evidence_status": "WAITING_FOR_REAL_USERS" if len(clean_responses) == 0 else "RESPONSES_INGESTED",
+        "decision": analysis_report["decision"],
+        "go_possible": False if len(clean_responses) == 0 else analysis_report["decision"] == "GO",
+        "ingestion_errors": ingestion_errors,
+        "note": "APE cannot proceed to GO until external real-user evidence is supplied."
+    }
+    status_json.write_text(json.dumps(status_payload, indent=2), encoding="utf-8")
 
     # Save Markdown artifact
     pos_str = "\n".join(f"- {p['item']}" for p in analysis_report["positive_evidence"]) if analysis_report["positive_evidence"] else "- None observed (0 real user responses logged)"
@@ -99,15 +117,30 @@ def run_evidence_analysis(repo_root: Path, topic: str = "home_local_services") -
 
     out_md = results_dir / f"{topic}-evidence-analysis.md"
     out_md.write_text(md_content, encoding="utf-8")
+
+    # Save Collection Status Markdown Artifact
+    status_md_content = (
+        f"# REAL USER EVIDENCE COLLECTION STATUS: {topic}\n\n"
+        f"**Observed Responses:** `{len(clean_responses)}` \n"
+        f"**Evidence Status:** `WAITING_FOR_REAL_USERS` \n"
+        f"**Decision:** `{analysis_report['decision']}` \n"
+        f"**GO:** `IMPOSSIBLE` \n\n"
+        f"> **Invariant:** APE cannot proceed to GO until external real-user evidence is supplied.\n\n"
+        f"## Ingestion Gate Validation Errors ({len(ingestion_errors)})\n" +
+        ("\n".join(f"- {err}" for err in ingestion_errors) if ingestion_errors else "- Zero ingestion errors detected.")
+    ).replace(" \n", "\n")
+    status_md = results_dir / f"{topic}-evidence-collection-status.md"
+    status_md.write_text(status_md_content, encoding="utf-8")
+
     return analysis_report
 
 
 def main() -> None:
-    print("Executing Real User Evidence Analysis & Decision Gate for 'home_local_services'...")
+    print("Executing Real User Evidence Analysis & Ingestion Gate for 'home_local_services'...")
     res = run_evidence_analysis(REPO_ROOT, "home_local_services")
 
     print("\n========================================================")
-    print("REAL USER EVIDENCE ANALYSIS RESULT")
+    print("REAL USER EVIDENCE ANALYSIS & COLLECTION STATUS")
     print(f"  Opportunity             : {res['opportunity']}")
     print(f"  Observed Responses      : {res['observed_response_count']}/10")
     print(f"  H1 (Problem) Status     : {res['hypotheses']['H1_problem_exists']['status']}")
@@ -117,8 +150,8 @@ def main() -> None:
     print(f"  Evidence Quality        : {res['evidence_quality']}/100")
     print(f"  Confidence              : {res['confidence']}%")
     print(f"  DECISION                : {res['decision']}")
+    print(f"  GO                      : IMPOSSIBLE")
     print(f"  Reason                  : {res['decision_reason']}")
-    print(f"  Next Action             : {res['next_action']}")
     print("========================================================")
 
 

@@ -1,38 +1,61 @@
-# Real User Evidence Input Directory (`lab/experiments/input/`)
+# Evidence Collection & Ingestion Guide (`lab/experiments/input/`)
 
-**Purpose:** Ingest real-world user survey responses and validation signals into APE without storing Personally Identifiable Information (PII).
+**Purpose:** This directory serves as the human-in-the-loop evidence ingestion point for real-world user feedback on APE market opportunities.
 
 ---
 
-## Data Schema (`user_responses.json`)
+## Strict Rules of Evidence Authenticity
 
-To submit real user feedback, append structured response JSON objects to `lab/experiments/input/user_responses.json`:
+### 1. What Counts as Real User Evidence?
+- Direct feedback from an external human user collected via Reddit, HackerNews, surveys, landing page signups, or 1-on-1 interviews.
+- Verified behavioral quotes regarding current manual workarounds, setup pain frequency, or commercial spending.
+
+### 2. What Does NOT Count as Evidence?
+- **APE Report Content:** Information copied from previous APE reports (e.g. `$29 license hypothesis`, `50 devs in 14 days target`) is **analytical inference**, NOT customer evidence.
+- **Synthetic / Bot Data:** Any AI-generated or simulated survey responses (`is_synthetic: true` results in immediate `NO-GO` rejection).
+- **Internal Hypotheses:** Team assumptions or unverified roadmap goals.
+
+### 3. Key Invariants
+- **`INFERRED != OBSERVED`:** Hypotheses created by LLMs or heuristic scorers can NEVER raise confidence or count as observed evidence.
+- **`SYNTHETIC != REAL`:** Synthetic data payloads are rejected at the ingestion gate.
+- **Zero Real Users = Zero Evidence:** If `user_responses.json` contains 0 entries, APE outputs `Observed Responses: 0`, `Decision: VALIDATE_MORE`, and `GO: IMPOSSIBLE`.
+
+---
+
+## Schema & Privacy Invariants
+
+### Forbidden PII Fields
+To comply with privacy standards, **do NOT include PII**:
+- `name`
+- `email`
+- `phone`
+- `address`
+- `ip`
+
+Use anonymous IDs (`resp_001`, `resp_002`).
+
+### Ingestion Data Contract (`user_responses.json`)
 
 ```json
 [
   {
     "response_id": "resp_001",
-    "source": "Reddit r/IndieHackers",
-    "timestamp": "2026-07-31T10:00:00Z",
+    "source": "reddit",
     "target_customer_match": true,
-    "current_solution": "Custom Python scripts",
     "problem_frequency": "Daily",
-    "current_spend": "$50/mo on developer hours",
-    "biggest_pain": "Setup complexity and fragile API breaking changes",
     "trial_interest": true,
     "payment_interest": true,
-    "price_feedback": "Willing to pay $20-30/mo",
-    "free_text": "Need local caching proxy ASAP.",
-    "evidence_type": "USER_REPORTED",
-    "is_synthetic": false
+    "current_spend": "$50/mo",
+    "free_text": "Manual API integration breaks weekly."
   }
 ]
 ```
 
----
-
-## Strict Privacy & PII Invariants
-
-1. **NO PII (Privacy Invariant):** Do NOT include names, email addresses, IP addresses, or phone numbers. Use anonymized `response_id` identifiers (`resp_001`, `resp_002`).
-2. **NO Synthetic Data (SPEC-0012 Invariant):** Never generate fake or bot user responses (`is_synthetic: true` triggers an immediate `NO-GO` rejection).
-3. **Default State:** When `user_responses.json` is empty (`[]`) or missing, APE evaluates `Observed User Signals = 0` and outputs `VALIDATE_MORE` with `"Waiting for first real user responses (0/10 collected)"`.
+### Valid Sources
+- `reddit`
+- `hackernews`
+- `direct_interview`
+- `survey`
+- `landing_page`
+- `other`
+- `UNKNOWN` (if source not specified)

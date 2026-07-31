@@ -1,0 +1,9 @@
+{
+  "opportunity": "home_local_services",
+  "observed_responses": 0,
+  "evidence_status": "WAITING_FOR_REAL_USERS",
+  "decision": "VALIDATE_MORE",
+  "go_possible": false,
+  "ingestion_errors": [],
+  "note": "APE cannot proceed to GO until external real-user evidence is supplied."
+}
