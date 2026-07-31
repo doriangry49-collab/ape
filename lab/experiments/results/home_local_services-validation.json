@@ -1,0 +1,81 @@
+{
+  "opportunity": "home_local_services",
+  "hypothesis": "Target customers experience verified pain in home_local_services and require a simpler automation workflow.",
+  "target_customer": [
+    "Solo Founders",
+    "Indie Hackers",
+    "Software Developers"
+  ],
+  "problem": "High API pricing and pricing model complexity Difficult local setup and installation overhead for home_local_services Integration support missing for major development tools",
+  "validation_questions": [
+    "Are target customers actively spending money or developer hours on manual workarounds today?",
+    "Will target customers pay a recurring fee or one-time license for a local automation CLI tool?",
+    "Is the competitive gap open enough to acquire customers without high ad spend?"
+  ],
+  "evidence_sources": [
+    "HackerNews",
+    "AudienceHeuristics"
+  ],
+  "evidence_count": 7,
+  "positive_signals": [
+    "Found 3 verified customer pain points in raw research data.",
+    "Active community discussions detected (2 threads)."
+  ],
+  "negative_signals": [
+    "3 product card hypotheses (e.g. pricing, acquisition channels) lack real empirical evidence."
+  ],
+  "evidence_quality": 44,
+  "demand_score": 70,
+  "pain_score": 75,
+  "buyer_intent_score": 75,
+  "monetization_signal": 50,
+  "validation_score": 67,
+  "confidence": 46,
+  "decision": "VALIDATE_MORE",
+  "decision_reason": "Validation score is 67/100 with 46% confidence, but 3 claims (60%) are UNSUPPORTED hypotheses. Requires targeted real-world customer validation.",
+  "next_action": "Execute targeted user survey & landing page test to validate pricing intent and acquisition channels.",
+  "audited_claims": [
+    {
+      "claim": "Problem: High API pricing and pricing model complexity Difficult loca...",
+      "status": "EVIDENCED",
+      "reason": "Directly present in raw customer pain data."
+    },
+    {
+      "claim": "Competitors: Generic home_local_services API Providers, Manual custom implementations",
+      "status": "EVIDENCED",
+      "reason": "Identified in competitor scanner results."
+    },
+    {
+      "claim": "Monetization: $29 one-time CLI developer license.",
+      "status": "UNSUPPORTED",
+      "reason": "Hardcoded pricing hypothesis with zero empirical payment intent data."
+    },
+    {
+      "claim": "Acquisition: Direct community forum outreach.",
+      "status": "UNSUPPORTED",
+      "reason": "Hypothetical marketing channel; no live conversion experiment run yet."
+    },
+    {
+      "claim": "Success Target: 50 active developers using CLI tool within 14 days of launch with zero critical crashes.",
+      "status": "UNSUPPORTED",
+      "reason": "Arbitrary success benchmark without baseline conversion data."
+    }
+  ],
+  "what_we_know": [
+    "Problem: High API pricing and pricing model complexity Difficult loca...",
+    "Competitors: Generic home_local_services API Providers, Manual custom implementations"
+  ],
+  "what_we_dont_know": [
+    "Monetization: $29 one-time CLI developer license.",
+    "Acquisition: Direct community forum outreach.",
+    "Success Target: 50 active developers using CLI tool within 14 days of launch with zero critical crashes."
+  ],
+  "evidence_lineage": {
+    "sources": [
+      "HackerNews",
+      "AudienceHeuristics"
+    ],
+    "evidence_hash": "sha256_verified_evidence_ledger",
+    "unsupported_claims_ratio": 0.6
+  }
+}
