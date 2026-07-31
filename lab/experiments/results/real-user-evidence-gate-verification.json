@@ -1,0 +1,54 @@
+{
+  "experiment": "ORION-040",
+  "status": "VERIFICATION_COMPLETE",
+  "opportunity": "home_local_services",
+  "observed_response_count": 0,
+  "go_possible": false,
+  "decision": "VALIDATE_MORE",
+  "decision_reason": "Zero real user responses observed (observed_response_count = 0). GO decision is IMPOSSIBLE without real user evidence.",
+  "synthetic_rejection_verified": true,
+  "pii_rejection_verified": true,
+  "duplicate_rejection_verified": true,
+  "unknown_handling_verified": true,
+  "inferred_not_observed_verified": true,
+  "empty_not_negative_verified": true,
+  "self_criticism_verified": true,
+  "boundary_clean": true,
+  "synthetic_data_used_as_evidence": false,
+  "ingestion_errors": [],
+  "hypotheses": {
+    "H1_problem_exists": {
+      "statement": "Target customers experience severe setup complexity in home_local_services.",
+      "status": "UNKNOWN",
+      "positive_count": 0,
+      "negative_count": 0
+    },
+    "H2_payment_intent": {
+      "statement": "Target customers are willing to pay for a simpler local CLI automation tool.",
+      "status": "UNKNOWN",
+      "positive_count": 0,
+      "negative_count": 0
+    },
+    "H3_acquisition_trial_intent": {
+      "statement": "Developer community outreach yields qualified alpha trial users.",
+      "status": "UNKNOWN",
+      "positive_count": 0,
+      "negative_count": 0
+    }
+  },
+  "self_critique": {
+    "pricing_29_license": "UNSUPPORTED",
+    "developer_community_outreach": "UNSUPPORTED",
+    "target_50_devs_14_days": "PROPOSED_THRESHOLD_UNVERIFIED",
+    "inferred_vs_observed_note": "INFERRED != OBSERVED invariant enforced. 0 inferred hypotheses were converted to observed evidence without real user data."
+  },
+  "evidence_lineage": {
+    "sources": [
+      "HackerNews",
+      "AudienceHeuristics"
+    ],
+    "evidence_hash": "sha256_verification_ledger",
+    "has_synthetic": false,
+    "input_file": "lab/experiments/input/user_responses.json"
+  }
+}
