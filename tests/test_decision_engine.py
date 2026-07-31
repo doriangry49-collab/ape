@@ -109,3 +109,59 @@ def test_decision_engine_integration(tmp_path):
         line = f.readline()
         data = json.loads(line)
         assert data["decision"] == "BUILD"
+
+
+def test_decision_engine_preserves_discovery_lineage_metadata(tmp_path):
+    """Verifies that DecisionEngine preserves discovery_lineage metadata without changing decision score."""
+    research_dir = tmp_path / ".build" / "research"
+    research_dir.mkdir(parents=True)
+
+    mock_discovery_lineage = {
+        "scan_mode": "business",
+        "scanned_at": "2026-07-31T12:00:00Z",
+        "source_artifact": "2026-07-31-business-scan.json",
+        "opportunity_title": "Local Services App",
+        "opportunity_slug": "local_services_app",
+        "discovery_source": "business_scanner",
+        "discovery_score": 88,
+        "is_hypothesis": True,
+    }
+
+    mock_json = {
+        "metadata": {
+            "research_id": "res_456",
+            "discovery_lineage": mock_discovery_lineage,
+        },
+        "confidence": 85,
+        "pain_points": ["p1", "p2", "p3"],
+        "discussions": ["d1"],
+        "risks": [],
+        "competitors": [],
+        "target_audience": ["t1"],
+    }
+
+    with open(research_dir / "local_services.json", "w") as f:
+        json.dump(mock_json, f)
+
+    engine_with_lineage = DecisionEngine(tmp_path)
+    report_with_lineage = engine_with_lineage.run_decision("Local Services", "local_services")
+
+    assert "discovery_lineage" in report_with_lineage.metadata
+    assert report_with_lineage.metadata["discovery_lineage"] == mock_discovery_lineage
+
+    # Check Markdown evidence trace
+    md_content = (tmp_path / ".build" / "decisions" / "local_services.md").read_text(encoding="utf-8")
+    assert "Discovery Lineage" in md_content
+    assert "2026-07-31-business-scan.json" in md_content
+
+    # Lineage Neutrality Audit: Ensure score calculation is strictly identical without lineage
+    mock_json_no_lineage = dict(mock_json)
+    mock_json_no_lineage["metadata"] = {"research_id": "res_456"}
+    with open(research_dir / "local_services_no_lineage.json", "w") as f:
+        json.dump(mock_json_no_lineage, f)
+
+    report_no_lineage = engine_with_lineage.run_decision("Local Services", "local_services_no_lineage")
+
+    assert report_with_lineage.overall_score == report_no_lineage.overall_score
+    assert report_with_lineage.confidence == report_no_lineage.confidence
+    assert report_with_lineage.decision == report_no_lineage.decision

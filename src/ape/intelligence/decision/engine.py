@@ -128,6 +128,10 @@ class DecisionEngine:
 
         decision_id = f"dec_{uuid.uuid4().hex[:8]}"
 
+        report_metadata: dict[str, Any] = {"version": "1.1", "generator": "ape-decision-engine"}
+        if "discovery_lineage" in metadata and isinstance(metadata["discovery_lineage"], dict):
+            report_metadata["discovery_lineage"] = metadata["discovery_lineage"]
+
         report = DecisionReport(
             decision_id=decision_id,
             research_id=research_id,
@@ -143,7 +147,7 @@ class DecisionEngine:
             evidence_flags=bridge_result.evidence_flags,
             provenance_chain=bridge_result.provenance_chain,
             reference_urls=bridge_result.reference_urls,
-            metadata={"version": "1.1", "generator": "ape-decision-engine"},
+            metadata=report_metadata,
         )
 
         self._save_artifacts(topic_slug, report)
@@ -184,6 +188,7 @@ class DecisionEngine:
         for line in report.rationale:
             md_content.append(f"- {line}")
 
+        disc_lineage = report.metadata.get("discovery_lineage") if isinstance(report.metadata, dict) else None
         md_content.extend([
             "",
             "## Evidence Trace",
@@ -191,6 +196,11 @@ class DecisionEngine:
             f"- **Decision ID:** `{report.decision_id}`",
             f"- **Evidence Hash:** `{report.evidence_hash}`",
         ])
+        if isinstance(disc_lineage, dict):
+            md_content.append(
+                f"- **Discovery Lineage:** `{disc_lineage.get('source_artifact', 'unknown')}` "
+                f"(Mode: `{disc_lineage.get('scan_mode', 'unknown')}`)"
+            )
 
         with open(md_path, "w", encoding="utf-8") as f:
             f.write("\n".join(md_content))
