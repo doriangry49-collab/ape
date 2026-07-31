@@ -1,0 +1,90 @@
+{
+  "experiment": "ORION-041",
+  "status": "SIMULATION_COMPLETE",
+  "real_user_response_count": 0,
+  "test_fixture_count": 23,
+  "go_without_real_users": false,
+  "scenarios": [
+    {
+      "scenario": "A_EMPTY",
+      "h1": "UNKNOWN",
+      "h2": "UNKNOWN",
+      "h3": "UNKNOWN",
+      "evidence_state": "EMPTY / WAITING_FOR_REAL_USERS",
+      "expected_decision": "VALIDATE_MORE",
+      "actual_decision": "VALIDATE_MORE",
+      "passed": true
+    },
+    {
+      "scenario": "B_STRONG_POSITIVE",
+      "h1": "OBSERVED",
+      "h2": "OBSERVED",
+      "h3": "OBSERVED",
+      "evidence_state": "TEST_FIXTURE_INGESTED",
+      "expected_decision": "GO",
+      "actual_decision": "GO",
+      "passed": true
+    },
+    {
+      "scenario": "C_STRONG_NEGATIVE",
+      "h1": "CONTRADICTED",
+      "h2": "CONTRADICTED",
+      "h3": "CONTRADICTED",
+      "evidence_state": "TEST_FIXTURE_INGESTED",
+      "expected_decision": "NO-GO",
+      "actual_decision": "NO-GO",
+      "passed": true
+    },
+    {
+      "scenario": "D_MIXED_SIGNALS",
+      "h1": "OBSERVED",
+      "h2": "UNKNOWN",
+      "h3": "CONTRADICTED",
+      "evidence_state": "TEST_FIXTURE_INGESTED",
+      "expected_decision": "VALIDATE_MORE",
+      "actual_decision": "VALIDATE_MORE",
+      "passed": true
+    },
+    {
+      "scenario": "E_PARTIAL_RESPONSES",
+      "h1": "PARTIALLY_SUPPORTED",
+      "h2": "UNKNOWN",
+      "h3": "UNKNOWN",
+      "evidence_state": "TEST_FIXTURE_INGESTED",
+      "expected_decision": "VALIDATE_MORE",
+      "actual_decision": "VALIDATE_MORE",
+      "passed": true
+    },
+    {
+      "scenario": "F_SYNTHETIC_PAYLOAD",
+      "h1": "UNKNOWN",
+      "h2": "UNKNOWN",
+      "h3": "UNKNOWN",
+      "evidence_state": "INGESTION_REJECTED",
+      "expected_decision": "NO-GO",
+      "actual_decision": "NO-GO",
+      "passed": true
+    },
+    {
+      "scenario": "G_SELF_GENERATED_EVIDENCE_ATTACK",
+      "h1": "UNKNOWN",
+      "h2": "UNKNOWN",
+      "h3": "UNKNOWN",
+      "evidence_state": "ANALYTICAL_INFERENCES_AUDITED",
+      "expected_decision": "VALIDATE_MORE",
+      "actual_decision": "VALIDATE_MORE",
+      "passed": true
+    }
+  ],
+  "self_criticism": {
+    "inferred_not_observed": true,
+    "self_generated_evidence_rejected": true,
+    "unknown_preserved": true,
+    "empty_not_negative": true
+  },
+  "false_go_protection": true,
+  "synthetic_evidence_protection": true,
+  "negative_evidence_handling": true,
+  "boundary_clean": true,
+  "synthetic_data_used_as_real_evidence": false
+}
