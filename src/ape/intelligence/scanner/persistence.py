@@ -127,3 +127,57 @@ class ScanPersistence:
             return json.loads(json_files[0].read_text(encoding="utf-8"))
         except Exception:
             return None
+
+    def find_matching_opportunity(
+        self, topic: str
+    ) -> Tuple[Optional[dict[str, Any]], Optional[dict[str, Any]], Optional[Path]]:
+        """Search .build/scans/*.json sorted by date descending for an opportunity matching topic.
+
+        Returns (matched_opportunity_dict, scan_metadata_dict, json_file_path).
+        Safely handles malformed/corrupt JSON files without crashing.
+        """
+        if not self._scans_dir.exists():
+            return None, None, None
+
+        topic_clean = topic.strip().lower()
+        topic_slug = slugify(topic_clean)
+
+        # Deterministic sorting: newest scan files first (by path reverse)
+        json_files = sorted(self._scans_dir.glob("*-scan.json"), reverse=True)
+
+        for json_path in json_files:
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+            except Exception:
+                # Malformed JSON artifact: skip safely
+                continue
+
+            if not isinstance(data, dict):
+                continue
+
+            metadata = data.get("metadata", {})
+            opportunities = data.get("opportunities", [])
+            if not isinstance(opportunities, list):
+                continue
+
+            for opp in opportunities:
+                if not isinstance(opp, dict):
+                    continue
+
+                opp_slug = str(opp.get("slug", "")).lower()
+                opp_title = str(opp.get("title", "")).lower()
+                opp_tags = [str(t).lower() for t in opp.get("tags", []) if isinstance(t, str)]
+
+                # Deterministic matching rules:
+                # 1. Exact match on slug
+                # 2. Exact match on tag
+                # 3. Substring match on title/topic
+                if (
+                    (topic_slug and opp_slug == topic_slug)
+                    or (topic_clean in opp_tags)
+                    or (topic_clean and topic_clean in opp_title)
+                    or (opp_title and opp_title in topic_clean)
+                ):
+                    return opp, metadata, json_path
+
+        return None, None, None

@@ -51,6 +51,40 @@ class ResearchEngine:
         conf_val = float(confidence) if isinstance(confidence, (int, float)) else 0.80
         pains_list = pain_points if isinstance(pain_points, list) else []
 
+        # Check for matching discovery scan lineage in .build/scans/
+        discovery_lineage = None
+        sources_list = combined_signals.get("sources", ["HackerNews", "AudienceHeuristics"])
+        if not isinstance(sources_list, list):
+            sources_list = [str(sources_list)]
+
+        try:
+            from ape.intelligence.scanner.persistence import ScanPersistence
+            scan_persistence = ScanPersistence(self._project.root)
+            matched_opp, scan_meta, json_path = scan_persistence.find_matching_opportunity(topic)
+
+            if matched_opp and scan_meta and json_path:
+                discovery_lineage = {
+                    "scan_mode": scan_meta.get("mode", "unknown"),
+                    "scanned_at": scan_meta.get("scanned_at"),
+                    "source_artifact": json_path.name,
+                    "opportunity_title": matched_opp.get("title"),
+                    "opportunity_slug": matched_opp.get("slug"),
+                    "discovery_source": matched_opp.get("source"),
+                    "discovery_score": matched_opp.get("score"),
+                    "is_hypothesis": matched_opp.get("is_hypothesis", True),
+                }
+                sources_list.append(f"DiscoveryScan({json_path.name})")
+
+                # Incorporate discovery pain point as seed input signal if present
+                pain_info = matched_opp.get("pain_point")
+                if isinstance(pain_info, dict) and pain_info.get("description"):
+                    seed_pain = f"[Discovery Signal] {pain_info.get('description')}"
+                    if seed_pain not in pains_list:
+                        pains_list.append(seed_pain)
+        except Exception:
+            # Gracefully handle any unexpected scanner load errors without halting research
+            discovery_lineage = None
+
         if conf_val < 0.60:
             action = "IGNORE"
         elif conf_val >= 0.80 and len(pains_list) >= 3:
@@ -72,6 +106,8 @@ class ResearchEngine:
             "research_id": f"res_{uuid.uuid4().hex[:8]}",
             "opportunity_id": f"op_{clean_topic_id}"
         }
+        if discovery_lineage:
+            metadata["discovery_lineage"] = discovery_lineage
 
         # Build clean ResearchReport
         report = ResearchReport(
@@ -82,7 +118,7 @@ class ResearchEngine:
             market_signals=combined_signals.get("market_signals", []),  # type: ignore
             risks=combined_signals.get("risks", []),  # type: ignore
             confidence=conf_val,  # type: ignore
-            sources=combined_signals.get("sources", ["HackerNews", "AudienceHeuristics"]),  # type: ignore
+            sources=sources_list,  # type: ignore
             discussions=combined_signals.get("discussions", []),  # type: ignore
             suggested_mvp=combined_signals.get("suggested_mvp", []),  # type: ignore
             timestamp=now_utc,
