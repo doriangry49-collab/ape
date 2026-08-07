@@ -11,6 +11,8 @@ Use the pattern `SPEC-####-short-name.md`.
 Examples:
 - `SPEC-0001-foundation.md`
 - `SPEC-0004-workspace.md`
+- `SPEC-0018-constitutional-pipeline-architecture.md`
+- `SPEC-0019-resource-budget-model.md`
 
 ## When to Create a New Spec
 

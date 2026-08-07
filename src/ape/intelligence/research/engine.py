@@ -7,56 +7,66 @@ from datetime import UTC, datetime
 
 from ape import __version__
 from ape.intelligence.research.models import ResearchReport
-from ape.intelligence.research.providers.audience import HeuristicAudienceProvider
-from ape.intelligence.research.providers.hackernews import HackerNewsResearchProvider
+from ape.pipeline.contracts import PipelineContext
+from ape.pipeline.runner import ConstitutionalPipelineRunner
+from ape.pipeline.stages.acquisition_execution import AcquisitionExecutionStage
+from ape.pipeline.stages.capability_validation import CapabilityValidationStage
+from ape.pipeline.stages.evidence_fusion import EvidenceFusionStage
+from ape.pipeline.stages.explainability import ExplainabilityStage
+from ape.pipeline.stages.research_plan import ResearchPlanStage
+from ape.pipeline.stages.research_persist import ResearchPersistStage
+from ape.pipeline.stages.source_selection import SourceSelectionStage
 from ape.project import Project
-from ape.utils import append_to_evidence
 
 
 class ResearchEngine:
-    """Orchestrates research providers to gather signals and compile reports."""
+    """Orchestrates research providers to gather signals and compile reports via Constitutional Pipeline."""
 
     def __init__(self, project: Project, offline: bool = False) -> None:
         self._project = project
         self._offline = offline
-        self._providers = [
-            HackerNewsResearchProvider(offline=offline),
-            HeuristicAudienceProvider()
-        ]
 
     def run_research(self, topic: str) -> ResearchReport:
-        """Fetch signals from all providers, merge into ResearchReport, and save artifacts."""
-        combined_signals: dict[str, list | float | str] = {}
-        for provider in self._providers:
-            signals = provider.fetch_signals(topic)
-            for k, v in signals.items():
-                if isinstance(v, list):
-                    existing = combined_signals.setdefault(k, [])
-                    if isinstance(existing, list):
-                        existing.extend(v)
-                elif isinstance(v, (int, float)):
-                    if k in combined_signals:
-                        # Take the minimum confidence score for conservative estimate
-                        combined_signals[k] = min(combined_signals[k], v)  # type: ignore
-                    else:
-                        combined_signals[k] = v
-                else:
-                    combined_signals[k] = v
+        """Fetch signals from all providers, merge into ResearchReport, and save artifacts via 7-stage ResearchPipeline."""
+        # --- Strangler Pattern PR-7 Full Pipeline Integration ---
+        ctx = PipelineContext(
+            topic_slug=topic,
+            run_id=f"res_run_{uuid.uuid4().hex[:8]}",
+        )
+        runner = ConstitutionalPipelineRunner([
+            ResearchPlanStage(),
+            SourceSelectionStage(),
+            AcquisitionExecutionStage(offline=self._offline),
+            CapabilityValidationStage(),
+            EvidenceFusionStage(),
+            ExplainabilityStage(),
+            ResearchPersistStage(project_root=self._project.root),
+        ])
+        pipeline_results = runner.run(ctx)
+        plan_result = pipeline_results[0]
+        selection_result = pipeline_results[1]
+        acq_result = pipeline_results[2]
+        val_result = pipeline_results[3]
+        fusion_result = pipeline_results[4]
+        explain_result = pipeline_results[5]
+        persist_result = pipeline_results[6]
 
-        # Calculate heuristics for next recommended action
-        confidence = combined_signals.get("confidence", 0.80)
-        pain_points = combined_signals.get("pain_points", [])
-        
-        # Ensure we have clean typing
-        conf_val = float(confidence) if isinstance(confidence, (int, float)) else 0.80
-        pains_list = pain_points if isinstance(pain_points, list) else []
+        clean_topic_id = plan_result.output_data.get("clean_topic_id", "default")
+        acquisition_plan = selection_result.output_data
+        validated_data = val_result.output_data
+        fusion_data = fusion_result.output_data
+        explain_data = explain_result.output_data
+        combined_signals = fusion_data.get("fused_signals", {})
+        # --------------------------------------------------------
 
-        # Check for matching discovery scan lineage in .build/scans/
-        discovery_lineage = None
-        sources_list = combined_signals.get("sources", ["HackerNews", "AudienceHeuristics"])
+        confidence = fusion_data.get("overall_confidence", 0.80)
+        pains_list = fusion_data.get("fused_pain_points", [])
+        sources_list = fusion_data.get("fused_sources", ["HackerNews", "AudienceHeuristics"])
         if not isinstance(sources_list, list):
             sources_list = [str(sources_list)]
 
+        # Check for matching discovery scan lineage in .build/scans/
+        discovery_lineage = None
         try:
             from ape.intelligence.scanner.persistence import ScanPersistence
             scan_persistence = ScanPersistence(self._project.root)
@@ -85,6 +95,7 @@ class ResearchEngine:
             # Gracefully handle any unexpected scanner load errors without halting research
             discovery_lineage = None
 
+        conf_val = float(confidence)
         if conf_val < 0.60:
             action = "IGNORE"
         elif conf_val >= 0.80 and len(pains_list) >= 3:
@@ -95,22 +106,30 @@ class ResearchEngine:
             action = "WATCH"
 
         now_utc = datetime.now(UTC)
-        clean_topic_id = re.sub(r'[^a-z0-9]', '', topic.lower())[:8]
-        if not clean_topic_id:
-            clean_topic_id = "default"
 
         metadata = {
             "schema_version": "1.0",
             "created_at": now_utc.isoformat(),
             "ape_version": __version__,
             "research_id": f"res_{uuid.uuid4().hex[:8]}",
-            "opportunity_id": f"op_{clean_topic_id}"
+            "opportunity_id": f"op_{clean_topic_id}",
+            "pipeline_stage_hash": persist_result.evidence.get("stage_hash"),
+            "pipeline_parent_hash": persist_result.evidence.get("parent_hash"),
+            "acquisition_plan": acquisition_plan,
+            "observation_count": acq_result.output_data.get("observation_count", 0),
+            "spec_0012_validated": validated_data.get("spec_0012_compliant", False),
+            "agreement_score": fusion_data.get("agreement_score", 1.0),
+            "explainability_summary": explain_data.get("summary"),
+            "decision_path": explain_data.get("decision_path"),
+            "evidence_path": explain_data.get("evidence_path"),
+            "persisted_artifacts": persist_result.output_data,
         }
+
         if discovery_lineage:
             metadata["discovery_lineage"] = discovery_lineage
 
         # Build clean ResearchReport
-        report = ResearchReport(
+        return ResearchReport(
             topic=topic,
             target_audience=combined_signals.get("target_audience", []),  # type: ignore
             competitors=combined_signals.get("competitors", []),  # type: ignore
@@ -125,78 +144,3 @@ class ResearchEngine:
             next_recommended_action=action,
             metadata=metadata
         )
-
-        self._save_artifacts(report)
-        return report
-
-    def _save_artifacts(self, report: ResearchReport) -> None:
-        """Write JSON and MD files under .build/research/.
-
-        Current state  -> .build/research/<slug>.json   (mutable, overwritten each run)
-        Immutable log  -> .governance/evidence/research-YYYY-MM.jsonl  (append-only)
-        """
-        build_dir = self._project.root / ".build" / "research"
-        build_dir.mkdir(parents=True, exist_ok=True)
-
-        slug = re.sub(r'[^a-z0-9_]', '', report.topic.lower().replace(" ", "_"))
-        if not slug:
-            slug = "unnamed_topic"
-
-        json_data = {
-            "metadata": report.metadata,
-            "topic": report.topic,
-            "next_recommended_action": report.next_recommended_action,
-            "target_audience": report.target_audience,
-            "competitors": report.competitors,
-            "pain_points": report.pain_points,
-            "market_signals": report.market_signals,
-            "risks": report.risks,
-            "confidence": report.confidence,
-            "sources": report.sources,
-            "discussions": report.discussions,
-            "suggested_mvp": report.suggested_mvp,
-            "timestamp": report.timestamp.isoformat()
-        }
-
-        # 1. Current state (canonical pointer - mutable)
-        json_file = build_dir / f"{slug}.json"
-        json_file.write_text(json.dumps(json_data, indent=2), encoding="utf-8")
-
-        # 2. Evidence history (append-only)
-        evidence_dir = self._project.root / ".governance" / "evidence"
-        append_to_evidence(evidence_dir, "research", json_data)
-
-        # 3. Markdown output (current state - mutable)
-        md_file = build_dir / f"{slug}.md"
-        
-        disc_lines = []
-        for d in report.discussions:
-            title = d.get("title", "")
-            pts = d.get("points", 0)
-            url = d.get("url", "")
-            disc_lines.append(f"- **{title}** (HN Points: {pts}) - {url}")
-
-        md_content = (
-            f"# Research Report: {report.topic}\n\n"
-            f"**Timestamp:** {report.timestamp.isoformat()} UTC  \n"
-            f"**Next Recommended Action:** {report.next_recommended_action}  \n"
-            f"**Confidence Score:** {report.confidence:.0%}  \n"
-            f"**Sources:** {', '.join(report.sources)}\n\n"
-            "## Target Audience\n"
-            + "\n".join(f"- {a}" for a in report.target_audience) + "\n\n"
-            "## Competitors\n"
-            + "\n".join(f"- {c}" for c in report.competitors) + "\n\n"
-            "## Pain Points\n"
-            + "\n".join(f"- {p}" for p in report.pain_points) + "\n\n"
-            "## Market Signals\n"
-            + "\n".join(f"- {s}" for s in report.market_signals) + "\n\n"
-            "## Risks\n"
-            + "\n".join(f"- {r}" for r in report.risks) + "\n\n"
-            "## Suggested MVP\n"
-            + "\n".join(f"- {m}" for m in report.suggested_mvp) + "\n\n"
-            "## HackerNews Discussions\n"
-            + "\n".join(disc_lines) + "\n\n"
-            "## Metadata\n"
-            + "\n".join(f"- **{k}:** {v}" for k, v in report.metadata.items())
-        )
-        md_file.write_text(md_content, encoding="utf-8")

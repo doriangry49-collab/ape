@@ -19,7 +19,7 @@ _TRANSITIONS: dict[TaskStatus, set[TaskStatus]] = {
         TaskStatus.IN_PROGRESS, TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED
     },
     TaskStatus.IN_PROGRESS: {
-        TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.PAUSED,
+        TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.PAUSED,
         TaskStatus.REQUIRES_APPROVAL, TaskStatus.BLOCKED
     },
     TaskStatus.FAILED:             {TaskStatus.IN_PROGRESS},

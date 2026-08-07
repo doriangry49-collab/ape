@@ -36,20 +36,20 @@ class MockDeterministicLLM(PlannerModel):
                 "thought": "Create initial calculator implementation with intentional bug to verify repair loop.",
                 "action": "create_file",
                 "params": {
-                    "path": "calculator.py",
+                    "path": "calculator_module.py",
                     "content": "def add(a, b):\n    return a - b  # Intentional bug for RFC-019 test\n",
-                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator.py\').write_text(\'def add(a, b):\\n    return a - b\\n\'); pathlib.Path(\'test_calculator.py\').write_text(\'from calculator import add\\ndef test_add():\\n    assert add(2, 3) == 5\\n\')" && "{sys.executable}" -m pytest test_calculator.py'
+                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator_module.py\').write_text(\'def add(a, b):\\n    return a - b\\n\'); pathlib.Path(\'test_calculator_module.py\').write_text(\'from calculator_module import add\\ndef test_add():\\n    assert add(2, 3) == 5\\n\')" && "{sys.executable}" -m pytest test_calculator_module.py'
                 }
             }
         else:
-            # Attempt 2: Repair calculator.py
+            # Attempt 2: Repair calculator_module.py
             return {
                 "thought": "Fix subtraction bug in add function.",
                 "action": "modify_file",
                 "params": {
-                    "path": "calculator.py",
+                    "path": "calculator_module.py",
                     "content": "def add(a, b):\n    return a + b\n",
-                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator.py\').write_text(\'def add(a, b):\\n    return a + b\\n\')" && "{sys.executable}" -m pytest test_calculator.py'
+                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator_module.py\').write_text(\'def add(a, b):\\n    return a + b\\n\')" && "{sys.executable}" -m pytest test_calculator_module.py'
                 }
             }
 

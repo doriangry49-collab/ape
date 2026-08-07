@@ -142,13 +142,13 @@ class RoadmapGenerator:
                         Task(
                             task_id="tsk_1_1",
                             description="Conduct user interviews to validate pain points",
-                            deliverables=["Interview Notes", "Pain Point Summary"],
+                            deliverables=[f"docs/interview_notes_{topic_slug}.md", f"docs/pain_points_{topic_slug}.md"],
                             estimated_effort="3 days"
                         ),
                         Task(
                             task_id="tsk_1_2",
                             description="Map identified pain points to potential solution areas",
-                            deliverables=["Pain Point Map"],
+                            deliverables=[f"docs/pain_map_{topic_slug}.md"],
                             estimated_effort="1 day"
                         ),
                     ],
@@ -161,13 +161,13 @@ class RoadmapGenerator:
                         Task(
                             task_id="tsk_2_1",
                             description="Build and deploy a landing page with waitlist sign-up",
-                            deliverables=["Landing Page URL", "Waitlist Form"],
+                            deliverables=[f"docs/landing_url_{topic_slug}.txt", f"docs/waitlist_form_{topic_slug}.json"],
                             estimated_effort="2 days"
                         ),
                         Task(
                             task_id="tsk_2_2",
                             description="Deploy targeted survey to potential customer segment",
-                            deliverables=["Survey Results Report"],
+                            deliverables=[f"docs/survey_results_{topic_slug}.json"],
                             estimated_effort="3 days"
                         ),
                     ],
@@ -180,7 +180,7 @@ class RoadmapGenerator:
                         Task(
                             task_id="tsk_3_1",
                             description="Analyze collected signals against success criteria",
-                            deliverables=["Validation Decision Document"],
+                            deliverables=[f"docs/validation_doc_{topic_slug}.md"],
                             estimated_effort="1 day"
                         ),
                     ],
@@ -200,14 +200,8 @@ class RoadmapGenerator:
                         Task(
                             task_id="tsk_1_1",
                             description="Define core data models and architecture",
-                            deliverables=["Architecture Document", "Data Models"],
+                            deliverables=[f"{topic_slug}.py"],
                             estimated_effort="1 day"
-                        ),
-                        Task(
-                            task_id="tsk_1_2",
-                            description="Setup project repository and CI/CD",
-                            deliverables=["Git Repo", "Github Actions"],
-                            estimated_effort="4 hours"
                         ),
                     ],
                     dependencies=[]
@@ -219,13 +213,13 @@ class RoadmapGenerator:
                         Task(
                             task_id="tsk_2_1",
                             description="Implement core backend logic",
-                            deliverables=["API Endpoints", "Core Engine"],
+                            deliverables=[f"{topic_slug}.py"],
                             estimated_effort="3 days"
                         ),
                         Task(
                             task_id="tsk_2_2",
-                            description="Implement basic CLI or Web UI",
-                            deliverables=["User Interface"],
+                            description="Implement automated unit test suite",
+                            deliverables=[f"test_{topic_slug}.py"],
                             estimated_effort="2 days"
                         ),
                     ],
@@ -238,16 +232,9 @@ class RoadmapGenerator:
                         Task(
                             task_id="tsk_3_1",
                             description="Verify build artifacts and run test suite",
-                            deliverables=["Test Verification Log"],
+                            deliverables=[f"test_{topic_slug}.py"],
                             estimated_effort="1 day",
                             action="run_tests"
-                        ),
-                        Task(
-                            task_id="tsk_3_2",
-                            description="Monitor analytics and gather feedback",
-                            deliverables=["Analytics Dashboard", "User Feedback Report"],
-                            estimated_effort="Ongoing",
-                            action="read_file"
                         ),
                     ],
                     dependencies=["ms_2"]

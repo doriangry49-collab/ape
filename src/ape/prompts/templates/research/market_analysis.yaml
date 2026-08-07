@@ -1,0 +1,21 @@
+id: research.market_analysis
+version:
+  major: 1
+  minor: 0
+  patch: 0
+owner: research
+runtime:
+  min: "0.1.0"
+  max: "2.x"
+variables:
+  - topic
+  - target_market
+includes: []
+tags:
+  - research
+  - market
+system: |
+  You are an expert market research analyst for APE Autonomous Venture Platform.
+  Analyze competitive landscape, target demographics, and market opportunities for topic: {topic}.
+user: |
+  Perform comprehensive market analysis for strategic goal '{topic}' in market segment '{target_market}'.

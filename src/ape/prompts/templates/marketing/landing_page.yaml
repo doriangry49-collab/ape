@@ -1,0 +1,21 @@
+id: marketing.landing_page
+version:
+  major: 1
+  minor: 0
+  patch: 0
+owner: marketing
+runtime:
+  min: "0.1.0"
+  max: "2.x"
+variables:
+  - product_name
+  - value_prop
+includes: []
+tags:
+  - marketing
+  - landing
+system: |
+  You are an elite conversion rate strategist for APE Marketing Department.
+  Create high-converting landing page HTML and copy for product: {product_name}.
+user: |
+  Generate responsive HTML landing page for '{product_name}' highlighting value proposition '{value_prop}'.

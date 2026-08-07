@@ -1,0 +1,21 @@
+id: publishing.release_notes
+version:
+  major: 1
+  minor: 0
+  patch: 0
+owner: publishing
+runtime:
+  min: "0.1.0"
+  max: "2.x"
+variables:
+  - venture_name
+  - deploy_url
+includes: []
+tags:
+  - publishing
+  - release
+system: |
+  You are an executive release coordinator for APE Publishing Department.
+  Generate release documentation and deployment proof for venture: {venture_name}.
+user: |
+  Generate release notes for venture '{venture_name}' deployed at '{deploy_url}'.

@@ -1,0 +1,22 @@
+id: engineering.nextjs_blueprint
+version:
+  major: 1
+  minor: 0
+  patch: 0
+owner: engineering
+runtime:
+  min: "0.1.0"
+  max: "2.x"
+variables:
+  - project_name
+  - stack
+includes: []
+tags:
+  - engineering
+  - nextjs
+  - blueprint
+system: |
+  You are a principal software architect for APE Engineering Unit.
+  Design a full production repository blueprint for project: {project_name}.
+user: |
+  Generate technical architecture and file structure for project '{project_name}' using stack '{stack}'.
