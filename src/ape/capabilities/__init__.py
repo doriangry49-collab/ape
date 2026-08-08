@@ -54,6 +54,9 @@ from ape.capabilities.pipeline import (
     StrategySelectionStage,
 )
 from ape.capabilities.planner import ExecutionPlanner, StandardExecutionPlanner
+from ape.capabilities.governance.planner import GovernedExecutionPlanner
+from ape.capabilities.governance.resolver import CapabilityBindingResolver
+
 from ape.capabilities.registry import (
     CapabilityDescriptor,
     CapabilityMatrix,
@@ -218,4 +221,6 @@ __all__ = [
     "EffectivePolicyGate",
     "EffectiveToolPolicyEvaluator",
     "ToolExecutionStage",
+    "GovernedExecutionPlanner",
+    "CapabilityBindingResolver",
 ]

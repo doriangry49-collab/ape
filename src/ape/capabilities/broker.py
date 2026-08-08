@@ -136,3 +136,49 @@ class CapabilityBroker:
             policy=policy or ExecutionPolicy(),
         )
         return self.execute_request(req)
+
+    def execute_capability(
+        self,
+        request: Any,  # CapabilityRequest
+        context: ExecutionContext,
+        governed_planner: Optional[Any] = None,
+    ) -> ExecutionResult:
+        """
+        Governed entry point executing CapabilityRequest via GovernedExecutionPlanner.
+        Legacy execute() remains untouched for backwards compatibility.
+        """
+        from ape.capabilities.governance.planner import GovernedExecutionPlanner
+        from ape.prompts.template import RenderedPrompt
+
+        planner = governed_planner or GovernedExecutionPlanner(
+            capability_registry=getattr(self, "governance_registry", None),
+            binding_resolver=getattr(self, "binding_resolver", None),
+        )
+        graph = planner.plan_governed(request, context)
+
+        # Wrap CapabilityRequest into ExecutionRequest for SequentialScheduler compatibility
+        rendered_prompt = RenderedPrompt(
+            system_prompt="",
+            user_prompt=str(dict(request.input_payload)),
+            prompt_id="governed_prompt",
+            version="1.0.0",
+            template_sha256="gov_template",
+            rendered_sha256="gov_rendered",
+            trace_id=context.trace_id,
+        )
+        exec_req = ExecutionRequest(
+            request_id=request.request_id,
+            capability_id=request.capability_id,
+            rendered_prompt=rendered_prompt,
+            context=context,
+            policy=ExecutionPolicy(),
+        )
+
+
+        res = self.scheduler.schedule(graph, exec_req, self.execution_engine)
+
+        if res.trace():
+            for evt in res.trace().events:
+                self.event_bus.publish(evt)
+
+        return res

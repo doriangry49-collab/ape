@@ -56,6 +56,9 @@ class CapabilityRegistry:
         Deterministically resolve capability_id and version_constraint to a CapabilityDescriptor.
         Fails closed on 'latest', invalid syntax, or revoked versions.
         """
+        if "@" in capability_id and version_constraint is None:
+            capability_id, version_constraint = capability_id.split("@", 1)
+
         # 1. Reject 'latest' wildcard or unparseable syntax
         if version_constraint is not None:
             v_str = version_constraint.strip().lower()
@@ -63,6 +66,7 @@ class CapabilityRegistry:
                 raise UnresolvableVersionError(
                     f"FAIL CLOSED: Forbidden or invalid version constraint '{version_constraint}' for capability '{capability_id}'."
                 )
+
 
         # Find matching descriptors for capability_id
         matches = [d for q_id, d in self._capabilities.items() if d.capability_id == capability_id]
