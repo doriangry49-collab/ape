@@ -3,7 +3,14 @@ APE Tool Abstraction Layer — ORION-117.0 Specification.
 Exports canonical contracts, lifecycle orchestrator, policies, and registry interfaces.
 """
 
-from ape.tools.adapters.base import BaseToolAdapter
+from ape.tools.adapters import (
+    BaseToolAdapter,
+    NativeTool,
+    NativeToolAdapter,
+    create_deterministic_compute_tool,
+    create_echo_tool,
+    create_structured_transform_tool,
+)
 from ape.tools.contracts import (
     ApprovalRequiredError,
     EvidenceSink,
@@ -40,5 +47,10 @@ __all__ = [
     "ToolScope",
     "ToolRegistry",
     "BaseToolAdapter",
+    "NativeTool",
+    "NativeToolAdapter",
+    "create_echo_tool",
+    "create_structured_transform_tool",
+    "create_deterministic_compute_tool",
     "ToolExecutor",
 ]
