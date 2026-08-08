@@ -1,29 +1,35 @@
 """
-APE Agent Fabric Subsystem — RFC-022 / PR-A1 to PR-A6 Specification.
+APE Fabric In-Memory Multi-Agent Swarm Subsystem — ORION-116 Specification.
 """
 
-from ape.fabric.bus import FabricEvent, ObservationBus, get_default_observation_bus
-from ape.fabric.contracts import AgentReport, ApeAgent
-from ape.fabric.loader import AgentLoader
-from ape.fabric.manifest import AgentManifest
-from ape.fabric.memory import SharedMemoryWorkspace
-from ape.fabric.registry import AgentRegistry, get_default_agent_registry
-from ape.fabric.scheduler import AgentScheduler
-from ape.fabric.state import AgentLifecycle, AgentStatus, InvalidAgentTransitionError
+from ape.fabric.agent_node import (
+    AgentNode,
+    AgentResponse,
+    AgentRole,
+    ArchitectAgentNode,
+    AuditorAgentNode,
+    BaseAgentNode,
+    CoderAgentNode,
+    QAAgentNode,
+    SwarmTask,
+)
+from ape.fabric.message_bus import SwarmMessage, SwarmMessageBus
+from ape.fabric.shared_memory import SharedSwarmMemory
+from ape.fabric.swarm import SwarmOrchestrator, SwarmOutcome
 
 __all__ = [
-    "ApeAgent",
-    "AgentReport",
-    "AgentManifest",
-    "AgentRegistry",
-    "get_default_agent_registry",
-    "AgentStatus",
-    "AgentLifecycle",
-    "InvalidAgentTransitionError",
-    "AgentLoader",
-    "SharedMemoryWorkspace",
-    "FabricEvent",
-    "ObservationBus",
-    "get_default_observation_bus",
-    "AgentScheduler",
+    "AgentRole",
+    "SwarmTask",
+    "AgentResponse",
+    "AgentNode",
+    "BaseAgentNode",
+    "ArchitectAgentNode",
+    "CoderAgentNode",
+    "QAAgentNode",
+    "AuditorAgentNode",
+    "SwarmMessage",
+    "SwarmMessageBus",
+    "SharedSwarmMemory",
+    "SwarmOutcome",
+    "SwarmOrchestrator",
 ]

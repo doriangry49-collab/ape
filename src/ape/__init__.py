@@ -1,6 +1,6 @@
 """
-APE Platform Package — ORION-110.5 / ORION-111A / ORION-111B / ORION-112 / ORION-113 / ORION-114 / ORION-115 Specification.
-Freezes stable public API interfaces for APE Execution Graph Runtime & OS Kernel Engine.
+APE Platform Package — ORION-110.5 / ORION-111A / ORION-111B / ORION-112 / ORION-113 / ORION-114 / ORION-115 / ORION-116 Specification.
+Freezes stable public API interfaces for APE Execution Graph Runtime & Swarm Engine.
 """
 
 from ape.business.orchestrator import ExecutionOrchestrator
@@ -86,6 +86,21 @@ from ape.capabilities import (
     ToolCall,
     ToolDefinition,
     ToolOperation,
+)
+from ape.fabric import (
+    AgentNode,
+    AgentResponse,
+    AgentRole,
+    ArchitectAgentNode,
+    AuditorAgentNode,
+    CoderAgentNode,
+    QAAgentNode,
+    SharedSwarmMemory,
+    SwarmMessage,
+    SwarmMessageBus,
+    SwarmOrchestrator,
+    SwarmOutcome,
+    SwarmTask,
 )
 from ape.prompts import (
     PromptContextBuilder,
@@ -201,4 +216,17 @@ __all__ = [
     "ToolDefinition",
     "ToolCall",
     "ExecutionStep",
+    "AgentRole",
+    "SwarmTask",
+    "AgentResponse",
+    "AgentNode",
+    "ArchitectAgentNode",
+    "CoderAgentNode",
+    "QAAgentNode",
+    "AuditorAgentNode",
+    "SwarmMessage",
+    "SwarmMessageBus",
+    "SharedSwarmMemory",
+    "SwarmOutcome",
+    "SwarmOrchestrator",
 ]
