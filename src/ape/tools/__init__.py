@@ -5,8 +5,12 @@ Exports canonical contracts, lifecycle orchestrator, policies, and registry inte
 
 from ape.tools.adapters import (
     BaseToolAdapter,
+    MCPClient,
+    MCPToolAdapter,
+    MCPToolMapper,
     NativeTool,
     NativeToolAdapter,
+    StdioTransport,
     create_deterministic_compute_tool,
     create_echo_tool,
     create_structured_transform_tool,
@@ -52,5 +56,9 @@ __all__ = [
     "create_echo_tool",
     "create_structured_transform_tool",
     "create_deterministic_compute_tool",
+    "MCPToolAdapter",
+    "MCPClient",
+    "MCPToolMapper",
+    "StdioTransport",
     "ToolExecutor",
 ]

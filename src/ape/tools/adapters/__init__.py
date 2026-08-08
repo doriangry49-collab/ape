@@ -4,6 +4,7 @@ Exports BaseToolAdapter protocol interface and NativeToolAdapter implementation.
 """
 
 from ape.tools.adapters.base import BaseToolAdapter
+from ape.tools.adapters.mcp import MCPClient, MCPToolAdapter, MCPToolMapper, StdioTransport
 from ape.tools.adapters.native import (
     NativeTool,
     NativeToolAdapter,
@@ -19,4 +20,8 @@ __all__ = [
     "create_echo_tool",
     "create_structured_transform_tool",
     "create_deterministic_compute_tool",
+    "MCPToolAdapter",
+    "MCPClient",
+    "MCPToolMapper",
+    "StdioTransport",
 ]
