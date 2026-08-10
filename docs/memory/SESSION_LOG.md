@@ -29,3 +29,17 @@
 - Preserved CLI behavior and added regression tests for the new project information accessors.
 - Verified the implementation with Ruff and pytest; 16 tests passed.
 - Prepared the repository for Sprint 6.2 planning under the title “Project Services”.
+
+## Audit Session — 2026-08-11 (PHASE 0.5 State Provenance Investigation & Full Reconciliation)
+- Conducted deep Phase 0.5 State Provenance Investigation to reconcile audit discrepancies.
+- Confirmed cause of discrepancy: Multi-workspace directory coexistence (`C:\Users\Thea-Aria\ape` vs `C:\Users\Thea-Aria\ .gemini\antigravity\scratch\ec2-file-explorer\ape_repo`).
+- Established Authoritative Target Repository: `C:\Users\Thea-Aria\ .gemini\antigravity\scratch\ec2-file-explorer\ape_repo`.
+  - HEAD: `c6e386860923415e4f133e7678b17bfcb62da161` (`c6e3868`)
+  - Kernel Baseline Commit `7b6440e`: Confirmed Present (`7b6440e feat(runtime): finalize ORION-110..115 kernel architecture`).
+  - Swarm Runtime: Confirmed Present (`src/ape/fabric/swarm.py`, 142 lines).
+  - Modular Pipeline: Confirmed Present (`src/ape/pipeline/stages/`, 16 modular pipeline stage files).
+  - Unpushed Commit Count: Confirmed Exactly 30 Commits ahead of `origin/main` (`30ea47f`).
+  - Test Suite Result: 493 PASS / 6 FAIL out of 499 total tests (5 Docker sandbox inactive, 1 SerpAPI live API).
+- Pushed WIP branch backup from canonical repository: `git push -f origin HEAD:wip/orion-119`.
+- Status: **CONDITIONAL READY**.
+
