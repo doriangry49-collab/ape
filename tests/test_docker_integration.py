@@ -5,19 +5,32 @@ unavailable and run unconditionally in CI (ubuntu-latest runner has Docker).
 """
 import os
 import shutil
+import subprocess
 
 import pytest
 
 from ape.intelligence.execution.executor import DockerSandboxExecutor
 
-DOCKER_AVAILABLE = shutil.which("docker") is not None
+
+def _is_docker_daemon_active() -> bool:
+    if not shutil.which("docker"):
+        return False
+    try:
+        res = subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=5)
+        return res.returncode == 0
+    except Exception:
+        return False
+
+
+DOCKER_AVAILABLE = _is_docker_daemon_active()
 
 
 @pytest.mark.integration
 @pytest.mark.skipif(
-    not DOCKER_AVAILABLE, reason="Docker is not installed or available on PATH"
+    not DOCKER_AVAILABLE, reason="Docker daemon is not running or available on host"
 )
 class TestDockerIntegration:
+
 
     def test_real_docker_execution(self):
         """A simple command should execute inside the container."""

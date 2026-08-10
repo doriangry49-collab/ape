@@ -1,11 +1,18 @@
 import os
+
 import pytest
-from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter, AdapterError, BudgetExhaustedError
+
+from ape.intelligence.scanner.adapters.web_search_adapter import (
+    AdapterError,
+    BudgetExhaustedError,
+    WebSearchAdapter,
+)
 
 # Mark all tests in this file as integration tests
 pytestmark = pytest.mark.integration
 
 from unittest.mock import patch
+
 
 def test_missing_api_key_raises_error():
     # If key is missing, verify clean failure (AdapterError)
@@ -23,7 +30,12 @@ def test_missing_api_key_raises_error():
 
 @pytest.mark.skipif(not os.environ.get("SERPAPI_API_KEY"), reason="SERPAPI_API_KEY environment variable is not set")
 def test_serpapi_live_integration():
+    import shutil
     adapter = WebSearchAdapter(max_requests=1, limit_queries=1)
+    # Clear cache directory to force live request budget enforcement
+    if os.path.exists(adapter.cache_dir):
+        shutil.rmtree(adapter.cache_dir)
+
     results = adapter.scan_segment("real_estate")
     # Verify results are produced
     assert len(results) == 1
@@ -34,6 +46,8 @@ def test_serpapi_live_integration():
     # Try second request -> should raise BudgetExhaustedError
     with pytest.raises(BudgetExhaustedError):
         adapter._external_request("real_estate pricing")
+
+
 
 @pytest.mark.skipif(not os.environ.get("SERPAPI_API_KEY"), reason="SERPAPI_API_KEY environment variable is not set")
 def test_serpapi_cache_behavior():

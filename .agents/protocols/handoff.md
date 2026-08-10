@@ -8,8 +8,17 @@ The handoff report must be written in the following template:
 ```text
 HANDOFF
 
+REPOSITORY IDENTITY FINGERPRINT
+───────────────────────────────
+Root        : [Canonical Absolute Path]
+Remote      : [Origin Push URL]
+Branch      : [Current Branch Name]
+HEAD        : [Full Commit SHA]
+Timestamp   : [ISO-8601 UTC]
+
 Current Sprint: [Sprint name/number]
 Current Objective: [Brief overview of what we are building]
+
 Completed:
   - [x] Item 1
   - [x] Item 2

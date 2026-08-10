@@ -10,12 +10,12 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+
 import pytest
 
-from ape.intelligence.execution.agent import ApeCoderAgent, AgentStepResult
+from ape.intelligence.execution.agent import ApeCoderAgent
 from ape.intelligence.execution.engine import ExecutionEngine
-from ape.intelligence.execution.executor import DockerSandboxExecutor, TaskExecutor, SandboxResult
-from ape.intelligence.execution.models import TaskStatus
+from ape.intelligence.execution.executor import DockerSandboxExecutor, SandboxResult, TaskExecutor
 from ape.intelligence.roadmap.llm import PlannerModel
 
 
@@ -210,11 +210,22 @@ def test_e2e_autonomous_build_repair_loop_offline(e2e_project_env):
     assert agent_logs[1]["evidence_hash"] == "hash_rfc017_e2e_proof"
 
 
-DOCKER_AVAILABLE = shutil.which("docker") is not None
+def _is_docker_daemon_active() -> bool:
+    if not shutil.which("docker"):
+        return False
+    try:
+        res = subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=5)
+        return res.returncode == 0
+    except Exception:
+        return False
+
+
+DOCKER_AVAILABLE = _is_docker_daemon_active()
 
 
 @pytest.mark.integration
-@pytest.mark.skipif(not DOCKER_AVAILABLE, reason="Docker required for real Docker Sandbox E2E test")
+@pytest.mark.skipif(not DOCKER_AVAILABLE, reason="Docker daemon required for real Docker Sandbox E2E test")
+
 def test_e2e_autonomous_build_docker_sandbox(e2e_project_env):
     """
     Real Docker Sandbox E2E Validation:
