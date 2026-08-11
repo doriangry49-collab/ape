@@ -31,7 +31,6 @@ DOCKER_AVAILABLE = _is_docker_daemon_active()
 )
 class TestDockerIntegration:
 
-
     def test_real_docker_execution(self):
         """A simple command should execute inside the container."""
         executor = DockerSandboxExecutor()
@@ -111,16 +110,25 @@ class TestDockerIntegration:
         assert result.exit_code == 42
         assert result.status == "FAILED"
 
-    def test_blocked_status_when_docker_unavailable(self, monkeypatch):
-        """
-        When Docker is unavailable, execute_command must return status=BLOCKED.
-        BLOCKED = task stopped before execution began (environment failure).
-        FAILED  = task started but failed during execution.
-        """
-        monkeypatch.setattr("shutil.which", lambda _: None)
-        executor = DockerSandboxExecutor()
-        result = executor.execute_command("echo test", cwd="/tmp")
 
-        assert result.status == "BLOCKED"
-        assert "Docker unavailable" in result.error
-        assert result.exit_code == -1
+# ---------------------------------------------------------------------------
+# Daemon-independent tests: run unconditionally regardless of Docker availability
+# ---------------------------------------------------------------------------
+
+@pytest.mark.integration
+def test_blocked_status_when_docker_unavailable(monkeypatch):
+    """
+    When Docker is unavailable, execute_command must return status=BLOCKED.
+    BLOCKED = task stopped before execution began (environment failure).
+    FAILED  = task started but failed during execution.
+
+    This test uses monkeypatch and does NOT require a real Docker daemon.
+    It MUST run even when the host Docker daemon is inactive.
+    """
+    monkeypatch.setattr("shutil.which", lambda _: None)
+    executor = DockerSandboxExecutor()
+    result = executor.execute_command("echo test", cwd="/tmp")
+
+    assert result.status == "BLOCKED"
+    assert "Docker unavailable" in result.error
+    assert result.exit_code == -1
