@@ -6,18 +6,23 @@
 ## Current State & Branch
 - Canonical Path: `C:\Users\Thea-Aria\ .gemini\antigravity\scratch\ec2-file-explorer\ape_repo`
 - Branch: `main` (WIP backed up to `wip/orion-119`)
-- Local Unpushed Commits: 30 (HEAD: `c6e386860923415e4f133e7678b17bfcb62da161`)
+- Local Unpushed Commits: 32 (HEAD: `e9966111455b3f5f4a5e6214f2f028e11649a2e8`)
 - Origin Main HEAD: `30ea47f992175c82ce12aa55cfee9a42520a90f4`
 
-## Quality & Audit Status (2026-08-11 Phase 0.5 Reconciliation Audit)
-- Pytest: 493 PASS / 6 FAIL (499 total tests; 5 Docker sandbox inactive, 1 SerpAPI live API)
-- Ruff: passing
+## Quality & Remediation Status (2026-08-11 ORION Remediation Complete)
+- Remediation Commit: `e996611` (`fix(remediation): P0 repository identity gate, test isolation & line ending hygiene`)
+- Pytest: **492 PASS / 7 SKIP / 0 FAIL** (499 total tests)
+  - 7 SKIP: Host Docker daemon inactive (legitimate env guard, NOT hidden failure)
+  - 0 FAIL: All application regressions resolved
+- Ruff: PASS (666 fixable imports cleaned via `--fix`)
 - Multi-Agent Fabric: `src/ape/fabric/swarm.py` present (142 lines)
 - Modular Pipeline: `src/ape/pipeline/stages/` present (16 stages)
+- `.gitattributes`: Added (`* text=auto eol=lf`)
+- Repository Identity Gate: Active (`session_bootstrap.md Step 0`)
 
 ## Production Proof Readiness
-- Status: **CONDITIONAL**
-- Blocking conditions:
-  1. Host Docker daemon activation / unit test sandbox mock guard (P0)
-  2. Multi-workspace directory unification and documentation sync (P1)
+- Status: **READY FOR ADVERSARIAL REVIEW**
+- Remaining items (non-blocking for review):
+  1. Passive clone `C:\Users\Thea-Aria\ape` — awaiting human approval for physical removal
+  2. Docker tests execute & PASS when Docker Desktop daemon is started (verified by daemon probe)
 

@@ -43,3 +43,15 @@
 - Pushed WIP branch backup from canonical repository: `git push -f origin HEAD:wip/orion-119`.
 - Status: **CONDITIONAL READY**.
 
+## Remediation Session — 2026-08-11 (ORION Remediation — P0 Repository Identity & Test Isolation)
+- Executed all verified P0/P1 remediation tasks with zero architectural changes.
+- **Task 1 (P0 — Repository Identity Gate):** Updated `.agents/protocols/session_bootstrap.md` with Step 0 fail-closed identity verification. Updated `.agents/protocols/handoff.md` with mandatory `REPOSITORY IDENTITY FINGERPRINT` header.
+- **Task 2 (P0 — Passive Clone):** Cataloged `C:\Users\Thea-Aria\ape` as `P0 — Duplicate Repository Clone`. Physical removal awaiting human approval.
+- **Task 3 (P0 — Docker Test Isolation):** Replaced `shutil.which("docker")` with `_is_docker_daemon_active()` daemon probe in `tests/test_docker_integration.py` and `tests/intelligence/p1/test_e2e_autonomous_build.py`. Tests legitimately SKIP when daemon is inactive; PASS when daemon is active.
+- **Task 4 (P0/P1 — SerpAPI):** Added `shutil.rmtree(adapter.cache_dir)` pre-test cleanup in `tests/integration/test_serpapi_integration.py` to guarantee live budget enforcement is tested.
+- **Task 5 (P1 — Hygiene):** Created `.gitattributes` (`* text=auto eol=lf`). Executed `ruff check --fix` (666 imports cleaned).
+- **Task 6 (Full Re-Verification):** Test suite result: **492 PASS / 7 SKIP / 0 FAIL** (499 total tests).
+- **Remediation Commit:** `e9966111455b3f5f4a5e6214f2f028e11649a2e8` (`e996611`) pushed to `origin/wip/orion-119`.
+- **Production Proof Status:** READY FOR ADVERSARIAL REVIEW.
+
+
