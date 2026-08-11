@@ -3,7 +3,6 @@ Resource & Capacity Management Engine — RFC-022 / Phase B4 Specification.
 Handles agent capacity limits, priority queues, and concurrency throttling.
 """
 
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 

@@ -3,7 +3,7 @@ Marketing Department — ORION-106A Specification.
 Generates landing page HTML, ad copywriting, and sales conversion assets.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ape.business.contracts import UnitReport
 from ape.business.units.base import BaseBusinessUnit

@@ -2,10 +2,8 @@
 Unit tests for Plugin SDK Contracts and Manifest (PR-P1).
 """
 
-import pytest
 
 from ape.plugins.contracts import ApePlugin
-from ape.plugins.exceptions import PluginIncompatibleError, PluginLoadError
 from ape.plugins.manifest import PluginManifest
 
 

@@ -3,7 +3,6 @@ Unit tests for Capacity Manager and Organizational Learning Engine (Phase B4 / P
 """
 
 from pathlib import Path
-import pytest
 
 from ape.business.capacity import CapacityManager
 from ape.business.learning import OrganizationalLearningEngine

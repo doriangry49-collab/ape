@@ -3,7 +3,8 @@ Organizational Learning Engine — RFC-022 / Phase B5 Specification.
 Extracts lessons learned and pattern recommendations from persistent Enterprise Knowledge Graph.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
+
 from ape.workspace import EnterpriseKnowledgeGraph
 
 

@@ -4,10 +4,10 @@ Provides ProviderEndpointKey and ProviderCircuitBreaker tracking circuit states 
 at (provider_id, model) granular endpoint level.
 """
 
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
-from typing import Dict, Optional
+from typing import Dict
 
 from ape.capabilities.contracts import CircuitBreakerOpenError
 

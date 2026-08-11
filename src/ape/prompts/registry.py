@@ -4,11 +4,12 @@ Loads standardized YAML prompt templates from disk, tracks SemVer PromptVersion 
 and freezes into an immutable read-only registry at startup.
 """
 
-from dataclasses import dataclass, field
 import hashlib
-from pathlib import Path
 import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List
+
 import yaml
 
 

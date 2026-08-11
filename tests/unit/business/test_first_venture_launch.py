@@ -3,7 +3,6 @@ Unit tests for ORION-106A First Revenue-Generating Departments & First Real Vent
 Verifies Research, Marketing, Publishing departments, landing page generation, live deployment, and $27.00 initial revenue tracking.
 """
 
-import pytest
 
 from ape.business import (
     MarketingDepartment,

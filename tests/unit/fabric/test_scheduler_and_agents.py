@@ -3,7 +3,6 @@ Unit tests for Agent Scheduler and Reference Agents (PR-A3 / PR-A6).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.fabric.agents import PlannerAgent, QAAgent, ReleaseAgent
 from ape.fabric.memory import SharedMemoryWorkspace

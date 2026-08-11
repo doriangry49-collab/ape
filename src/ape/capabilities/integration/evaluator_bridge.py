@@ -4,10 +4,13 @@ Injects spoof-proof AuthorizationDecision verification into ToolExecutor Stage 3
 without modifying frozen ORION-117.0 contracts.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
-from ape.capabilities.integration.policy_gate import AuthorizationDecision, AuthorizationDecisionType
-from ape.tools.definition import RiskLevel, ToolDefinition, ToolPermission
+from ape.capabilities.integration.policy_gate import (
+    AuthorizationDecision,
+    AuthorizationDecisionType,
+)
+from ape.tools.definition import ToolDefinition, ToolPermission
 from ape.tools.policy import PolicyDecision, PolicyEvaluationResult, ToolPolicyEvaluator
 
 

@@ -1,7 +1,6 @@
 """Unit tests for CapabilityCheckStage."""
 
 from pathlib import Path
-import pytest
 
 from ape.pipeline.contracts import ExecutionContext, StageResult, StageStatus
 from ape.pipeline.stages.capability_check import (

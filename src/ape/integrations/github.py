@@ -4,14 +4,14 @@ Processes webhooks and executes REAL GitHub REST API v3 calls for branch creatio
 Tags execution mode explicitly as REAL or SIMULATED.
 """
 
-from dataclasses import dataclass
 import hashlib
 import hmac
 import json
 import os
-from typing import Any, Dict, Optional, Tuple
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 
 @dataclass

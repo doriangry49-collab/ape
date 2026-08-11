@@ -3,11 +3,15 @@ Anthropic Claude ProviderAdapter — ORION-112 Specification.
 Thin integration adapter for Anthropic Claude models using ProviderConfig and HTTPTransport abstraction.
 """
 
-from dataclasses import dataclass
 import time
 from typing import Any, Dict, Optional
 
-from ape.capabilities.adapters_base import ProviderAdapter, ProviderFeatureSet, ProviderHealth, ProviderHealthMonitor, ProviderProfile
+from ape.capabilities.adapters_base import (
+    ProviderFeatureSet,
+    ProviderHealth,
+    ProviderHealthMonitor,
+    ProviderProfile,
+)
 from ape.capabilities.config import ProviderConfig
 from ape.capabilities.contracts import CacheSource, CapabilityResult, ExecutionContext, FinishReason
 from ape.capabilities.transport import HTTPRequest, HTTPTransport, MockHTTPTransport

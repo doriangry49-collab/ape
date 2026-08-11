@@ -3,12 +3,11 @@ EffectivePolicyGate & Authorization Decision Binding — ORION-118 Specification
 Evaluates single unified authorization decision, 3-tier permission state taxonomy, and spoof-proof decision binding.
 """
 
+import hashlib
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import hashlib
-import json
-import time
-from typing import Any, Dict, List, Optional, Set
+from typing import List, Optional, Set
 
 from ape.capabilities.contracts import ExecutionContext, ExecutionPolicy
 from ape.tools.definition import RiskLevel, ToolDefinition, ToolPermission

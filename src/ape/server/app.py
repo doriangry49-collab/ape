@@ -6,14 +6,13 @@ Provides HTTP REST API endpoints and embedded Web Dashboard UI.
 from __future__ import annotations
 
 import json
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, Dict, Optional
-import urllib.parse
+from typing import Any, Optional
 
 from ape import __version__
 from ape.server.store import BuildStore
-
 
 DASHBOARD_HTML = """<!DOCTYPE html>
 <html lang="en">
@@ -461,6 +460,7 @@ class APEDashboardHTTPRequestHandler(BaseHTTPRequestHandler):
             task = req_data.get("task", "Produce Golden Path REST API")
             repo = req_data.get("repo", "acme/api-service")
             import hashlib
+
             from ape.integrations.github import GitHubWebhookHandler
             gh = GitHubWebhookHandler()
             pr_info = gh.create_pull_request(repo_name=repo, branch_name="ape/feature-branch", title=f"APE Auto Fix: {task}")

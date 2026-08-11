@@ -3,10 +3,10 @@ APE System Health & Diagnostic Engine (ape doctor) — Generation 7A / EPIC 7A-3
 Checks platform environment, database locks, worker registries, and marketplace signature integrity.
 """
 
-from dataclasses import dataclass, field
-from pathlib import Path
 import sys
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, List
 
 from ape.marketplace import MarketplaceIndex
 from ape.store.adapters.sqlite import SQLiteStoreAdapter

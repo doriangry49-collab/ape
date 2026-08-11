@@ -3,7 +3,8 @@ Agent Registry — RFC-022 / PR-A1 Specification.
 Manages and resolves Fabric Agents by specialized platform roles (planner, coder, qa, security, release).
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
+
 from ape.fabric.contracts import ApeAgent
 
 

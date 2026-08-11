@@ -3,7 +3,7 @@ KPI & Scorecard Engine — RFC-022 / Phase B2 Specification.
 Computes organization-wide productivity metrics and health indicators.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List
 
 

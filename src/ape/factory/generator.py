@@ -6,12 +6,11 @@ Generates, verifies via Quality OS, and packages new specialized Fabric Agents f
 from __future__ import annotations
 
 import hashlib
-import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
-from ape.fabric.contracts import AgentReport, ApeAgent
+from ape.fabric.contracts import AgentReport
 from ape.marketplace.contracts import MarketplacePackage
 from ape.marketplace.index import MarketplaceIndex
 from ape.quality import QualityRunner, ValidationContext

@@ -3,9 +3,8 @@ Publishing Department — ORION-106A Specification.
 Handles live product deployment provisioning and initial revenue tracking.
 """
 
-import hashlib
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ape.business.contracts import UnitReport
 from ape.business.units.base import BaseBusinessUnit

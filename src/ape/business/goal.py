@@ -3,10 +3,10 @@ Goal Root Strategic Domain Entity — ORION-105 Specification.
 Defines Goal as the root strategic driver of APE autonomous reasoning loops.
 """
 
-from dataclasses import dataclass, field
 import hashlib
 import time
-from typing import Any, Dict, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict
 
 
 @dataclass

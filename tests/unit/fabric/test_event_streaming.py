@@ -3,7 +3,6 @@ Unit tests for EventStreamEngine (EPIC G6-3).
 """
 
 import time
-import pytest
 
 from ape.fabric.streaming import EventStreamEngine, StreamEvent
 

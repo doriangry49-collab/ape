@@ -4,9 +4,10 @@ Unit tests for Plugin Loader and Versioning Guard (PR-P3 / PR-P4).
 
 import json
 from pathlib import Path
+
 import pytest
 
-from ape.plugins.exceptions import PluginIncompatibleError, PluginLoadError
+from ape.plugins.exceptions import PluginIncompatibleError
 from ape.plugins.loader import PluginLoader
 from ape.plugins.registry import ExtensionRegistry
 

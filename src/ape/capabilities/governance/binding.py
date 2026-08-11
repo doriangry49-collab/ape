@@ -3,10 +3,10 @@ Capability Binding Contract & Target Isolation — ORION-119.C & 119.5 Specifica
 Decouples Capability ID from execution binding_id and enforces target_id isolation.
 """
 
+import types
 from dataclasses import dataclass, field
 from enum import Enum
-import types
-from typing import Any, Dict, FrozenSet, List, Mapping, Optional, Tuple
+from typing import Any, FrozenSet, Mapping, Tuple
 
 from ape.tools.definition import ToolPermission
 

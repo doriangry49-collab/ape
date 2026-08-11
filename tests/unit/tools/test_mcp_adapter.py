@@ -4,7 +4,8 @@ Verifies MCPToolMapper schema security checks, structural output validation, MCP
 MCPToolAdapter RPC dispatching, and 7-stage ToolExecutor integration.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
 import pytest
 
 from ape.tools import (
@@ -17,7 +18,6 @@ from ape.tools import (
     ToolLifecycleStage,
     ToolResult,
 )
-from ape.tools.adapters.mcp.contracts import TransportConfig
 from ape.tools.adapters.mcp.transports import MCPTransport
 
 

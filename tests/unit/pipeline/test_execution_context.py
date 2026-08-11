@@ -1,6 +1,7 @@
 """Unit tests for BasePipelineContext, ResearchContext, and ExecutionContext."""
 
 import pytest
+
 from ape.pipeline.contracts import (
     BasePipelineContext,
     ExecutionContext,

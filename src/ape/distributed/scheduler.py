@@ -5,8 +5,8 @@ Dispatches tasks from priority queue to lease-validated worker nodes.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-from ape.distributed.contracts import TaskLease, WorkerInfo
+from typing import Any, Dict, Optional
+
 from ape.distributed.lease import LeaseManager
 from ape.distributed.queue import DistributedQueue
 from ape.distributed.registry import WorkerRegistry, get_default_worker_registry

@@ -1,7 +1,6 @@
 """Unit tests for SPEC-0018 AcquisitionExecutionStage."""
 
-import pytest
-from ape.pipeline.contracts import PipelineContext, StageResult, StageStatus
+from ape.pipeline.contracts import PipelineContext, StageStatus
 from ape.pipeline.stages.acquisition_execution import AcquisitionExecutionStage
 from ape.pipeline.stages.research_plan import ResearchPlanStage
 from ape.pipeline.stages.source_selection import SourceSelectionStage

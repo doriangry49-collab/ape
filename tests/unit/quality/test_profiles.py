@@ -3,9 +3,10 @@ Unit tests for Quality OS Profiles (PR-H1).
 """
 
 from pathlib import Path
+
 import pytest
 
-from ape.quality.contracts import ValidationContext, ValidationStatus
+from ape.quality.contracts import ValidationContext
 from ape.quality.profiles import QualityProfile, get_profile_validators, get_validator_weight
 from ape.quality.runner import QualityRunner
 

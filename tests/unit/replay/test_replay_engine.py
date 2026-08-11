@@ -4,7 +4,6 @@ Unit tests for Replay & Reproducibility Engine (PR-G1 / PR-G2).
 
 import json
 from pathlib import Path
-import pytest
 
 from ape.replay.engine import ReplayEngine, ReplayPlanner, ReplayReporter, ReplayVerifier
 from ape.replay.models import ReplayReport

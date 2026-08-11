@@ -3,7 +3,6 @@ Unit tests for Evidence Explorer (PR-K1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.explorer.tree import EvidenceTreeExplorer
 

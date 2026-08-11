@@ -4,13 +4,13 @@ Provides reference implementation of BaseToolAdapter for Python callables.
 Includes safe, deterministic reference tools (echo, structured_transform, deterministic_compute).
 """
 
-from dataclasses import dataclass
 import hashlib
-from typing import Any, Callable, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List
 
 from ape.tools.adapters.base import BaseToolAdapter
-from ape.tools.contracts import ToolCallPayload, ToolExecutionError, ToolResult
-from ape.tools.definition import RiskLevel, ToolDefinition, ToolPermission
+from ape.tools.contracts import ToolCallPayload, ToolResult
+from ape.tools.definition import RiskLevel, ToolDefinition
 
 
 @dataclass

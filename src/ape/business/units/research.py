@@ -3,7 +3,7 @@ Research Department — ORION-106A Specification.
 Scans market pain points, competitor offerings, and target market opportunities.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ape.business.contracts import UnitReport
 from ape.business.units.base import BaseBusinessUnit

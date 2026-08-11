@@ -13,7 +13,6 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ape.intelligence.execution.exceptions import PolicyExecutionBlockedError
 from ape.pipeline.contracts import (
     BasePipelineContext,
     ExecutionContext,

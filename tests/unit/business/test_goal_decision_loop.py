@@ -3,7 +3,6 @@ Unit tests for ORION-105 Goal-Driven Decision Loop & Autonomous Reasoning Engine
 Verifies Goal root entity, GoalReasoningEngine hypothesis formulation, capability matching, and VentureOutcome learning.
 """
 
-import pytest
 
 from ape.business import (
     Goal,

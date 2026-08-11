@@ -2,7 +2,6 @@
 Unit tests for RemoteMarketplaceRegistry (EPIC G6-4).
 """
 
-import pytest
 
 from ape.marketplace.contracts import MarketplacePackage
 from ape.marketplace.remote import RemoteMarketplaceRegistry

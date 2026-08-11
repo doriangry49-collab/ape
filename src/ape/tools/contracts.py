@@ -7,8 +7,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Optional, Protocol, runtime_checkable
 
-from ape.tools.definition import ToolDefinition
-
 
 class ToolLifecycleStage(str, Enum):
     """Canonical 7-stage lifecycle for Tool execution."""

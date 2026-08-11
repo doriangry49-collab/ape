@@ -103,6 +103,7 @@ class ReleaseDecisionStage(PipelineStage):
             )
 
         from pathlib import Path
+
         from ape.policy.engine import PolicyEngine
 
         project_root = getattr(context, "root", getattr(context, "project_root", Path.cwd()))

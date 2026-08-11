@@ -3,7 +3,6 @@ Unit tests for Production Deployment Assets (EPIC G8-2).
 """
 
 from pathlib import Path
-import pytest
 
 
 def test_deployment_assets_exist():

@@ -3,9 +3,9 @@ Distributed Kernel Contracts — RFC-022 / EPIC-10A Specification.
 Defines WorkerInfo, TaskLease, and QueueItem schemas for Distributed APE Kernel.
 """
 
-from dataclasses import dataclass, field
 import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 
 @dataclass

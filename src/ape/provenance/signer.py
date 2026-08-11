@@ -6,7 +6,6 @@ Computes SHA-256 digital signatures, Merkle tree lineage proofs, and provenance 
 from __future__ import annotations
 
 import hashlib
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 

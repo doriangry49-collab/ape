@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import json
-import re
 from datetime import UTC, datetime
-from typing import Any, Optional
+from typing import Any
 
 from ape import __version__
 from ape.intelligence.decision.engine import DecisionEngine

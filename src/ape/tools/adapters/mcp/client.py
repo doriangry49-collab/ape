@@ -5,7 +5,7 @@ Manages JSON-RPC 2.0 wire protocol requests and the MCP Session Lifecycle.
 
 from typing import Any, Dict, Optional
 
-from ape.tools.adapters.mcp.contracts import JSONRPCRequest, MCPSessionState
+from ape.tools.adapters.mcp.contracts import MCPSessionState
 from ape.tools.adapters.mcp.transports import MCPTransport
 
 

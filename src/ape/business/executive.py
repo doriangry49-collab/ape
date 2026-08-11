@@ -3,8 +3,9 @@ Executive Decision Layer — RFC-022 / Phase B3 Specification.
 Models CEOAgent, CTOAgent, and ExecutiveBoard to delegate strategic directives down to Business Units.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+
 from ape.business.contracts import UnitReport
 from ape.business.registry import BusinessUnitRegistry, get_default_business_unit_registry
 

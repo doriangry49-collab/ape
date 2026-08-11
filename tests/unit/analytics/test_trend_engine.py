@@ -3,7 +3,6 @@ Unit tests for Quality Trend Engine (PR-J1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.analytics.trend import QualityTrendEngine, QualityTrendReport
 

@@ -1,6 +1,5 @@
 """Unit tests for SPEC-0018 CapabilityValidationStage (SPEC-0012)."""
 
-import pytest
 from ape.pipeline.contracts import PipelineContext, StageResult, StageStatus
 from ape.pipeline.stages.acquisition_execution import AcquisitionExecutionStage
 from ape.pipeline.stages.capability_validation import CapabilityValidationStage

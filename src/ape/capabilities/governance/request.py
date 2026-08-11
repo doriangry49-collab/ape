@@ -3,9 +3,9 @@ Governed Entry Capability Request Contract & Isolation — ORION-119.G & 119.5 S
 Authoritative entry request contract prohibiting target execution primitive selection by callers.
 """
 
-from dataclasses import dataclass, field
 import types
-from typing import Any, Dict, Mapping, Optional
+from dataclasses import dataclass, field
+from typing import Any, Mapping, Optional
 
 from ape.capabilities.contracts import PolicyDeniedError
 

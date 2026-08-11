@@ -4,9 +4,9 @@ Provides decoupled CapabilityRegistry, ProviderRegistry, and CapabilityMatrix wi
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from ape.capabilities.adapters_base import ProviderAdapter, ProviderHealth, ProviderProfile
+from ape.capabilities.adapters_base import ProviderAdapter, ProviderHealth
 from ape.capabilities.contracts import CapabilityNotSupportedError, ProviderUnavailableError
 
 

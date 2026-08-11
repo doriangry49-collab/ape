@@ -2,7 +2,6 @@
 Unit tests for Business Unit Framework (Phase B1).
 """
 
-import pytest
 
 from ape.business.contracts import BusinessUnit
 from ape.business.registry import BusinessUnitRegistry

@@ -5,9 +5,9 @@ Thread-safe Pub/Sub Event Bus for real-time Fabric Agent notifications and dashb
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List
-import time
 
 
 @dataclass

@@ -1,4 +1,5 @@
 from typer.testing import CliRunner
+
 from ape.cli import app
 from ape.intelligence.report import MarketReportFormatter
 from ape.project import Project

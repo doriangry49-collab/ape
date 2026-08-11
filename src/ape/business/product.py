@@ -3,10 +3,10 @@ Product Domain Model — ORION-104 Venture-Centric Product Factory Specification
 Defines Product as a first-class value-producing domain entity.
 """
 
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class ProductStatus(str, Enum):

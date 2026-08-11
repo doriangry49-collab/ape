@@ -3,9 +3,7 @@ ExecutionOperation & Compensation Pattern — ORION-115 Specification.
 Defines ExecutionOperation Protocol supporting execute, rollback, and compensate.
 """
 
-from dataclasses import dataclass, field
-import time
-from typing import Any, Dict, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from ape.capabilities.contracts import ExecutionState
 

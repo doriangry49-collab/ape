@@ -3,9 +3,9 @@ Pytest Executable Validator — RFC-022 / PR-Q2 Specification.
 Executes pytest against test deliverables using SubprocessRunner and captures physical log evidence.
 """
 
-from pathlib import Path
 import sys
 import time
+from pathlib import Path
 from typing import Optional
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus

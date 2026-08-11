@@ -3,9 +3,9 @@ Provider Configuration & Capabilities Specification — ORION-112 / ORION-113.
 Defines ProviderFeatureSet, ProviderCapabilities, and ProviderConfig dataclasses.
 """
 
-from dataclasses import dataclass, field
 import os
-from typing import Dict, Optional
+from dataclasses import dataclass, field
+from typing import Dict
 
 
 @dataclass(frozen=True)

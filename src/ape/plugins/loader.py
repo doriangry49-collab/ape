@@ -106,7 +106,7 @@ class PluginLoader:
             try:
                 plugin = self.load_plugin_instance(ep_obj)
                 self.register_plugin(plugin)
-            except Exception as exc:
+            except Exception:
                 if self.strict_versioning:
                     raise
 

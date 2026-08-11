@@ -3,9 +3,8 @@ Unit tests for Agent Factory Engine (EPIC-11E).
 """
 
 from pathlib import Path
-import pytest
 
-from ape.factory import AgentFactoryEngine, GeneratedFabricAgent
+from ape.factory import AgentFactoryEngine
 from ape.marketplace import MarketplaceIndex
 
 

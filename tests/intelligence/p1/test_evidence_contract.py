@@ -1,6 +1,7 @@
 def test_evidence_requires_provenance():
-    from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, UNKNOWN
     import pytest
+
+    from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
     
     # Should raise error if provenance is missing when not using all_unknown
     with pytest.raises(TypeError):

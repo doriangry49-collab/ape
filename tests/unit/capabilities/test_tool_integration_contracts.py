@@ -5,11 +5,9 @@ Verifies CapabilityToolResolver, ToolCandidate, ToolResultExecutionMapper, Effec
 """
 
 from typing import Any, Dict, Optional
-import pytest
 
 from ape.capabilities import ExecutionContext, ExecutionPolicy
 from ape.capabilities.integration import (
-    AuthorizationDecision,
     AuthorizationDecisionType,
     CapabilityToolResolver,
     EffectivePolicyGate,

@@ -13,7 +13,6 @@ from ape.capabilities import (
     ExecutionContext,
     FinishReason,
     GeminiProviderAdapter,
-    HTTPTransport,
     MockHTTPTransport,
     OllamaProviderAdapter,
     OpenAIProviderAdapter,
@@ -22,7 +21,6 @@ from ape.capabilities import (
     ProviderConfig,
     ProviderFactory,
     ProviderHealth,
-    ProviderRegistry,
 )
 from ape.prompts import RenderedPrompt
 

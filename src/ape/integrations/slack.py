@@ -4,8 +4,8 @@ Broadcasts Quality OS release decisions to Slack channels with REAL HTTP deliver
 """
 
 import json
-from typing import Any, Dict, Optional
 import urllib.request
+from typing import Any, Dict, Optional
 
 
 class SlackNotifier:

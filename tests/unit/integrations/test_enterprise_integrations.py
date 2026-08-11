@@ -3,7 +3,6 @@ Unit tests for Real Enterprise Integrations (EPIC G8-1).
 """
 
 import json
-import pytest
 
 from ape.integrations import GitHubWebhookHandler, JiraSyncEngine, SlackNotifier
 

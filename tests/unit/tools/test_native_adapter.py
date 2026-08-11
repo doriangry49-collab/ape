@@ -4,7 +4,6 @@ Verifies NativeToolAdapter dispatch, error normalization, reference tools (echo,
 and 7-stage ToolExecutor lifecycle integration.
 """
 
-import pytest
 
 from ape.tools import (
     DefaultEvidenceSink,

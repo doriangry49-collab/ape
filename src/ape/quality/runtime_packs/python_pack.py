@@ -7,7 +7,6 @@ import os
 import subprocess
 import time
 import urllib.request
-from pathlib import Path
 from typing import Any, Optional, Tuple
 
 from ape.quality.contracts import ValidationContext

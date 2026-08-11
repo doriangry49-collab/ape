@@ -5,11 +5,11 @@ Orchestrates multi-agent execution sequences and handoffs across Fabric Agents.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-from ape.fabric.contracts import AgentReport, ApeAgent
+from typing import List, Optional
+
+from ape.fabric.contracts import AgentReport
 from ape.fabric.memory import SharedMemoryWorkspace
 from ape.fabric.registry import AgentRegistry, get_default_agent_registry
-from ape.fabric.state import AgentLifecycle, AgentStatus
 
 
 class AgentScheduler:

@@ -3,9 +3,9 @@ Event-Sourced ExecutionTrace & ExecutionTraceBuilder — ORION-114 / ORION-115 S
 Defines ExecutionTrace model and ExecutionTraceBuilder for immutable audit trace generation.
 """
 
-from dataclasses import dataclass, field
 import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 from ape.capabilities.resiliency.telemetry import RuntimeEvent
 

@@ -2,10 +2,9 @@
 
 import json
 from pathlib import Path
-import pytest
 
 from ape.pipeline.contracts import ExecutionContext, StageStatus
-from ape.pipeline.stages.policy_gate import DecisionRepository, PolicyGateStage
+from ape.pipeline.stages.policy_gate import PolicyGateStage
 
 
 def test_policy_gate_stage_build_success(tmp_path: Path):

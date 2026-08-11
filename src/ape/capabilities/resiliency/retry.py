@@ -4,12 +4,11 @@ Provides RetryStrategy interface, ExponentialBackoffStrategy, LinearBackoffStrat
 ImmediateRetryStrategy, NoRetryStrategy, and ProviderRetryOrchestrator.
 """
 
-from dataclasses import dataclass
 import random
 import time
-from typing import Any, Callable, Optional, Protocol, runtime_checkable
+from typing import Callable, Optional, Protocol, runtime_checkable
 
-from ape.capabilities.contracts import CapabilityResult, ProviderTimeoutError, ProviderUnavailableError
+from ape.capabilities.contracts import CapabilityResult, ProviderUnavailableError
 
 
 @runtime_checkable

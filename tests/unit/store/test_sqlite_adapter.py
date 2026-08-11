@@ -3,7 +3,6 @@ Unit tests for SQLiteStoreAdapter (EPIC G6-1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.store.adapters.sqlite import SQLiteStoreAdapter
 from ape.store.contracts import StoreRecord

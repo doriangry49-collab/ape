@@ -3,7 +3,6 @@ Unit tests for WorkspaceManager (PR-W1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.workspace.manager import WorkspaceManager
 

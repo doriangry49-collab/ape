@@ -4,7 +4,6 @@ Executes tasks locally within sub-process worker environments.
 """
 
 from typing import Any, Dict
-from ape.distributed.executors.base import BaseExecutor
 
 
 class LocalExecutor:

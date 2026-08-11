@@ -1,8 +1,10 @@
 import pytest
+
 from ape.intelligence.decision.bridge import InferenceBridge, _aggregate_observation
 from ape.intelligence.decision.constitution import ConstitutionValidator
-from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, UNKNOWN
+from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
 from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError, BudgetExhaustedError
+
 
 def test_aggregate_observation_truth_table():
     # Test C: Deterministic truth table semantics

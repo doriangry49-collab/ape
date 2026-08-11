@@ -3,7 +3,6 @@ Unit tests for Pluggable Language Runtime Packs (PR-E1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.quality.contracts import ValidationContext
 from ape.quality.runtime_packs.python_pack import PythonRuntimePack

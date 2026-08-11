@@ -6,6 +6,7 @@ Implements priority task queueing, retries, timeouts, and cancellations.
 from __future__ import annotations
 
 from typing import Dict, List, Optional
+
 from ape.distributed.contracts import QueueItem
 
 

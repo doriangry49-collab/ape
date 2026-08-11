@@ -3,9 +3,9 @@ ExecutionEventStore & Materialized MemorySnapshot — ORION-115 Specification.
 Defines StateEvent, ExecutionEventStore, and materialized MemorySnapshot for audit, replay, and simulation.
 """
 
-from dataclasses import dataclass, field
 import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 
 @dataclass(frozen=True)

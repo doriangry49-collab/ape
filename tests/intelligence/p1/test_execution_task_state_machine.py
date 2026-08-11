@@ -1,9 +1,10 @@
 import json
-import pytest
 from pathlib import Path
 
+import pytest
+
+from ape.intelligence.execution.engine import ExecutionEngine, _infer_action
 from ape.intelligence.execution.models import (
-    ExecutionState,
     ExecutionTask,
     TaskStatus,
 )
@@ -11,7 +12,6 @@ from ape.intelligence.execution.state import (
     InvalidTransitionError,
     TaskStateMachine,
 )
-from ape.intelligence.execution.engine import ExecutionEngine, _infer_action
 
 
 def test_task_status_denied_enum_exists():

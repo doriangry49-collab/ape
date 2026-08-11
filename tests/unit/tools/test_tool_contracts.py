@@ -5,6 +5,7 @@ BaseToolAdapter protocol, 7-stage ToolExecutor lifecycle, and abstract EvidenceS
 """
 
 from typing import List
+
 import pytest
 
 from ape.tools import (
@@ -13,12 +14,10 @@ from ape.tools import (
     DefaultEvidenceSink,
     PolicyDecision,
     RiskLevel,
-    ToolAuthorizationError,
     ToolCallPayload,
     ToolDefinition,
     ToolExecutor,
     ToolLifecycleStage,
-    ToolPermission,
     ToolRegistry,
     ToolResult,
     ToolScope,

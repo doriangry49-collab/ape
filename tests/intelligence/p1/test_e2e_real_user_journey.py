@@ -3,17 +3,17 @@ RFC-019 Real User Journey & Governed Autonomous Build Acceptance Tests.
 (RFC-019)
 """
 import json
-import sys
 import subprocess
+import sys
 from pathlib import Path
-import pytest
+
 from typer.testing import CliRunner
 
 from ape.cli import app
-from ape.utils import get_artifact_history
-from ape.intelligence.execution.engine import ExecutionEngine
 from ape.intelligence.execution.agent import ApeCoderAgent
+from ape.intelligence.execution.engine import ExecutionEngine
 from ape.intelligence.roadmap.llm import PlannerModel
+from ape.utils import get_artifact_history
 
 runner = CliRunner()
 

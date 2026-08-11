@@ -4,11 +4,16 @@ RFC-018 ReleaseGate Unit and Governance Tests.
 """
 import json
 import subprocess
-import pytest
-from pathlib import Path
 
-from ape.intelligence.execution.models import ExecutionState, ExecutionStatus, ExecutionTask, TaskStatus
-from ape.intelligence.execution.release import ReleaseGate, ReleaseProposal
+import pytest
+
+from ape.intelligence.execution.models import (
+    ExecutionState,
+    ExecutionStatus,
+    ExecutionTask,
+    TaskStatus,
+)
+from ape.intelligence.execution.release import ReleaseGate
 from ape.utils import get_artifact_history
 
 

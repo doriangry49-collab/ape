@@ -3,9 +3,8 @@ End-to-End Failure Recovery & Resilience Audit — Generation 7A / EPIC 7A-2 Spe
 Simulates real-world production outages (worker crash, lease expiration, db lock) and tests Fail-Closed recovery.
 """
 
-from pathlib import Path
 import time
-import pytest
+from pathlib import Path
 
 from ape.distributed.lease import LeaseManager
 from ape.distributed.queue import DistributedQueue

@@ -1,6 +1,6 @@
 def test_business_evidence_fields():
     # Attempt to import the newly requested BusinessEvidence
-    from ape.intelligence.models import BusinessEvidence, UNKNOWN
+    from ape.intelligence.models import UNKNOWN, BusinessEvidence
     
     # Create an instance to verify contract
     evidence = BusinessEvidence.all_unknown()
@@ -14,8 +14,9 @@ def test_business_evidence_fields():
     assert evidence.ai_solvability == UNKNOWN
     
 def test_opportunity_has_evidence_list():
-    from ape.intelligence.models import Opportunity
     from datetime import datetime
+
+    from ape.intelligence.models import Opportunity
     
     opp = Opportunity(
         title="Test",
@@ -33,8 +34,9 @@ def test_opportunity_has_evidence_list():
     assert isinstance(opp.business_evidence, list)
 
 def test_evidence_provenance_contract():
-    from ape.intelligence.models import EvidenceProvenance
     from datetime import datetime
+
+    from ape.intelligence.models import EvidenceProvenance
     
     prov = EvidenceProvenance(
         source_adapter="test",

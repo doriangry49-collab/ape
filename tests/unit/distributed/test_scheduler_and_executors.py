@@ -2,7 +2,6 @@
 Unit tests for DistributedScheduler and Worker Executors (EPIC-10A / EPIC-10B).
 """
 
-import pytest
 
 from ape.distributed.executors import DockerExecutor, LocalExecutor
 from ape.distributed.queue import DistributedQueue

@@ -1,6 +1,6 @@
 def test_web_search_adapter_contract():
-    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
     from ape.intelligence.models import UNKNOWN
+    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
     
     adapter = WebSearchAdapter()
     
@@ -14,8 +14,8 @@ def test_web_search_adapter_contract():
     assert ev.provenance is not None
 
 def test_complaint_adapter_contract():
-    from ape.intelligence.scanner.adapters.complaint_adapter import ComplaintAdapter
     from ape.intelligence.models import UNKNOWN
+    from ape.intelligence.scanner.adapters.complaint_adapter import ComplaintAdapter
     
     adapter = ComplaintAdapter()
     ev = adapter.process_mock_result("Şikayet: çok kötü hizmet")
@@ -25,8 +25,9 @@ def test_complaint_adapter_contract():
     assert ev.provenance is not None
 
 def test_serpapi_malformed_json_failure():
-    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter, AdapterError
     import pytest
+
+    from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError, WebSearchAdapter
     
     adapter = WebSearchAdapter()
     
@@ -60,8 +61,8 @@ def test_serpapi_valid_response_without_link():
     assert ev.manual_work_observation is True
 
 def test_serpapi_valid_json_undetermined_observation():
-    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
     from ape.intelligence.models import UNKNOWN
+    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
     
     adapter = WebSearchAdapter()
     
@@ -75,8 +76,9 @@ def test_serpapi_valid_json_undetermined_observation():
     assert ev.provenance.reference_url == "https://example.com"
 
 def test_serpapi_malformed_json_failure():
-    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter, AdapterError
     import pytest
+
+    from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError, WebSearchAdapter
     
     adapter = WebSearchAdapter()
     
@@ -85,11 +87,13 @@ def test_serpapi_malformed_json_failure():
         adapter.process_live_result("query", "invalid { json")
 
 def test_serpapi_network_failure_semantics():
-    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter, AdapterError
-    from unittest.mock import patch
-    import requests
-    import pytest
     import os
+    from unittest.mock import patch
+
+    import pytest
+    import requests
+
+    from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError, WebSearchAdapter
     
     adapter = WebSearchAdapter(max_requests=1)
     
@@ -100,10 +104,10 @@ def test_serpapi_network_failure_semantics():
             adapter._external_request("unique_failing_query")
 
 def test_serpapi_cache_hit_provenance_and_secret_safety():
-    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
-    from unittest.mock import patch
     import os
-    import pytest
+    from unittest.mock import patch
+
+    from ape.intelligence.scanner.adapters.web_search_adapter import WebSearchAdapter
     
     adapter = WebSearchAdapter(max_requests=1)
     test_query = "unique_secret_safety_query"

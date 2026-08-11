@@ -3,8 +3,7 @@ SharedSwarmMemory Store — ORION-116 Specification.
 Provides thread-safe in-memory state store for inter-agent context sharing.
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class SharedSwarmMemory:

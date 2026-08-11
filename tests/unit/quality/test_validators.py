@@ -2,14 +2,13 @@
 Unit tests for Quality OS Validators and Registry Engine.
 """
 
-from pathlib import Path
 import tempfile
-import pytest
+from pathlib import Path
 
 from ape.quality.contracts import ValidationContext, ValidationStatus
 from ape.quality.registry import ValidatorRegistry
-from ape.quality.validators.syntax import SyntaxValidator
 from ape.quality.validators.import_validator import ImportValidator
+from ape.quality.validators.syntax import SyntaxValidator
 
 
 def test_syntax_validator_valid_python():

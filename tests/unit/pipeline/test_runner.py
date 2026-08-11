@@ -1,6 +1,7 @@
 """Unit tests for SPEC-0018 Constitutional Pipeline Core Contracts & Runner."""
 
 import pytest
+
 from ape.pipeline.contracts import (
     PipelineContext,
     PipelineStage,

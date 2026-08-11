@@ -18,7 +18,6 @@ from ape.tools.contracts import (
     ToolLifecycleStage,
     ToolResult,
 )
-from ape.tools.definition import ToolDefinition
 from ape.tools.policy import PolicyDecision, ToolPolicyEvaluator
 from ape.tools.registry import ToolRegistry
 

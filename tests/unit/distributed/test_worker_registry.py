@@ -3,7 +3,6 @@ Unit tests for WorkerRegistry (EPIC-10A).
 """
 
 import time
-import pytest
 
 from ape.distributed.registry import WorkerRegistry
 

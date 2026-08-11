@@ -3,8 +3,9 @@ Planner Agent Reference Implementation — RFC-022 / PR-A6 Specification.
 Decomposes user topic into strategic execution tasks and registers execution plan in shared memory.
 """
 
-from typing import Any, List
-from ape.fabric.contracts import AgentReport, ApeAgent
+from typing import Any
+
+from ape.fabric.contracts import AgentReport
 from ape.fabric.memory import SharedMemoryWorkspace
 
 
@@ -23,7 +24,7 @@ class PlannerAgent:
         tasks = [
             {"id": "t1", "description": f"Research baseline architecture for {topic}"},
             {"id": "t2", "description": f"Generate core implementation files for {topic}"},
-            {"id": "t3", "description": f"Audit quality and execute test verification"},
+            {"id": "t3", "description": "Audit quality and execute test verification"},
         ]
         workspace_context.set("execution_plan", tasks)
         workspace_context.log_finding(self.name, self.role, f"Decomposed topic '{topic}' into {len(tasks)} tasks.")

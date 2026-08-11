@@ -1,12 +1,14 @@
 import json
-import pytest
 from pathlib import Path
-from ape.intelligence.decision.bridge import BridgeResult, InferenceBridge
+
+import pytest
+
+from ape.intelligence.decision.bridge import BridgeResult
 from ape.intelligence.decision.constitution import ConstitutionValidator
 from ape.intelligence.decision.engine import DecisionEngine
-from ape.intelligence.decision.models import DecisionReport, PolicyDecision, PolicyGateResult
+from ape.intelligence.decision.models import PolicyDecision
+from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
 from ape.intelligence.roadmap.engine import RoadmapGenerator
-from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, UNKNOWN
 
 
 def test_policy_decision_enum_properties():

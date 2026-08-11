@@ -3,7 +3,6 @@ Unit tests for Marketplace Core and Package Installer (EPIC-11A).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.marketplace import MarketplaceIndex, PackageInstaller
 

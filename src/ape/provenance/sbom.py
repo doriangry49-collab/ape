@@ -5,10 +5,8 @@ Generates SPDX 2.3 and CycloneDX 1.4 structured Software Bill of Materials.
 
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class SBOMGenerator:

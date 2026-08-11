@@ -3,7 +3,6 @@ Unit tests for Shared Memory Workspace and Observation Bus (PR-A4 / PR-A5).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.fabric.bus import FabricEvent, ObservationBus
 from ape.fabric.memory import SharedMemoryWorkspace

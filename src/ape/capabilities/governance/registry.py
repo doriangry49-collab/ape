@@ -4,9 +4,9 @@ Manages versioned capability descriptors, lifecycle states (ACTIVE, DEPRECATED, 
 and deterministic version resolution with fail-closed safeguards.
 """
 
-from enum import Enum
 import re
-from typing import Dict, List, Optional
+from enum import Enum
+from typing import Dict, Optional
 
 from ape.capabilities.contracts import CapabilityError
 from ape.capabilities.governance.descriptor import CapabilityDescriptor

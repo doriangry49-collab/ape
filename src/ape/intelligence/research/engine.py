@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import json
-import re
 import uuid
 from datetime import UTC, datetime
 
@@ -13,8 +11,8 @@ from ape.pipeline.stages.acquisition_execution import AcquisitionExecutionStage
 from ape.pipeline.stages.capability_validation import CapabilityValidationStage
 from ape.pipeline.stages.evidence_fusion import EvidenceFusionStage
 from ape.pipeline.stages.explainability import ExplainabilityStage
-from ape.pipeline.stages.research_plan import ResearchPlanStage
 from ape.pipeline.stages.research_persist import ResearchPersistStage
+from ape.pipeline.stages.research_plan import ResearchPlanStage
 from ape.pipeline.stages.source_selection import SourceSelectionStage
 from ape.project import Project
 

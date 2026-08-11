@@ -5,10 +5,8 @@ Browser -> Workspace -> Connect GitHub Repo -> Execute Task -> Quality OS PASS -
 """
 
 from pathlib import Path
-import pytest
 from unittest.mock import MagicMock
 
-from ape.integrations.github import GitHubWebhookHandler
 from ape.server.app import APEDashboardHTTPRequestHandler
 
 

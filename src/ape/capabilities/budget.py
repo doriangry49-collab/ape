@@ -3,7 +3,7 @@ Resource & Execution Budget Specification — ORION-111B.
 Provides immutable ExecutionBudget limits and mutable ExecutionUsage tracker with limit enforcement.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict
 
 from ape.capabilities.contracts import BudgetExceededError, CapabilityResult

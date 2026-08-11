@@ -1,7 +1,6 @@
 """Unit tests for VerificationStage."""
 
 from pathlib import Path
-import pytest
 
 from ape.pipeline.contracts import ExecutionContext, StageResult, StageStatus
 from ape.pipeline.stages.verification import VerificationStage

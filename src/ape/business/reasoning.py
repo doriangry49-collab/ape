@@ -4,9 +4,8 @@ Evaluates strategic goals, generates product form hypotheses, matches organizati
 and recommends Marketplace Business Model Packs.
 """
 
-from dataclasses import dataclass, field
-import hashlib
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import List, Optional
 
 from ape.business.goal import Goal
 from ape.business.product import ProductType

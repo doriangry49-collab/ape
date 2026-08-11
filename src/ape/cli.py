@@ -613,6 +613,7 @@ def explain_cmd(
 ) -> None:
     """Render human-readable Constitutional Explainability Narrative (Why, How, Evidence, Policy, Quality Drivers)."""
     import json
+
     from ape.utils import get_current_artifact, slugify
 
     project = load_project()
@@ -636,18 +637,18 @@ def explain_cmd(
     typer.echo("")
     typer.echo(f"APE Constitutional Explainability Narrative: '{topic}'")
     typer.echo(_hr())
-    typer.echo(f"1. WHY THIS DECISION?")
+    typer.echo("1. WHY THIS DECISION?")
     typer.echo(f"   • Policy Decision  : {dec_data.get('decision')} (Policy: {dec_data.get('policy')})")
     typer.echo(f"   • Opportunity Score: {dec_data.get('overall_score')}/100")
     typer.echo(f"   • Confidence Score : {dec_data.get('confidence')}%")
     typer.echo(f"   • Primary Rationale: {', '.join(dec_data.get('rationale', []))}")
     typer.echo("")
-    typer.echo(f"2. WHICH EVIDENCE SUPPORTED THIS?")
+    typer.echo("2. WHICH EVIDENCE SUPPORTED THIS?")
     typer.echo(f"   • Evidence Hash    : {dec_data.get('evidence_hash')}")
     typer.echo(f"   • Signal Sources   : {', '.join(res_data.get('sources', ['N/A']))}")
     typer.echo(f"   • Target Audience  : {', '.join(res_data.get('fused_signals', {}).get('target_audience', ['N/A']))}")
     typer.echo("")
-    typer.echo(f"3. HOW WAS IT EXECUTED?")
+    typer.echo("3. HOW WAS IT EXECUTED?")
     typer.echo(f"   • Execution Status : {exec_data.get('status', 'NOT_STARTED')}")
     typer.echo(f"   • Execution ID     : {exec_data.get('execution_id', 'N/A')}")
     typer.echo(f"   • Tasks Total      : {len(exec_data.get('tasks', []))}")
@@ -655,16 +656,16 @@ def explain_cmd(
 
     if qual_data:
         typer.echo("")
-        typer.echo(f"4. QUALITY OS CONFIDENCE DRIVERS")
+        typer.echo("4. QUALITY OS CONFIDENCE DRIVERS")
         typer.echo(f"   • Release Confidence: {qual_data.get('release_confidence', 100.0):.2f}%")
         typer.echo(f"   • Risk Level        : {qual_data.get('risk_level', 'LOW')}")
         typer.echo(f"   • Quality Profile   : {qual_data.get('quality_profile', 'STANDARD').upper()}")
-        typer.echo(f"   • Drivers Breakdown :")
+        typer.echo("   • Drivers Breakdown :")
         for reason in qual_data.get("confidence_reasons", []):
             typer.echo(f"       {reason}")
 
         if qual_data.get("score_weights"):
-            typer.echo(f"   • Confidence Formula Weights:")
+            typer.echo("   • Confidence Formula Weights:")
             weights_str = " | ".join(f"{k.capitalize()}: {v:.0f}" for k, v in qual_data["score_weights"].items())
             typer.echo(f"       {weights_str}")
 
@@ -692,6 +693,7 @@ def inspect_cmd(
 ) -> None:
     """Inspect immutable governance evidence lineage and audit trail."""
     import json
+
     from ape.utils import slugify
 
     project = load_project()
@@ -763,6 +765,7 @@ def dashboard_cmd(
 ) -> None:
     """Launch live APE Observability Web Dashboard backend & UI server."""
     import webbrowser
+
     from ape.server import run_dashboard_server
 
     project = load_project()
@@ -883,6 +886,7 @@ def worker_start_cmd(
 ) -> None:
     """Start and register a local distributed worker node."""
     import socket
+
     from ape.distributed import get_default_worker_registry
 
     hostname = socket.gethostname()
@@ -956,7 +960,7 @@ def factory_generate_cmd(
     meta = engine.generate_agent(role=role, capabilities=[f"{role}_capability"], description=description)
 
     typer.echo("")
-    typer.echo(f"Agent Factory Engine — Generated New Agent")
+    typer.echo("Agent Factory Engine — Generated New Agent")
     typer.echo(_hr())
     typer.echo(f"  • Agent Name       : {meta.agent_name}")
     typer.echo(f"  • Role             : {meta.role}")
@@ -1021,8 +1025,8 @@ def venture_run(
 @venture_app.command("list")
 def venture_list() -> None:
     """List active venture workspace manifests (Single Source of Truth)."""
-    from pathlib import Path
     import json
+    from pathlib import Path
 
     ventures_dir = Path(".build/ventures")
     if not ventures_dir.exists():
@@ -1048,8 +1052,8 @@ def venture_status(
     venture_id: str = typer.Option(..., "--venture-id", "-v", help="Venture workspace ID"),
 ) -> None:
     """Inspect execution.json manifest for a specific venture workspace."""
-    from pathlib import Path
     import json
+    from pathlib import Path
 
     manifest = Path(".build/ventures") / venture_id / "execution.json"
     if not manifest.exists():
@@ -1085,8 +1089,8 @@ def venture_package(
 @venture_app.command("history")
 def venture_history() -> None:
     """Display formatted execution history and metric summaries for past ventures."""
-    from pathlib import Path
     import json
+    from pathlib import Path
 
     ventures_dir = Path(".build/ventures")
     if not ventures_dir.exists():
@@ -1115,8 +1119,8 @@ def venture_show(
     venture_id: str = typer.Option(..., "--venture-id", "-v", help="Venture workspace ID"),
 ) -> None:
     """Display detailed DAG step timeline, structured event log, and SHA256 artifact index."""
-    from pathlib import Path
     import json
+    from pathlib import Path
 
     manifest = Path(".build/ventures") / venture_id / "execution.json"
     if not manifest.exists():

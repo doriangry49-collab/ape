@@ -6,14 +6,13 @@ Parses declared dependencies in requirements.txt or pyproject.toml and cross-ref
 from __future__ import annotations
 
 import ast
-from pathlib import Path
 import sys
 import time
-from typing import Any, Dict, List, Optional, Set
+from pathlib import Path
+from typing import List, Optional, Set
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus
 from ape.quality.runner import SubprocessRunner
-
 
 # Standard library module names in Python 3
 STD_LIB = sys.stdlib_module_names if hasattr(sys, "stdlib_module_names") else {

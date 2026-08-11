@@ -5,7 +5,7 @@ Defines ArtifactType enum and ExecutionArtifact model for multi-modal output man
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class ArtifactType(str, Enum):

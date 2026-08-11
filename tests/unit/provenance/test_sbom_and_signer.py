@@ -3,7 +3,6 @@ Unit tests for SBOM Generator and Artifact Signer (PR-L1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.provenance.sbom import SBOMGenerator
 from ape.provenance.signer import ArtifactSigner

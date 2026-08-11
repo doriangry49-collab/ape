@@ -2,7 +2,6 @@
 Unit tests for TopicDAGEngine (PR-W3 / PR-W4).
 """
 
-import pytest
 
 from ape.workspace.dag import TopicDAGEngine
 

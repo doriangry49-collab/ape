@@ -1,7 +1,6 @@
 """Unit tests for ExecutionEvidenceStage."""
 
 from pathlib import Path
-import pytest
 
 from ape.pipeline.contracts import ExecutionContext, StageResult, StageStatus
 from ape.pipeline.stages.execution_evidence import ExecutionEvidenceStage

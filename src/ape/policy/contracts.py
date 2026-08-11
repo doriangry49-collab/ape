@@ -4,7 +4,7 @@ Defines ReleasePolicy and PolicyEvaluationResult data structures.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
+from typing import Any, List
 
 
 @dataclass

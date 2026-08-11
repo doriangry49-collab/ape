@@ -3,11 +3,11 @@ SwarmOrchestrator & In-Memory Swarm Runtime — ORION-116 Specification.
 Orchestrates single-process multi-agent swarm collaboration (Architect, Coder, QA, Auditor) using SwarmMessageBus and SharedSwarmMemory.
 """
 
-from dataclasses import dataclass, field
 import time
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from ape.capabilities import CapabilityBroker, ExecutionContext, ExecutionRequest
+from ape.capabilities import CapabilityBroker, ExecutionContext
 from ape.fabric.agent_node import (
     AgentNode,
     AgentResponse,
@@ -56,12 +56,38 @@ class SwarmOrchestrator:
         """Register a custom AgentNode for a specific role."""
         self._agents[agent_node.role] = agent_node
 
-    def execute_swarm_goal(self, goal: str, context: Optional[ExecutionContext] = None) -> SwarmOutcome:
-        """Execute a goal sequentially across Architect -> Coder -> QA -> Auditor swarm agent nodes."""
+    def execute_swarm_goal(
+        self,
+        goal: str,
+        context: Optional[ExecutionContext] = None,
+        governed_capability_id: Optional[str] = None,
+    ) -> SwarmOutcome:
+        """Execute a goal sequentially across Architect -> Coder -> QA -> Auditor swarm agent nodes with optional governed capability execution."""
         start_time = time.time()
         responses: List[AgentResponse] = []
 
+        ctx = context or ExecutionContext(
+            execution_id=f"ex_swarm_{int(time.time())}",
+            venture_id="venture_default",
+            trace_id=f"tr_swarm_{int(time.time())}",
+            workspace_id="workspace_default",
+        )
+
+        if governed_capability_id:
+            from ape.capabilities.governance.request import CapabilityRequest
+            req = CapabilityRequest(
+                request_id=f"req_swarm_{int(time.time())}",
+                capability_id=governed_capability_id,
+                input_payload={"goal": goal},
+                caller_identity="swarm_orchestrator",
+                context_id=ctx.execution_id,
+            )
+            planner = getattr(self.capability_broker, "governed_planner", None)
+            self.capability_broker.execute_capability(req, ctx, governed_planner=planner)
+
+
         execution_sequence = [AgentRole.ARCHITECT, AgentRole.CODER, AgentRole.QA, AgentRole.AUDITOR]
+
 
         for role in execution_sequence:
             agent = self._agents[role]

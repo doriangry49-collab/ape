@@ -4,8 +4,6 @@ Tests SubprocessRunner, TimeoutManager, PytestValidator, SmokeValidator, and Qua
 """
 
 from pathlib import Path
-import tempfile
-import pytest
 
 from ape.quality.contracts import ValidationContext, ValidationStatus
 from ape.quality.runner import QualityRunner, SubprocessRunner, TimeoutManager

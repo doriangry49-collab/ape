@@ -3,11 +3,17 @@ RFC-020 Execution Boundary Safety & Visibility Unit Tests.
 (RFC-020)
 """
 import json
+
 import pytest
-from pathlib import Path
-from ape.intelligence.execution.policy import validate_path_containment
+
 from ape.intelligence.execution.engine import ExecutionEngine
-from ape.intelligence.execution.models import ExecutionState, ExecutionStatus, ExecutionTask, TaskStatus
+from ape.intelligence.execution.models import (
+    ExecutionState,
+    ExecutionStatus,
+    ExecutionTask,
+    TaskStatus,
+)
+from ape.intelligence.execution.policy import validate_path_containment
 from ape.intelligence.execution.release import ReleaseGate
 
 

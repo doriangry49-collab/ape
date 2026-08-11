@@ -3,7 +3,6 @@ Unit tests for LeaseManager and DistributedQueue (EPIC-10A).
 """
 
 import time
-import pytest
 
 from ape.distributed.lease import LeaseManager
 from ape.distributed.queue import DistributedQueue

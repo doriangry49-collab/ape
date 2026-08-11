@@ -6,13 +6,12 @@ Performs AST static security inspection and secret scanning across deliverable c
 from __future__ import annotations
 
 import ast
-from pathlib import Path
 import re
 import time
-from typing import Any, Dict, List, Optional, Set
+from pathlib import Path
+from typing import List
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus
-
 
 # High-entropy API key and credential detection regex patterns
 SECRET_PATTERNS = [

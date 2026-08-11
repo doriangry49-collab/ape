@@ -3,11 +3,11 @@ Typed Artifact Bundle Schemas — ORION-106B Specification.
 Decouples Business Unit logic from raw File I/O by defining strongly typed ArtifactBundle domain objects.
 """
 
-from dataclasses import dataclass, field
 import hashlib
 import json
 import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -79,7 +79,7 @@ class BuildArtifactBundle(ArtifactBundle):
             ),
             ArtifactFile(
                 relative_path="repo/Dockerfile",
-                content=f'FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nCMD ["python", "repo/src/main.py"]\n',
+                content='FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nCMD ["python", "repo/src/main.py"]\n',
             ),
             ArtifactFile(
                 relative_path="repo/README.md",

@@ -6,7 +6,6 @@ Defines ExecutionPlanner Protocol and StandardExecutionPlanner converting Execut
 from typing import Any, Protocol, runtime_checkable
 
 from ape.capabilities.graph import ExecutionGraph, ExecutionNode
-from ape.capabilities.operation import ProviderOperation
 from ape.capabilities.pipeline import (
     AdapterExecutionStage,
     PolicyEnforcementStage,

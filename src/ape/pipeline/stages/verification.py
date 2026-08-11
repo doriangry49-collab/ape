@@ -10,11 +10,9 @@ Stage Purity: Read-only verification stage. Performs deliverable checks and retu
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from ape.intelligence.execution.verifier import DeliverableVerifier
-from ape.quality.contracts import ValidationContext
-from ape.quality.runner import QualityRunner
 from ape.pipeline.contracts import (
     BasePipelineContext,
     ExecutionContext,
@@ -22,6 +20,8 @@ from ape.pipeline.contracts import (
     StageResult,
     StageStatus,
 )
+from ape.quality.contracts import ValidationContext
+from ape.quality.runner import QualityRunner
 
 
 class VerificationStage(PipelineStage):

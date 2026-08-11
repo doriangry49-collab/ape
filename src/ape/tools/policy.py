@@ -5,7 +5,7 @@ Evaluates authorization, required permissions, risk tiers, and human approval ga
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import List, Optional, Set
 
 from ape.tools.definition import RiskLevel, ToolDefinition, ToolPermission
 

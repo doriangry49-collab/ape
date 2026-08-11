@@ -5,16 +5,11 @@ SwarmMessageBus in-memory pub/sub, SharedSwarmMemory state store, and custom Age
 """
 
 from typing import Any
-import pytest
 
 from ape.fabric import (
     AgentResponse,
     AgentRole,
-    ArchitectAgentNode,
-    AuditorAgentNode,
     BaseAgentNode,
-    CoderAgentNode,
-    QAAgentNode,
     SharedSwarmMemory,
     SwarmMessage,
     SwarmMessageBus,

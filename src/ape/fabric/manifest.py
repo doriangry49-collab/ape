@@ -4,7 +4,7 @@ Defines AgentManifest structure for declarative agent roles and capabilities.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 @dataclass

@@ -4,8 +4,8 @@ Verifies generic ExecutionRuntime resilience, retry with exponential backoff, ti
 CancellationToken signals, department-slug checkpointing, runtime event hooks, and MockLLMProvider execution.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -18,7 +18,6 @@ from ape.runtime import (
     MockLLMProvider,
     RetryPolicy,
     RuntimeEventHooks,
-    TimeoutPolicy,
 )
 
 

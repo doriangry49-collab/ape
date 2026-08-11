@@ -3,16 +3,13 @@ Unit tests for ORION-106B Typed Artifact Bundle Architecture & ArtifactAssembler
 Verifies Research, Build, Marketing, and Deployment ArtifactBundles, and ArtifactAssembler materialization to disk and ZIP archives.
 """
 
-from pathlib import Path
 import tempfile
 import zipfile
-
-import pytest
+from pathlib import Path
 
 from ape.business import (
     ArtifactAssembler,
     BuildArtifactBundle,
-    DeploymentArtifactBundle,
     MarketingArtifactBundle,
     ResearchArtifactBundle,
 )

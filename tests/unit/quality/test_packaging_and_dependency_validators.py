@@ -3,12 +3,9 @@ Unit tests for Capability Milestone C: Packaging, Dependency, and Release Confid
 """
 
 from pathlib import Path
-import pytest
 
 from ape.quality.contracts import (
-    QualityReport,
     ValidationContext,
-    ValidationResult,
     ValidationStatus,
 )
 from ape.quality.runner import QualityRunner

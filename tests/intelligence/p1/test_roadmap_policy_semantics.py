@@ -5,12 +5,9 @@ Verifies that RoadmapGenerator produces policy-appropriate milestone tracks
 and that Roadmap carries the policy_decision and decision_id fields.
 """
 import json
-import pytest
 from pathlib import Path
 
 from ape.intelligence.roadmap.engine import RoadmapGenerator
-from ape.intelligence.roadmap.models import Roadmap
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Test helpers

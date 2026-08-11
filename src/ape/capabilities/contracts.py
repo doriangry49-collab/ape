@@ -4,9 +4,9 @@ Defines CapabilityError hierarchy, ExecutionPolicy, ExecutionContext, RuntimeCon
 FinishReason, CacheSource, CapabilityResult, ExecutionState, and unified ExecutionResult.
 """
 
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
 from typing import Any, Dict, Iterator, List, Optional
 
 from ape.capabilities.artifacts import ExecutionArtifact

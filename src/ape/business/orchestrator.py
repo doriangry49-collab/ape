@@ -4,10 +4,10 @@ Provides pure workflow orchestration, dependency injection, lifecycle hooks, and
 the canonical execution.json manifest to disk.
 """
 
-from dataclasses import dataclass, field
 import json
-from pathlib import Path
 import time
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from ape.business.artifacts import (
@@ -16,10 +16,8 @@ from ape.business.artifacts import (
     MarketingArtifactBundle,
     ResearchArtifactBundle,
 )
-from ape.business.assembler import ArtifactAssembler
 from ape.business.goal import Goal
-from ape.business.product import ProductType
-from ape.business.reasoning import GoalReasoningEngine, ReasoningDecision
+from ape.business.reasoning import GoalReasoningEngine
 from ape.business.units.engineering import EngineeringUnit
 from ape.business.units.marketing import MarketingDepartment
 from ape.business.units.publishing import PublishingDepartment

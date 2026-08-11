@@ -3,9 +3,9 @@ Venture Outcome Domain Entity — ORION-105 Specification.
 Tracks operational venture outcome state (RUNNING, VALIDATED, REJECTED, SCALING).
 """
 
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
 from typing import Any, Dict, List
 
 

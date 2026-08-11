@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import List
 
 from ape.utils import slugify
 
@@ -39,7 +39,7 @@ class EvidenceTreeExplorer:
         lines.append("├── 1. Research Signals")
         lines.append("│   └── Fused Market Signals & Confidence Score")
         lines.append("├── 2. Policy Decision Gate")
-        lines.append(f"│   └── Decision: BUILD (Policy: ExecutionPolicy)")
+        lines.append("│   └── Decision: BUILD (Policy: ExecutionPolicy)")
         lines.append("├── 3. Execution Lineage")
         tasks_count = len(exec_data.get("tasks", []))
         lines.append(f"│   └── State: COMPLETED ({tasks_count} tasks verified)")

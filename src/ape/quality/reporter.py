@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
-from ape.quality.contracts import QualityReport, ValidationResult
+from ape.quality.contracts import QualityReport
 
 
 class QualityReportCollector:

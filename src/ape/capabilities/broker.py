@@ -3,33 +3,30 @@ CapabilityBroker Pure Facade — ORION-111B / ORION-112 / ORION-113 / ORION-114 
 Pure facade delegating request planning to ExecutionPlanner, scheduling to ExecutionScheduler, and execution to ExecutionEngine.
 """
 
-from dataclasses import dataclass, field
-import time
-from typing import Any, Callable, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Optional
 
-from ape.capabilities.adapters_base import ProviderAdapter, ProviderFeatureSet, ProviderProfile
 from ape.capabilities.budget import ExecutionBudget, ExecutionUsage
 from ape.capabilities.contracts import (
     CapabilityResult,
     ExecutionContext,
     ExecutionPolicy,
     ExecutionResult,
-    ExecutionState,
-    RuntimeContext,
 )
 from ape.capabilities.pipeline import (
-    AdapterExecutionStage,
     ExecutionEngine,
-    PolicyEnforcementStage,
-    ResolveCandidateStage,
-    StrategySelectionStage,
 )
 from ape.capabilities.planner import ExecutionPlanner, StandardExecutionPlanner
-from ape.capabilities.registry import CapabilityMatrix, CapabilityRegistry, ProviderRegistry, ProviderScore
-from ape.capabilities.request import ExecutionMode, ExecutionRequest
-from ape.capabilities.resiliency import EventBus, ProviderCircuitBreaker, ProviderRetryOrchestrator, RetryStrategy, RuntimeEvent
+from ape.capabilities.registry import CapabilityMatrix, CapabilityRegistry, ProviderRegistry
+from ape.capabilities.request import ExecutionRequest
+from ape.capabilities.resiliency import (
+    EventBus,
+    ProviderCircuitBreaker,
+    RetryStrategy,
+    RuntimeEvent,
+)
 from ape.capabilities.scheduler import ExecutionScheduler, SequentialScheduler
-from ape.capabilities.selection import LowestCostStrategy, ProviderSelectionStrategy
+from ape.capabilities.selection import ProviderSelectionStrategy
 from ape.prompts.template import RenderedPrompt
 
 

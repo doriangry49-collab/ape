@@ -5,10 +5,11 @@ Instantiates and loads Fabric Agents into AgentRegistry.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
+
 from ape.fabric.contracts import ApeAgent
 from ape.fabric.registry import AgentRegistry, get_default_agent_registry
-from ape.fabric.state import AgentLifecycle, AgentStatus
+from ape.fabric.state import AgentLifecycle
 
 
 class AgentLoader:

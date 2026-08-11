@@ -1,9 +1,10 @@
-import pytest
 import json
+
+import pytest
+
 from ape.intelligence.roadmap.engine import RoadmapGenerator
-from ape.intelligence.roadmap.contracts import PlannerProposal, PlannerMilestone, PlannerTask
 from ape.intelligence.roadmap.llm import PlannerModel
-from ape.project import Project
+
 
 class MockPlannerModel(PlannerModel):
     def __init__(self, response_dict: dict, should_fail: bool = False):
@@ -47,7 +48,6 @@ def setup_project(tmp_path):
     return project_root
 
 def test_planner_happy_path(setup_project, monkeypatch):
-    from ape.intelligence.roadmap.planner import IntelligentPlanner
     from ape.intelligence.roadmap.engine import RoadmapGenerator
     
     valid_response = {

@@ -3,9 +3,8 @@ Unit tests for Capability M Centralized State & Store.
 """
 
 from pathlib import Path
-import pytest
 
-from ape.store import ArtifactStore, StateStore, StoreRecord
+from ape.store import ArtifactStore, StateStore
 
 
 def test_artifact_store_thread_safe_persistence(tmp_path: Path):

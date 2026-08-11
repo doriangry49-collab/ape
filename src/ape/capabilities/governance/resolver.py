@@ -4,12 +4,11 @@ Provides authoritative server-side resolution mapping CapabilityDescriptor to Ca
 without allowing caller/agent selection overrides.
 """
 
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
 from ape.capabilities.contracts import CapabilityError
-from ape.capabilities.governance.binding import BindingType, CapabilityBinding
+from ape.capabilities.governance.binding import CapabilityBinding
 from ape.capabilities.governance.descriptor import CapabilityDescriptor
-from ape.tools.definition import ToolPermission
 
 
 class UnresolvableBindingError(CapabilityError):

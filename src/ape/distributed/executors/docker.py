@@ -4,7 +4,6 @@ Executes tasks inside isolated Docker containers.
 """
 
 from typing import Any, Dict
-from ape.distributed.executors.base import BaseExecutor
 
 
 class DockerExecutor:

@@ -1,7 +1,6 @@
 """Unit tests for SPEC-0018 EvidenceFusionStage."""
 
-import pytest
-from ape.pipeline.contracts import PipelineContext, StageResult, StageStatus
+from ape.pipeline.contracts import PipelineContext, StageStatus
 from ape.pipeline.stages.acquisition_execution import AcquisitionExecutionStage
 from ape.pipeline.stages.capability_validation import CapabilityValidationStage
 from ape.pipeline.stages.evidence_fusion import EvidenceFusionStage

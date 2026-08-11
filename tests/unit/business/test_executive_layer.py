@@ -2,7 +2,6 @@
 Unit tests for Executive Decision Layer (Phase B3).
 """
 
-import pytest
 
 from ape.business.executive import ExecutiveBoard
 from ape.business.registry import BusinessUnitRegistry

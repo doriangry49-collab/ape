@@ -3,7 +3,6 @@ Unit tests for Capability Milestone D: Security & Boundary Containment Engine.
 """
 
 from pathlib import Path
-import pytest
 
 from ape.quality.contracts import ValidationContext, ValidationStatus
 from ape.quality.runner import QualityRunner

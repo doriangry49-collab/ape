@@ -4,12 +4,16 @@ Provides ExecutionStage Protocol (before, execute, after, rollback), ExecutionMi
 and DAG-ready ExecutionEngine stage runner.
 """
 
-from dataclasses import dataclass, field
 import time
-from typing import Any, Callable, Dict, List, Optional, Protocol, runtime_checkable
+from typing import Any, Callable, List, Optional, Protocol, runtime_checkable
 
 from ape.capabilities.adapters_base import ProviderFeatureSet
-from ape.capabilities.contracts import ExecutionResult, ExecutionState, ProviderUnavailableError, RuntimeContext
+from ape.capabilities.contracts import (
+    ExecutionResult,
+    ExecutionState,
+    ProviderUnavailableError,
+    RuntimeContext,
+)
 from ape.capabilities.resiliency import CircuitBreakerState, ProviderEndpointKey, RuntimeEvent
 from ape.capabilities.selection import LowestCostStrategy, ProviderSelectionStrategy
 from ape.capabilities.trace import ExecutionTrace

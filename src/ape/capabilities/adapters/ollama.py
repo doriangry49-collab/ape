@@ -4,11 +4,15 @@ Thin integration adapter for Local Ollama models using ProviderConfig and HTTPTr
 Zero token cost ($0.00).
 """
 
-from dataclasses import dataclass
 import time
 from typing import Any, Dict, Optional
 
-from ape.capabilities.adapters_base import ProviderAdapter, ProviderFeatureSet, ProviderHealth, ProviderHealthMonitor, ProviderProfile
+from ape.capabilities.adapters_base import (
+    ProviderFeatureSet,
+    ProviderHealth,
+    ProviderHealthMonitor,
+    ProviderProfile,
+)
 from ape.capabilities.config import ProviderConfig
 from ape.capabilities.contracts import CacheSource, CapabilityResult, ExecutionContext, FinishReason
 from ape.capabilities.transport import HTTPRequest, HTTPTransport, MockHTTPTransport

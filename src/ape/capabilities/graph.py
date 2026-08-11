@@ -4,7 +4,7 @@ Defines ExecutionNode, ExecutionEdge, and pure data structure ExecutionGraph wit
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 
 @dataclass

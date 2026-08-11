@@ -4,10 +4,9 @@ Tests all 20 contract invariants, fail-closed safeguards, deep immutability,
 and nested mutation attack resistance.
 """
 
-from typing import Any, Dict
 import pytest
 
-from ape.capabilities import ExecutionContext, ExecutionPolicy
+from ape.capabilities import ExecutionContext
 from ape.capabilities.contracts import PolicyDeniedError
 from ape.capabilities.governance import (
     BindingType,
@@ -19,7 +18,6 @@ from ape.capabilities.governance import (
     CapabilityPolicyEvaluator,
     CapabilityRegistry,
     CapabilityRequest,
-    CapabilityType,
     CompositeCapabilityDefinition,
     UnresolvableVersionError,
 )

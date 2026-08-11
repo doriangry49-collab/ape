@@ -3,7 +3,6 @@ Unit tests for Capability Milestone F: Runtime Verification Engine & Explainable
 """
 
 from pathlib import Path
-import pytest
 
 from ape.quality.contracts import ValidationContext, ValidationStatus
 from ape.quality.runner import QualityRunner

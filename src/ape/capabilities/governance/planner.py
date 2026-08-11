@@ -4,9 +4,9 @@ Translates CapabilityRequest into governed ExecutionGraph with upfront Risk Aggr
 Single Authorization Decision, and zero caller target selection bypass.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
-from ape.capabilities.contracts import ExecutionContext, ExecutionState, PolicyDeniedError
+from ape.capabilities.contracts import ExecutionContext, ExecutionState
 from ape.capabilities.governance.binding import BindingType, CapabilityBinding
 from ape.capabilities.governance.composite import CompositeCapabilityDefinition
 from ape.capabilities.governance.descriptor import CapabilityDescriptor, CapabilityType
@@ -15,14 +15,17 @@ from ape.capabilities.governance.registry import CapabilityRegistry
 from ape.capabilities.governance.request import CapabilityRequest
 from ape.capabilities.governance.resolver import CapabilityBindingResolver
 from ape.capabilities.graph import ExecutionGraph, ExecutionNode
-from ape.capabilities.integration.contracts import ToolExecutionEvent, ToolResultExecutionMapper
+from ape.capabilities.integration.contracts import ToolResultExecutionMapper
 from ape.capabilities.integration.evaluator_bridge import EffectiveToolPolicyEvaluator
-from ape.capabilities.integration.policy_gate import AuthorizationDecision, AuthorizationDecisionType, EffectivePolicyGate
+from ape.capabilities.integration.policy_gate import (
+    AuthorizationDecision,
+    AuthorizationDecisionType,
+)
 from ape.capabilities.integration.stage import ToolExecutionStage
 from ape.capabilities.pipeline import BaseExecutionStage
 from ape.capabilities.resiliency import RuntimeEvent
 from ape.tools.contracts import ToolCallPayload
-from ape.tools.definition import RiskLevel, ToolDefinition
+from ape.tools.definition import RiskLevel
 from ape.tools.executor import ToolExecutor
 
 
@@ -46,6 +49,37 @@ class GovernedExecutionNodeStage(BaseExecutionStage):
         self.executor = executor or ToolExecutor()
 
     def execute(self, state: ExecutionState) -> ExecutionState:
+        # 119.2.B Execution-Time Live Lifecycle Check
+        from ape.capabilities.contracts import CapabilityError
+        from ape.capabilities.governance.registry import CapabilityLifecycleState
+
+
+        if hasattr(self, "capability_registry") and self.capability_registry:
+            reg = self.capability_registry
+        else:
+            reg = getattr(self.executor, "governance_registry", None)
+
+        if reg and hasattr(reg, "get_lifecycle_state"):
+            try:
+                l_state = reg.get_lifecycle_state(self.descriptor.qualified_id)
+                if l_state == CapabilityLifecycleState.REVOKED:
+                    raise CapabilityError(
+                        f"FAIL CLOSED: Capability '{self.descriptor.qualified_id}' is REVOKED at execution time."
+                    )
+                elif l_state == CapabilityLifecycleState.DEPRECATED:
+                    state.trace_events.append(
+                        RuntimeEvent(
+                            event_type="CapabilityDeprecatedWarning",
+                            capability_id=self.descriptor.qualified_id,
+                            trace_id=state.context.trace_id,
+                            details={"message": f"Capability '{self.descriptor.qualified_id}' is DEPRECATED but permitted."},
+                        )
+                    )
+            except CapabilityError:
+                raise
+            except Exception:
+                pass
+
         # Record entry trace event
         state.trace_events.append(
             RuntimeEvent(
@@ -59,6 +93,7 @@ class GovernedExecutionNodeStage(BaseExecutionStage):
                 },
             )
         )
+
 
         if self.binding.binding_type == BindingType.TOOL:
             # 1. Prepare bridge with pre-evaluated AuthorizationDecision
@@ -163,6 +198,7 @@ class GovernedExecutionPlanner:
                 decision=decision,
                 executor=self.tool_executor,
             )
+            node_stage.capability_registry = self.capability_registry
             node = ExecutionNode(node_id=f"node_{descriptor.capability_id}", operation=node_stage)
             graph.add_node(node)
 
@@ -199,8 +235,10 @@ class GovernedExecutionPlanner:
                         decision=decision,  # Share single effective decision identity
                         executor=self.tool_executor,
                     )
+                    c_stage.capability_registry = self.capability_registry
                     ex_node = ExecutionNode(node_id=c_node.node_id, operation=c_stage)
                     graph.add_node(ex_node)
+
 
                 for src, tgt in composite_def.edges:
                     graph.add_edge(src, tgt)

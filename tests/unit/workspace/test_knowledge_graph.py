@@ -3,7 +3,6 @@ Unit tests for Persistent Enterprise Knowledge Graph (PR-W5).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.workspace.knowledge_graph import EnterpriseKnowledgeGraph
 

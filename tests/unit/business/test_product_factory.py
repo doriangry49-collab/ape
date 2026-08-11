@@ -3,7 +3,6 @@ Unit tests for ORION-104 Venture-Centric Product Factory & Business Model Packs.
 Verifies Product domain object, Venture lifecycle execution, and Business Model Pack registry.
 """
 
-import pytest
 
 from ape.business import Product, ProductStatus, ProductType, VentureEngine
 from ape.marketplace.business_packs import BusinessModelPackRegistry

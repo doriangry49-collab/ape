@@ -3,7 +3,7 @@ Model-Agnostic LLM Provider Adapters — ORION-109A Specification.
 Defines LLMProviderProtocol contract and deterministic MockLLMProvider for offline unit tests.
 """
 
-from typing import Any, Dict, Optional, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 
 @runtime_checkable

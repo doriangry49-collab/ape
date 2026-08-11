@@ -5,15 +5,15 @@ PromptContextBuilder variable validation, pure I/O-free PromptRenderer dual SHA-
 deterministic trace_id generation, and isolated PromptTraceStore disk saving.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import pytest
 
 from ape.prompts import (
     PromptContextBuilder,
     PromptRegistry,
     PromptRenderer,
-    PromptTemplate,
     PromptTraceStore,
     RenderedPrompt,
 )

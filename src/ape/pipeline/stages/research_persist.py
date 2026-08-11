@@ -9,7 +9,6 @@ import json
 import re
 from typing import List
 
-from ape.intelligence.research.models import ResearchReport
 from ape.pipeline.contracts import (
     PipelineContext,
     PipelineStage,

@@ -3,7 +3,8 @@ Remote Marketplace Online Registry — EPIC G6-4 Specification.
 Handles online package publishing, remote queries, and signature validation.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
+
 from ape.marketplace.contracts import MarketplacePackage
 
 

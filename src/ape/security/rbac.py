@@ -3,7 +3,7 @@ Workspace Role-Based Access Control (RBAC) Engine — EPIC G6-2 Specification.
 Enforces permissions across ADMIN, DEVELOPER, and AUDITOR roles.
 """
 
-from typing import Dict, List, Set
+from typing import Dict, Set
 
 
 class WorkspaceRBAC:

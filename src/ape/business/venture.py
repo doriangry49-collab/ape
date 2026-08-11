@@ -4,10 +4,10 @@ Executes the end-to-end product production pipeline:
 Idea -> Validation -> Planning -> Engineering -> QA -> Launch -> Revenue.
 """
 
-from dataclasses import dataclass
 import hashlib
 import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 from ape.business.product import Product, ProductStatus, ProductType
 

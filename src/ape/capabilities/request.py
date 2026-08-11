@@ -5,7 +5,6 @@ Defines rich ExecutionMode enum and ExecutionRequest value object.
 
 from dataclasses import dataclass, field
 from enum import Enum
-import time
 from typing import Any, Dict, Optional
 
 from ape.capabilities.budget import ExecutionBudget

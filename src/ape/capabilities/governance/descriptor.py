@@ -3,10 +3,10 @@ Capability Identity & Semantic Versioning Contract — ORION-119.A Specification
 Provides deeply immutable CapabilityDescriptor with versioning (MAJOR.MINOR.PATCH) and risk protections.
 """
 
+import types
 from dataclasses import dataclass, field
 from enum import Enum
-import types
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import Any, Mapping
 
 from ape.tools.definition import RiskLevel
 

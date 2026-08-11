@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-import pytest
 
 from ape.pipeline.contracts import ExecutionContext, StageStatus
 from ape.pipeline.stages.execution_plan import ExecutionPlanStage

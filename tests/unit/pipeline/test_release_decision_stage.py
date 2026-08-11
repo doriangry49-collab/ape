@@ -1,6 +1,5 @@
 """Unit tests for ReleaseDecisionStage."""
 
-import pytest
 
 from ape.pipeline.contracts import BasePipelineContext, StageResult, StageStatus
 from ape.pipeline.stages.release_decision import ReleaseDecisionStage

@@ -2,10 +2,9 @@
 Unit tests for KPI & Scorecard Engine (Phase B2).
 """
 
-import pytest
 
 from ape.business.scorecard import BusinessScorecardEngine, OrganizationalScorecard
-from ape.business.units import EngineeringUnit, QAUnit
+from ape.business.units import EngineeringUnit
 
 
 def test_business_scorecard_computation():

@@ -9,6 +9,7 @@ Verifies the 4 core campaign scenarios specified in PRODUCT_PROOF.md:
 
 import json
 from pathlib import Path
+
 import pytest
 
 from ape.intelligence.execution.engine import ExecutionEngine, PolicyExecutionBlockedError

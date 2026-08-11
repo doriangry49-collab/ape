@@ -4,6 +4,7 @@ Defines BaseStoreAdapter protocol interface for SQLite, DuckDB, and Postgres per
 """
 
 from typing import List, Optional, Protocol, runtime_checkable
+
 from ape.store.contracts import StoreRecord
 
 

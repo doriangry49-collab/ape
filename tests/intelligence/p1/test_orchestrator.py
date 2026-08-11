@@ -1,5 +1,6 @@
-from unittest.mock import patch, MagicMock
 import os
+from unittest.mock import MagicMock, patch
+
 
 def test_orchestrator_initialization():
     from ape.intelligence.scanner.orchestrator import DiscoveryOrchestrator
@@ -44,10 +45,11 @@ def test_orchestrator_live_budget_boundary(mock_get):
 @patch.dict(os.environ, {"SERPAPI_API_KEY": "MOCK_KEY"})
 @patch("ape.intelligence.scanner.adapters.web_search_adapter.requests.get")
 def test_live_request_budget_boundary(mock_get):
-    from ape.intelligence.scanner.orchestrator import DiscoveryOrchestrator
-    from ape.intelligence.scanner.adapters.web_search_adapter import BudgetExhaustedError
+
     import pytest
-    import shutil
+
+    from ape.intelligence.scanner.adapters.web_search_adapter import BudgetExhaustedError
+    from ape.intelligence.scanner.orchestrator import DiscoveryOrchestrator
 
     # Configure mock response
     mock_resp = MagicMock()

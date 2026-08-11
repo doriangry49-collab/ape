@@ -2,10 +2,8 @@
 Unit tests for Agent Fabric SDK Core (PR-A1).
 """
 
-import pytest
 
 from ape.fabric.contracts import AgentReport, ApeAgent
-from ape.fabric.manifest import AgentManifest
 from ape.fabric.registry import AgentRegistry
 
 

@@ -6,10 +6,10 @@ Provides thread-safe relational SQLite persistence for StoreRecord entries under
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import sqlite3
 import threading
-from typing import Any, Dict, List, Optional
+from pathlib import Path
+from typing import Any, List, Optional
 
 from ape.store.contracts import StoreRecord
 

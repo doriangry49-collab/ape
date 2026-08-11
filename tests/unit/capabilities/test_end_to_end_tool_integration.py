@@ -5,11 +5,11 @@ ToolExecutionStage state updates, and Native + MCP execution paths.
 """
 
 from typing import Any, Dict, Optional
+
 import pytest
 
 from ape.capabilities import ExecutionContext, ExecutionPolicy, ExecutionState, RuntimeContext
 from ape.capabilities.integration import (
-    AuthorizationDecision,
     AuthorizationDecisionType,
     CapabilityToolResolver,
     EffectivePolicyGate,
@@ -17,7 +17,6 @@ from ape.capabilities.integration import (
     PermissionState,
     ResolutionResult,
     ToolCandidate,
-    ToolExecutionEvent,
     ToolExecutionStage,
     ToolResultExecutionMapper,
 )
@@ -33,7 +32,7 @@ from ape.tools import (
     ToolRegistry,
     ToolScope,
 )
-from ape.tools.adapters.native import create_echo_tool, create_structured_transform_tool
+from ape.tools.adapters.native import create_echo_tool
 
 
 class EndToEndResolver(CapabilityToolResolver):

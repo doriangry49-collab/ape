@@ -3,7 +3,6 @@ Unit tests for Phase A Platform Hardening & Package Boundary Integrity.
 Verifies clean importability and isolation across all platform subsystems.
 """
 
-import pytest
 
 
 def test_package_boundary_importability():

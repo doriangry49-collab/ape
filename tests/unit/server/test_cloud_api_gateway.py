@@ -3,7 +3,6 @@ Unit tests for Gen-7B Cloud API Gateway and Web SPA Endpoints.
 """
 
 from pathlib import Path
-import pytest
 from unittest.mock import MagicMock
 
 from ape.server.app import APEDashboardHTTPRequestHandler

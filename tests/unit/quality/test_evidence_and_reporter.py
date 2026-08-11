@@ -3,9 +3,8 @@ Unit tests for Quality OS PR-Q3 Hardening, Artifact Collector, and Evidence Bind
 """
 
 import json
-from pathlib import Path
 import sys
-import pytest
+from pathlib import Path
 
 from ape.quality.contracts import (
     QualityReport,
@@ -15,7 +14,7 @@ from ape.quality.contracts import (
 )
 from ape.quality.evidence import QualityEvidenceBinder
 from ape.quality.reporter import QualityReportCollector
-from ape.quality.runner import QualityRunner, SubprocessRunner
+from ape.quality.runner import SubprocessRunner
 from ape.quality.validators.pytest_validator import PytestValidator
 
 

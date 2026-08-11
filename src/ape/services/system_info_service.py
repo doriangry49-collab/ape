@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import platform
-from typing import Dict
 
 
 class SystemInfoService:

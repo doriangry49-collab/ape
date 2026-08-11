@@ -6,7 +6,6 @@ Provides index querying, package discovery, signature verification, and resoluti
 from __future__ import annotations
 
 import hashlib
-import json
 from pathlib import Path
 from typing import Dict, List, Optional
 

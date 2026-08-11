@@ -1,6 +1,5 @@
 """Unit tests for SPEC-0018 ResearchPlanStage."""
 
-import pytest
 from ape.pipeline.contracts import PipelineContext, StageStatus
 from ape.pipeline.stages.research_plan import ResearchPlanStage
 

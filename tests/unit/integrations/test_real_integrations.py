@@ -3,7 +3,6 @@ Unit tests for ORION-103 Reality Check & Real Integration Matrix.
 Verifies integration_mode tagging (REAL vs SIMULATED) across GitHub, Slack, and Jira clients.
 """
 
-import pytest
 
 from ape.integrations import GitHubWebhookHandler, JiraSyncEngine, SlackNotifier
 

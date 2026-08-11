@@ -4,7 +4,8 @@ Delegates to PolicyEngine to evaluate declarative policies and issue release dec
 """
 
 from typing import Any
-from ape.fabric.contracts import AgentReport, ApeAgent
+
+from ape.fabric.contracts import AgentReport
 from ape.fabric.memory import SharedMemoryWorkspace
 from ape.policy import PolicyEngine
 

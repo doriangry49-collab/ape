@@ -25,16 +25,13 @@ from ape.intelligence.execution.executor import (
 )
 from ape.intelligence.execution.models import (
     ExecutionState,
-    ExecutionStatus,
     ExecutionTask,
-    TaskStatus,
 )
 from ape.intelligence.execution.policy import ExecutionPolicy
-from ape.intelligence.execution.state import TaskStateMachine
 from ape.intelligence.execution.verifier import DeliverableVerifier
 from ape.pipeline.contracts import ExecutionContext, StageStatus
 from ape.pipeline.runner import PipelineExecutionError
-from ape.utils import append_to_evidence, get_current_artifact
+from ape.utils import get_current_artifact
 
 
 def _utcnow() -> str:
@@ -133,15 +130,15 @@ class ExecutionEngine:
     def _build_pipeline(self) -> ConstitutionalPipelineRunner:
         """Constructs the constitutional 8-stage ExecutionPipeline."""
         from ape.pipeline.runner import ConstitutionalPipelineRunner
-        from ape.pipeline.stages.execution_plan import ExecutionPlanStage
-        from ape.pipeline.stages.policy_gate import PolicyGateStage
         from ape.pipeline.stages.capability_check import CapabilityCheckStage
-        from ape.pipeline.stages.task_execution import TaskExecutionStage
-        from ape.pipeline.stages.verification import VerificationStage
         from ape.pipeline.stages.execution_evidence import ExecutionEvidenceStage
         from ape.pipeline.stages.execution_persist import ExecutionPersistStage
+        from ape.pipeline.stages.execution_plan import ExecutionPlanStage
+        from ape.pipeline.stages.policy_gate import PolicyGateStage
         from ape.pipeline.stages.quality_assurance import QualityAssuranceStage
         from ape.pipeline.stages.release_decision import ReleaseDecisionStage
+        from ape.pipeline.stages.task_execution import TaskExecutionStage
+        from ape.pipeline.stages.verification import VerificationStage
 
         return ConstitutionalPipelineRunner([
             ExecutionPlanStage(self._root),

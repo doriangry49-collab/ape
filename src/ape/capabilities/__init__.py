@@ -41,8 +41,15 @@ from ape.capabilities.contracts import (
 )
 from ape.capabilities.event_store import ExecutionEventStore, MemorySnapshot, StateEvent
 from ape.capabilities.factory import ProviderFactory
+from ape.capabilities.governance.planner import GovernedExecutionPlanner
+from ape.capabilities.governance.resolver import CapabilityBindingResolver
 from ape.capabilities.graph import ExecutionEdge, ExecutionGraph, ExecutionNode
-from ape.capabilities.operation import ExecutionOperation, FileOperation, ProviderOperation, ToolOperation
+from ape.capabilities.operation import (
+    ExecutionOperation,
+    FileOperation,
+    ProviderOperation,
+    ToolOperation,
+)
 from ape.capabilities.pipeline import (
     AdapterExecutionStage,
     BaseExecutionStage,
@@ -54,9 +61,6 @@ from ape.capabilities.pipeline import (
     StrategySelectionStage,
 )
 from ape.capabilities.planner import ExecutionPlanner, StandardExecutionPlanner
-from ape.capabilities.governance.planner import GovernedExecutionPlanner
-from ape.capabilities.governance.resolver import CapabilityBindingResolver
-
 from ape.capabilities.registry import (
     CapabilityDescriptor,
     CapabilityMatrix,

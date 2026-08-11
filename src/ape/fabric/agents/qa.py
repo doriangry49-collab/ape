@@ -4,7 +4,8 @@ Delegates to Quality OS runner to calculate release confidence scores and audit 
 """
 
 from typing import Any
-from ape.fabric.contracts import AgentReport, ApeAgent
+
+from ape.fabric.contracts import AgentReport
 from ape.fabric.memory import SharedMemoryWorkspace
 from ape.quality import QualityRunner, ValidationContext
 

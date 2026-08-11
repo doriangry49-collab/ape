@@ -1,8 +1,8 @@
-from datetime import UTC, datetime
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
-from ape.intelligence.models import BusinessEvidence, EvidenceProvenance, Opportunity, PainPoint
+from ape.intelligence.models import BusinessEvidence, Opportunity, PainPoint
 from ape.intelligence.scanner.persistence import ScanPersistence
 
 

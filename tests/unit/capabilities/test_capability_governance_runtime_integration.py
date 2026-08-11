@@ -54,9 +54,10 @@ def setup_governed_runtime():
         version="1.0.0",
         binding_type=BindingType.TOOL,
         target_id="echo",
-        allowed_scopes=frozenset({"workspace"}),
+        allowed_scopes=frozenset({"ws1", "workspace"}),
         required_permissions=(),
     )
+
 
     registry.register(echo_desc)
     resolver.register_binding(echo_bind)
@@ -75,6 +76,7 @@ def setup_governed_runtime():
         version="1.0.0",
         binding_type=BindingType.TOOL,
         target_id="echo",
+        allowed_scopes=frozenset({"ws1", "workspace"}),
     )
     registry.register(high_desc)
     resolver.register_binding(high_bind)
@@ -107,7 +109,9 @@ def setup_governed_runtime():
         version="1.0.0",
         binding_type=BindingType.COMPOSITE,
         target_id="test_workflow",
+        allowed_scopes=frozenset({"ws1", "workspace"}),
     )
+
     registry.register(comp_desc)
     resolver.register_binding(comp_bind)
 

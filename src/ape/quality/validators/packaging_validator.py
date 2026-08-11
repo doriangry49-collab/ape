@@ -5,9 +5,8 @@ Validates deliverable packaging structure, entrypoint definitions, and containme
 
 from __future__ import annotations
 
-from pathlib import Path
 import time
-from typing import List, Optional
+from typing import List
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus
 

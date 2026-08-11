@@ -5,7 +5,7 @@ Defines ToolCandidate, ResolutionResult, CapabilityToolResolver ABC, ToolExecuti
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from ape.capabilities.contracts import ExecutionContext
 from ape.tools.contracts import ToolResult

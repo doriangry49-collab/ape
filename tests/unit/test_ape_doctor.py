@@ -3,7 +3,6 @@ Unit tests for ApeDoctor diagnostics (EPIC 7A-3).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.doctor import ApeDoctor
 

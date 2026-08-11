@@ -6,15 +6,14 @@ Executes live process lifecycle checks and HTTP health probes for generated deli
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import socket
 import subprocess
 import time
 import urllib.request
-from typing import List, Optional, Tuple
+from pathlib import Path
+from typing import List, Optional
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus
-
 
 WEB_FRAMEWORK_IMPORTS = ["fastapi", "flask", "uvicorn", "http.server", "wsgiref", "aiohttp", "tornado"]
 

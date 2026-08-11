@@ -1,11 +1,11 @@
-import pytest
-from unittest.mock import patch
 import urllib.error
 
+import pytest
+
+from ape.intelligence.engine import OpportunityEngine
 from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError
 from ape.intelligence.scanner.github import GitHubTrendingScanner
 from ape.intelligence.scanner.hackernews import HackerNewsScanner
-from ape.intelligence.engine import OpportunityEngine
 from ape.project import Project
 
 

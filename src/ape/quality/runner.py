@@ -3,14 +3,19 @@ Quality OS Execution Infrastructure & Subsystem Runner — RFC-022 / PR-Q2 Speci
 Provides SubprocessRunner, TimeoutManager, and QualityRunner orchestrator.
 """
 
-from dataclasses import dataclass, field
 import os
-from pathlib import Path
 import subprocess
 import time
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Optional
 
-from ape.quality.contracts import QualityReport, ValidationContext, ValidationResult, ValidationStatus
+from ape.quality.contracts import (
+    QualityReport,
+    ValidationContext,
+    ValidationResult,
+    ValidationStatus,
+)
 
 
 class TimeoutManager:
@@ -156,7 +161,11 @@ class QualityRunner:
 
     def run(self, context: ValidationContext) -> QualityReport:
         """Run registered validators allowed by context.quality_profile and compute QualityReport."""
-        from ape.quality.profiles import get_profile_validators, get_validator_weight, normalize_validator_name, QualityProfile
+        from ape.quality.profiles import (
+            get_profile_validators,
+            get_validator_weight,
+            normalize_validator_name,
+        )
 
         profile_str = getattr(context, "quality_profile", "strict") or "strict"
         allowed_validator_names = get_profile_validators(profile_str)
@@ -267,8 +276,8 @@ class QualityRunner:
 
         # PR-Q3: Collect physical report artifacts and compute Merkle evidence lineage
         try:
-            from ape.quality.reporter import QualityReportCollector
             from ape.quality.evidence import QualityEvidenceBinder
+            from ape.quality.reporter import QualityReportCollector
 
             collector = QualityReportCollector(context.project_root)
             saved_paths = collector.save_report(

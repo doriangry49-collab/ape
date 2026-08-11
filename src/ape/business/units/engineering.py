@@ -3,7 +3,8 @@ Engineering Unit Implementation — RFC-022 / Phase B1 Specification.
 Specialized unit managing software implementation and deliverable generation.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
+
 from ape.business.contracts import UnitReport
 from ape.business.units.base import BaseBusinessUnit
 

@@ -4,6 +4,7 @@ Manages and resolves Business Units across organizational domains.
 """
 
 from typing import Dict, List, Optional
+
 from ape.business.contracts import BusinessUnit
 
 

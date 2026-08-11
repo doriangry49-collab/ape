@@ -2,11 +2,10 @@
 Unit tests for Observability Web Server & Dashboard Backend (PR-7A / EPIC-1).
 """
 
-from pathlib import Path
-import urllib.request
 import threading
 import time
-import pytest
+import urllib.request
+from pathlib import Path
 
 from ape.server import BuildStore, run_dashboard_server
 

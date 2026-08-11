@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import urllib.request
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
 
 from ape.intelligence.models import Opportunity
 from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError

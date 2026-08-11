@@ -2,7 +2,6 @@
 Unit tests for ProjectTopology Graph (PR-W2).
 """
 
-import pytest
 
 from ape.workspace.project import ProjectTopology
 

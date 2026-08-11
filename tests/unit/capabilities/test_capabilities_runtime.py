@@ -5,6 +5,7 @@ strategy-based RetryOrchestrator, platform EventBus broadcasting, MetricsCollect
 """
 
 import time
+
 import pytest
 
 from ape.capabilities import (
@@ -16,20 +17,16 @@ from ape.capabilities import (
     EventBus,
     ExecutionContext,
     ExecutionPolicy,
-    ExponentialBackoffStrategy,
     HealthMonitor,
     ImmediateRetryStrategy,
-    LinearBackoffStrategy,
     MetricsCollector,
     MockProviderAdapter,
-    NoRetryStrategy,
     ProviderCircuitBreaker,
     ProviderEndpointKey,
     ProviderFeatureSet,
     ProviderHealth,
     ProviderRegistry,
     ProviderRetryOrchestrator,
-    ProviderUnavailableError,
     RuntimeContext,
     RuntimeEvent,
 )

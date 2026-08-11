@@ -5,16 +5,15 @@ fail-closed safety, DAG dependency step plans, and replay modes (RESUME, OVERWRI
 """
 
 import json
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
-import pytest
 from typer.testing import CliRunner
 
 from ape.business import ExecutionOrchestrator, VentureWorkspaceManager
+from ape.business.replay import ReplayEngine, ReplayMode
 from ape.cli import app
 from ape.runtime.engine import CheckpointStore
-from ape.business.replay import ReplayEngine, ReplayMode
 
 runner = CliRunner()
 

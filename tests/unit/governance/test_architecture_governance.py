@@ -6,8 +6,6 @@ and frozen public API package exports.
 
 from pathlib import Path
 
-import pytest
-
 import ape
 from ape import (
     CancellationToken,

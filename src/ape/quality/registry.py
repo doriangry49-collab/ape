@@ -4,15 +4,16 @@ Allows registering and discovering validators by language pack and domain capabi
 """
 
 from typing import Dict, List
+
 from ape.quality.contracts import Validator
-from ape.quality.validators.syntax import SyntaxValidator
-from ape.quality.validators.import_validator import ImportValidator
-from ape.quality.validators.pytest_validator import PytestValidator
-from ape.quality.validators.smoke_validator import SmokeValidator
 from ape.quality.validators.dependency_validator import DependencyValidator
+from ape.quality.validators.import_validator import ImportValidator
 from ape.quality.validators.packaging_validator import PackagingValidator
-from ape.quality.validators.security_validator import SecurityValidator
+from ape.quality.validators.pytest_validator import PytestValidator
 from ape.quality.validators.runtime_validator import RuntimeValidator
+from ape.quality.validators.security_validator import SecurityValidator
+from ape.quality.validators.smoke_validator import SmokeValidator
+from ape.quality.validators.syntax import SyntaxValidator
 
 
 class ValidatorRegistry:

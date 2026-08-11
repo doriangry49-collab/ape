@@ -3,7 +3,6 @@ Unit tests for Declarative Policy Engine (PR-I1).
 """
 
 from pathlib import Path
-import pytest
 
 from ape.pipeline.contracts import ExecutionContext, StageResult, StageStatus
 from ape.policy.contracts import ReleasePolicy

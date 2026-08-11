@@ -4,7 +4,7 @@ Applies ToolExecutionEvent outputs to ExecutionState (working_memory, artifacts,
 without violating pure mapper invariants.
 """
 
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from ape.capabilities.artifacts import ArtifactType, ExecutionArtifact
 from ape.capabilities.contracts import ExecutionState

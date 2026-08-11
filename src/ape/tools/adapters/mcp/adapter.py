@@ -4,7 +4,7 @@ Bridges APE Tool Layer calls to MCPClient, handling schema translation and resul
 """
 
 import time
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from ape.tools.adapters.base import BaseToolAdapter
 from ape.tools.adapters.mcp.client import MCPClient

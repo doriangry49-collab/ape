@@ -3,10 +3,10 @@ Jira Integration Engine — ORION-103 Reality Check Specification.
 Maps Jira issues to APE production build tasks with REAL REST API v3 sync or SIMULATED mode.
 """
 
-from dataclasses import dataclass
 import json
-from typing import Any, Dict, Optional
 import urllib.request
+from dataclasses import dataclass
+from typing import Dict, Optional
 
 
 @dataclass

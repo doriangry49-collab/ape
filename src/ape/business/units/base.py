@@ -3,7 +3,8 @@ Base Business Unit Implementation — RFC-022 / Phase B1 Specification.
 """
 
 from typing import Any, Dict, List
-from ape.business.contracts import BusinessUnit, UnitReport
+
+from ape.business.contracts import UnitReport
 
 
 class BaseBusinessUnit:

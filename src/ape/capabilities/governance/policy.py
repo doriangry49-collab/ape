@@ -3,15 +3,17 @@ Capability Risk Inheritance & Authorization Decision Identity Contract — ORION
 Enforces Risk Monotonicity across Composite Nodes and generates canonical policy_decision_id.
 """
 
-from dataclasses import dataclass, field
 import hashlib
-import time
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import List, Optional
 
-from ape.capabilities.contracts import ExecutionContext, ExecutionPolicy
+from ape.capabilities.contracts import ExecutionContext
 from ape.capabilities.governance.binding import CapabilityBinding
 from ape.capabilities.governance.descriptor import CapabilityDescriptor
-from ape.capabilities.integration.policy_gate import AuthorizationDecision, AuthorizationDecisionType, PermissionState
+from ape.capabilities.integration.policy_gate import (
+    AuthorizationDecision,
+    AuthorizationDecisionType,
+    PermissionState,
+)
 from ape.tools.definition import RiskLevel, ToolPermission
 
 # Risk Tier Order for Risk Monotonicity (LOW -> MEDIUM -> HIGH -> CRITICAL)
@@ -74,7 +76,29 @@ class CapabilityPolicyEvaluator:
             tool_risk=tool_risk,
         )
 
+        # 119.2.C Scope Eligibility Check
+        if binding.allowed_scopes and context.workspace_id and context.workspace_id not in binding.allowed_scopes:
+            raw_payload = f"{request_id}:{descriptor.capability_id}:{descriptor.version}:{binding.binding_id}:{effective_risk.value}:scope_denied"
+            dec_id = "dec_auth_" + hashlib.sha256(raw_payload.encode("utf-8")).hexdigest()[:16]
+            evidence_hash = hashlib.sha256(f"evidence:{dec_id}:{raw_payload}".encode("utf-8")).hexdigest()
+            return AuthorizationDecision(
+                decision_id=dec_id,
+                decision=AuthorizationDecisionType.DENY,
+                effective_risk=effective_risk,
+                capability_id=descriptor.qualified_id,
+                tool_id=binding.target_id,
+                call_id=call_id,
+                context_id=context.execution_id,
+                permission_state=PermissionState.FORBIDDEN,
+                approval_required=False,
+                reason=f"SCOPE_MISMATCH: Workspace '{context.workspace_id}' is not permitted by binding allowed_scopes for '{binding.binding_id}'.",
+                evidence_hash=evidence_hash,
+            )
+
+
+
         context_scopes = {p.scope for p in (context_permissions or [])}
+
         missing: List[ToolPermission] = []
         forbidden: List[ToolPermission] = []
 

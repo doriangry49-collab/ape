@@ -3,13 +3,12 @@ ExecutionScheduler Specification — ORION-115 Specification.
 Defines ExecutionScheduler Protocol, SequentialScheduler, and ParallelScheduler decoupled from ExecutionGraph topology.
 """
 
-import time
 from typing import Any, Protocol, runtime_checkable
 
 from ape.capabilities.contracts import ExecutionResult, ExecutionState
 from ape.capabilities.graph import ExecutionGraph
 from ape.capabilities.request import ExecutionRequest
-from ape.capabilities.trace import ExecutionTrace, ExecutionTraceBuilder
+from ape.capabilities.trace import ExecutionTraceBuilder
 
 
 @runtime_checkable

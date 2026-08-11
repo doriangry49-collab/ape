@@ -3,8 +3,8 @@ RFC-021 StatusService & CLI Status Command Unit Tests.
 (RFC-021)
 """
 import json
+
 import pytest
-from pathlib import Path
 from typer.testing import CliRunner
 
 from ape.cli import app

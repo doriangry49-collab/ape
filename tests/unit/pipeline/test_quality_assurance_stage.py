@@ -2,9 +2,9 @@
 Unit tests for QualityAssuranceStage.
 """
 
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-import tempfile
 
 from ape.pipeline.contracts import BasePipelineContext, StageStatus
 from ape.pipeline.stages.quality_assurance import QualityAssuranceStage

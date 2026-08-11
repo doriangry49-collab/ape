@@ -3,8 +3,8 @@ In-Memory SwarmMessageBus & SwarmMessage — ORION-116 Specification.
 Provides synchronous in-memory pub/sub message bus for inter-agent communication.
 """
 
-from dataclasses import dataclass, field
 import time
+from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 
