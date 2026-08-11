@@ -10,3 +10,5 @@ build/
 .ape/
 .build/
 .cache/
+
+.clinerules
