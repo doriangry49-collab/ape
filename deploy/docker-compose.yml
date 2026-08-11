@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  ape-server:
+    image: ape/ape-platform:v1.0.0
+    container_name: ape-cloud-server
+    ports:
+      - "8080:8080"
+    environment:
+      - APE_ENV=production
+      - APE_PORT=8080
+      - APE_DB_PATH=/var/lib/ape/ape_store.db
+    volumes:
+      - ape-data:/var/lib/ape
+    restart: always
+
+  ape-worker-cpu:
+    image: ape/ape-worker:v1.0.0
+    container_name: ape-worker-cpu-01
+    environment:
+      - WORKER_NODE_TYPE=cpu
+      - MAX_SLOTS=4
+      - SERVER_URL=http://ape-server:8080
+    depends_on:
+      - ape-server
+    restart: always
+
+volumes:
+  ape-data:
