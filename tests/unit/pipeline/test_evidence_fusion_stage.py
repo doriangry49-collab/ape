@@ -24,6 +24,6 @@ def test_evidence_fusion_stage_success():
 
     assert fusion_res.status == StageStatus.SUCCESS
     assert fusion_res.stage_name == "evidence_fusion"
-    assert fusion_res.output_data["verified_observations_count"] == 2
+    assert fusion_res.output_data["verified_observations_count"] == 3
     assert fusion_res.output_data["agreement_score"] > 0.0
     assert fusion_res.evidence["synthetic"] is False

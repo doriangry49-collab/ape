@@ -31,14 +31,13 @@ class MockDeterministicLLM(PlannerModel):
     def generate(self, prompt: str, system_message: str, schema: dict) -> dict:
         self.call_count += 1
         if self.call_count == 1:
-            # Attempt 1: Create broken calculator.py + test_calculator.py
+            # Attempt 1: Create broken calculator_module.py
             return {
                 "thought": "Create initial calculator implementation with intentional bug to verify repair loop.",
                 "action": "create_file",
                 "params": {
                     "path": "calculator_module.py",
-                    "content": "def add(a, b):\n    return a - b  # Intentional bug for RFC-019 test\n",
-                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator_module.py\').write_text(\'def add(a, b):\\n    return a - b\\n\'); pathlib.Path(\'test_calculator_module.py\').write_text(\'from calculator_module import add\\ndef test_add():\\n    assert add(2, 3) == 5\\n\')" && "{sys.executable}" -m pytest test_calculator_module.py'
+                    "content": "def add(a, b):\n    return a - b  # Intentional bug for RFC-019 test\n"
                 }
             }
         else:
@@ -48,8 +47,7 @@ class MockDeterministicLLM(PlannerModel):
                 "action": "modify_file",
                 "params": {
                     "path": "calculator_module.py",
-                    "content": "def add(a, b):\n    return a + b\n",
-                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator_module.py\').write_text(\'def add(a, b):\\n    return a + b\\n\')" && "{sys.executable}" -m pytest test_calculator_module.py'
+                    "content": "def add(a, b):\n    return a + b\n"
                 }
             }
 
@@ -124,6 +122,9 @@ def test_e2e_real_user_journey_build_subcommand(tmp_path, monkeypatch):
             next_step="Build MVP"
         )
     monkeypatch.setattr(DecisionEngine, "run_decision", mock_run_decision)
+
+    # Pre-create test_calculator_module.py to test repair loop against
+    (tmp_path / "test_calculator_module.py").write_text("from calculator_module import add\ndef test_add():\n    assert add(2, 3) == 5\n")
 
     # Ensure ExecutionEngine uses ApeCoderAgent and LocalTestSandboxExecutor
     orig_exec_init = ExecutionEngine.__init__

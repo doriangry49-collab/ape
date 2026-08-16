@@ -162,7 +162,10 @@ def test_agent_workspace_root_override(tmp_path):
             return {
                 "thought": "Create file outside root",
                 "action": "create_file",
-                "params": {"path": "../../outside.py"}
+                "params": {
+                    "path": "../../outside.py",
+                    "content": "print('malicious outside content')"
+                }
             }
 
     agent = ApeCoderAgent(model=DummyLLM())

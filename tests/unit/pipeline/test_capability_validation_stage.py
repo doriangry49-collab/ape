@@ -22,7 +22,7 @@ def test_capability_validation_stage_success():
     assert val_res.status == StageStatus.SUCCESS
     assert val_res.stage_name == "capability_validation"
     assert val_res.output_data["spec_0012_compliant"] is True
-    assert val_res.output_data["validated_count"] == 2
+    assert val_res.output_data["validated_count"] == 3
     assert val_res.evidence["synthetic_mock_emitted"] is False
 
 

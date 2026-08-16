@@ -45,25 +45,22 @@ class MockDeterministicLLM(PlannerModel):
     def generate(self, prompt: str, system_message: str, schema: dict) -> dict:
         self.call_count += 1
         if self.call_count == 1:
-            # Attempt 1: Create broken calculator.py + test_calculator.py
+            # Attempt 1: Run tests before implementation (fails because calculator.py doesn't exist)
             return {
-                "thought": "Create initial calculator implementation with intentional bug to verify repair loop.",
-                "action": "create_file",
+                "thought": "Run initial test suite to verify baseline failure.",
+                "action": "run_tests",
                 "params": {
-                    "path": "calculator.py",
-                    "content": "def add(a, b):\n    return a - b  # Intentional bug for RFC-017 test\n",
-                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator.py\').write_text(\'def add(a, b):\\n    return a - b\\n\'); pathlib.Path(\'test_calculator.py\').write_text(\'from calculator import add\\ndef test_add():\\n    assert add(2, 3) == 5\\n\')" && "{sys.executable}" -m pytest test_calculator.py'
+                    "target": "test_calculator.py"
                 }
             }
         else:
-            # Attempt 2: Repair calculator.py
+            # Attempt 2: Create calculator.py (succeeds)
             return {
-                "thought": "Fix the bug in calculator.py based on pytest failure feedback.",
-                "action": "modify_file",
+                "thought": "Create calculator implementation matching specifications.",
+                "action": "create_file",
                 "params": {
                     "path": "calculator.py",
-                    "content": "def add(a, b):\n    return a + b\n",
-                    "command": f'"{sys.executable}" -c "import pathlib; pathlib.Path(\'calculator.py\').write_text(\'def add(a, b):\\n    return a + b\\n\')" && "{sys.executable}" -m pytest test_calculator.py'
+                    "content": "def add(a, b):\n    return a + b\n"
                 }
             }
 
@@ -111,6 +108,9 @@ def e2e_project_env(tmp_path):
     """Set up complete decision, roadmap, and evidence infrastructure in tmp_path."""
     project_root = tmp_path / "e2e_workspace"
     project_root.mkdir()
+
+    # Pre-create test suite to test repair loop against
+    (project_root / "test_calculator.py").write_text("from calculator import add\ndef test_add():\n    assert add(2, 3) == 5\n")
 
     # 1. Decision Artifact
     decisions_dir = project_root / ".build" / "decisions"

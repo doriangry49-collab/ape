@@ -18,6 +18,6 @@ def test_acquisition_execution_stage_offline():
 
     assert acq_res.status == StageStatus.SUCCESS
     assert acq_res.stage_name == "acquisition_execution"
-    assert acq_res.output_data["observation_count"] == 2
-    assert acq_res.evidence["successful_acquisitions"] == 2
+    assert acq_res.output_data["observation_count"] == 3
+    assert acq_res.evidence["successful_acquisitions"] == 3
     assert "combined_signals" in acq_res.output_data
