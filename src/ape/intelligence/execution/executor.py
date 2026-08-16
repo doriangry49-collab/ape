@@ -70,7 +70,24 @@ class SandboxResult:
     status: str
 
 
-class DockerSandboxExecutor(TaskExecutor):
+class SandboxExecutor(ABC):
+    """
+    Capability interface for low-level isolated command execution.
+    Separate from high-level TaskExecutor domain contract.
+    """
+
+    @abstractmethod
+    def execute_command(
+        self,
+        cmd: str,
+        cwd: str = "/workspace",
+        timeout: int = 60,
+        workspace_dir: str | None = None,
+    ) -> SandboxResult:
+        """Execute command in an isolated sandbox environment."""
+
+
+class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
     """
     Real executor utilizing a Docker sandbox.
     Fails closed if Docker is unavailable.
@@ -85,8 +102,41 @@ class DockerSandboxExecutor(TaskExecutor):
             raise RuntimeError(f"Sandbox Error: {result.error}")
         return result.output
 
+    @staticmethod
+    def get_docker_prefix() -> list[str] | None:
+        # 1. Try WSL Debian native docker CE
+        if shutil.which("wsl"):
+            try:
+                res = subprocess.run(
+                    "wsl -d Debian -u root -- docker info",
+                    capture_output=True,
+                    text=True,
+                    shell=True,
+                    timeout=5
+                )
+                if res.returncode != 0:
+                    subprocess.run("wsl -d Debian -u root -- service docker start", capture_output=True, text=True, shell=True, timeout=10)
+                    res = subprocess.run("wsl -d Debian -u root -- docker info", capture_output=True, text=True, shell=True, timeout=5)
+
+                if res.returncode == 0:
+                    return ["wsl", "-d", "Debian", "-u", "root", "--", "docker"]
+            except Exception:
+                pass
+
+        # 2. Try standard host docker CLI
+        if shutil.which("docker"):
+            try:
+                res = subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=2)
+                if res.returncode == 0:
+                    return ["docker"]
+            except Exception:
+                pass
+
+        return None
+
     def execute_command(self, cmd: str, cwd: str = "/tmp", timeout: int = 60, workspace_dir: str | None = None) -> SandboxResult:
-        if not shutil.which("docker"):
+        docker_prefix = self.get_docker_prefix()
+        if not docker_prefix:
             return SandboxResult(
                 exit_code=-1,
                 output="",
@@ -95,8 +145,8 @@ class DockerSandboxExecutor(TaskExecutor):
             )
         
         # Build strict docker command
-        docker_cmd = [
-            "docker", "run", "--rm",
+        docker_cmd = list(docker_prefix) + [
+            "run", "--rm",
             "--network=none",
             "--memory=512m",
             "--cpus=1.0",
@@ -111,13 +161,20 @@ class DockerSandboxExecutor(TaskExecutor):
         ])
         
         try:
-            # We explicitly do NOT pass host environment (env=None)
+            import os
+            clean_env = {
+                "PATH": os.environ.get("PATH", ""),
+                "SystemRoot": os.environ.get("SystemRoot", "C:\\Windows"),
+            }
             proc = subprocess.run(
                 docker_cmd,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
+                stdin=subprocess.DEVNULL,
                 timeout=timeout,
-                env={}  # No host env vars
+                env=clean_env
             )
             status = "COMPLETED" if proc.returncode == 0 else "FAILED"
             return SandboxResult(

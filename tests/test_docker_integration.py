@@ -13,13 +13,7 @@ from ape.intelligence.execution.executor import DockerSandboxExecutor
 
 
 def _is_docker_daemon_active() -> bool:
-    if not shutil.which("docker"):
-        return False
-    try:
-        res = subprocess.run(["docker", "info"], capture_output=True, text=True, timeout=5)
-        return res.returncode == 0
-    except Exception:
-        return False
+    return DockerSandboxExecutor.get_docker_prefix() is not None
 
 
 DOCKER_AVAILABLE = _is_docker_daemon_active()
