@@ -5,6 +5,13 @@ __pycache__/
 .venv/
 .eggs/
 *.egg-info/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+.eggs/
+*.egg-info/
 dist/
 build/
 .ape/
@@ -12,3 +19,5 @@ build/
 .cache/
 
 .clinerules
+deliverables/
+test_run.txt
