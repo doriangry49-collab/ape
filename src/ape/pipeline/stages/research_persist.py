@@ -73,6 +73,7 @@ class ResearchPersistStage(PipelineStage):
             "sources": fusion_data.get("fused_sources", []),
             "pain_points": fusion_data.get("fused_pain_points", []),
             "fused_signals": fusion_data.get("fused_signals", {}),
+            "business_evidence": fusion_data.get("business_evidence", []),
         }
 
         # 1. Canonical State JSON

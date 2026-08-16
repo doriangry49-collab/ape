@@ -77,6 +77,8 @@ class ExecutionContext(BasePipelineContext):
     dry_run: bool = True
     auto_deny_approvals: bool = False
     interrupt_after_tasks: Optional[int] = None
+    execution_mode: str = "SIMULATION"        # "SIMULATION" | "REAL_SANDBOX"
+    execution_backend: str = "SIMULATION_STUB" # "SIMULATION_STUB" | "DOCKER_SANDBOX"
 
     def with_updates(
         self,
@@ -87,6 +89,8 @@ class ExecutionContext(BasePipelineContext):
         dry_run: Optional[bool] = None,
         auto_deny_approvals: Optional[bool] = None,
         interrupt_after_tasks: Optional[int] = None,
+        execution_mode: Optional[str] = None,
+        execution_backend: Optional[str] = None,
     ) -> ExecutionContext:
         """Returns a new ExecutionContext with controlled, explicit updates preserving immutability."""
         new_budget = dict(self.resource_budget)
@@ -97,15 +101,21 @@ class ExecutionContext(BasePipelineContext):
         if metadata:
             new_meta.update(metadata)
 
+        eff_dry_run = dry_run if dry_run is not None else self.dry_run
+        eff_mode = execution_mode if execution_mode is not None else ("SIMULATION" if eff_dry_run else "REAL_SANDBOX")
+        eff_backend = execution_backend if execution_backend is not None else ("SIMULATION_STUB" if eff_dry_run else "DOCKER_SANDBOX")
+
         return ExecutionContext(
             run_id=self.run_id,
             resource_budget=new_budget,
             metadata=new_meta,
             topic_slug=topic_slug if topic_slug is not None else self.topic_slug,
             topic=topic if topic is not None else self.topic,
-            dry_run=dry_run if dry_run is not None else self.dry_run,
+            dry_run=eff_dry_run,
             auto_deny_approvals=auto_deny_approvals if auto_deny_approvals is not None else self.auto_deny_approvals,
             interrupt_after_tasks=interrupt_after_tasks if interrupt_after_tasks is not None else self.interrupt_after_tasks,
+            execution_mode=eff_mode,
+            execution_backend=eff_backend,
         )
 
 

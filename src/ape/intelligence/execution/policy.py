@@ -7,7 +7,7 @@ Unknown actions default to REQUIRES_APPROVAL (safe-by-default principle).
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple
+from typing import Any, Tuple
 
 _POLICY_TABLE: dict[str, str] = {
     # SAFE — auto-execute, no user gate
@@ -41,6 +41,94 @@ CANONICAL_ACTIONS: set[str] = {
     "search",
     "analyze",
 }
+
+# Constitutional Typed Parameter Schemas per Action
+ACTION_PARAMETER_SCHEMAS: dict[str, dict[str, dict[str, type]]] = {
+    "create_file": {
+        "required": {"path": str, "content": str},
+        "optional": {},
+    },
+    "modify_file": {
+        "required": {"path": str, "content": str},
+        "optional": {},
+    },
+    "read_file": {
+        "required": {"path": str},
+        "optional": {},
+    },
+    "run_tests": {
+        "required": {},
+        "optional": {"target": str},
+    },
+    "delete_file": {
+        "required": {"path": str},
+        "optional": {},
+    },
+    "git_diff": {
+        "required": {},
+        "optional": {"path": str},
+    },
+    "git_commit": {
+        "required": {"message": str},
+        "optional": {},
+    },
+    "git_push": {
+        "required": {},
+        "optional": {"remote": str, "branch": str},
+    },
+    "deploy": {
+        "required": {"environment": str},
+        "optional": {},
+    },
+}
+
+
+def validate_action_parameters(action: str, params: dict[str, Any]) -> Tuple[bool, str]:
+    """
+    Constitutional parameter schema validation.
+    Enforces strict typing, required keys presence, and REJECTS extraneous parameter keys.
+    """
+    if action not in CANONICAL_ACTIONS:
+        return False, f"UNKNOWN_CANONICAL_ACTION: Action '{action}' is not in Canonical Action Vocabulary."
+
+    schema = ACTION_PARAMETER_SCHEMAS.get(action)
+    if schema is None:
+        # Action is canonical but unconstrained by explicit parameter schema (e.g. search, analyze)
+        return True, ""
+
+    required_spec = schema.get("required", {})
+    optional_spec = schema.get("optional", {})
+    allowed_keys = set(required_spec.keys()).union(optional_spec.keys())
+
+    # Check for extraneous keys (e.g. command injection attempt)
+    extraneous = set(params.keys()) - allowed_keys
+    if extraneous:
+        return (
+            False,
+            f"PARAMETER_SCHEMA_VIOLATION: Action '{action}' contains unauthorized parameter keys: {sorted(extraneous)}. "
+            f"Allowed keys: {sorted(allowed_keys)}"
+        )
+
+    # Check required keys
+    missing_required = set(required_spec.keys()) - set(params.keys())
+    if missing_required:
+        return (
+            False,
+            f"PARAMETER_SCHEMA_VIOLATION: Action '{action}' missing required parameters: {sorted(missing_required)}."
+        )
+
+    # Type check provided keys
+    all_specs = {**required_spec, **optional_spec}
+    for k, val in params.items():
+        expected_type = all_specs.get(k)
+        if expected_type and not isinstance(val, expected_type):
+            return (
+                False,
+                f"PARAMETER_TYPE_VIOLATION: Action '{action}' parameter '{k}' expected type {expected_type.__name__}, got {type(val).__name__}."
+            )
+
+    return True, ""
+
 
 
 class ExecutionPolicy:

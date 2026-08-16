@@ -74,12 +74,27 @@ class PytestValidator:
         junit_xml_path = context.project_root / ".build" / "quality" / "reports" / "junit.xml"
         junit_xml_path.parent.mkdir(parents=True, exist_ok=True)
 
-        cmd = [sys.executable, "-m", "pytest", str(target_test), "-q", "--tb=short", f"--junitxml={junit_xml_path}"]
+        # Resolve src_root for PYTHONPATH injection (handles src/-layout packages)
+        import os
+        src_root = context.src_root
+        if src_root is None:
+            candidate = context.project_root / "src"
+            if candidate.is_dir():
+                src_root = candidate
+
+        extra_env: dict[str, str] = {}
+        if src_root is not None:
+            existing = os.environ.get("PYTHONPATH", "")
+            extra_env["PYTHONPATH"] = str(src_root) + (os.pathsep + existing if existing else "")
+
+        # Use absolute path for test file to avoid "file not found" when cwd != project_root
+        cmd = [sys.executable, "-m", "pytest", str(target_test.resolve()), "-q", "--tb=short", f"--junitxml={junit_xml_path}"]
         sub_res = self.runner.run(
             cmd,
             cwd=context.project_root,
             validator_name=self.name,
             log_filename="pytest.log",
+            env=extra_env if extra_env else None,
         )
 
         artifacts = []

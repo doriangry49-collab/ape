@@ -52,7 +52,7 @@ class ResearchPlanStage(PipelineStage):
                 f"{topic} problem pain points",
                 f"{topic} competitors alternative",
             ],
-            "target_providers": ["HackerNews", "AudienceHeuristics"],
+            "target_providers": ["HackerNews", "GitHubTrending", "AudienceHeuristics"],
         }
 
         evidence = {

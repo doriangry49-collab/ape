@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from ape.intelligence.research.providers.audience import HeuristicAudienceProvider
+from ape.intelligence.research.providers.github_trending import GitHubTrendingResearchProvider
 from ape.intelligence.research.providers.hackernews import HackerNewsResearchProvider
 from ape.pipeline.contracts import (
     PipelineContext,
@@ -25,6 +26,7 @@ class AcquisitionExecutionStage(PipelineStage):
         self._offline = offline
         self._providers = {
             "HackerNews": HackerNewsResearchProvider(offline=offline),
+            "GitHubTrending": GitHubTrendingResearchProvider(offline=offline),
             "AudienceHeuristics": HeuristicAudienceProvider(),
         }
 
@@ -54,7 +56,7 @@ class AcquisitionExecutionStage(PipelineStage):
                 break
 
         selected_sources = acquisition_plan.get(
-            "selected_sources", ["HackerNews", "AudienceHeuristics"]
+            "selected_sources", ["HackerNews", "GitHubTrending", "AudienceHeuristics"]
         )
 
         raw_observations: List[Dict[str, Any]] = []

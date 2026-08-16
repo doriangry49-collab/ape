@@ -129,10 +129,41 @@ class ReleaseDecisionStage(PipelineStage):
                 },
             )
 
+        dry_run = getattr(context, "dry_run", False)
+        exec_mode = getattr(context, "execution_mode", "SIMULATION" if dry_run else "REAL_SANDBOX")
+        exec_backend = getattr(context, "execution_backend", "SIMULATION_STUB" if dry_run else "DOCKER_SANDBOX")
+        metadata = getattr(context, "metadata", {}) or {}
+        require_real_sandbox = metadata.get("require_real_sandbox", False)
+
+        if require_real_sandbox and (dry_run or exec_mode == "SIMULATION"):
+            reason = f"Release SIMULATED: Execution mode is SIMULATION ({exec_backend}); production release approval requires REAL_SANDBOX execution assurance."
+            release_decision = {
+                "status": "RELEASE_DECISION_SIMULATED",
+                "reason": reason,
+                "approval_allowed": False,
+                "execution_mode": exec_mode,
+                "execution_backend": exec_backend,
+                "policy_evaluation": policy_eval.to_dict(),
+            }
+            return StageResult(
+                stage_name=self.name,
+                status=StageStatus.SUCCESS,
+                output_data={"release_decision": release_decision, "released": False},
+                evidence={
+                    "release_status": "RELEASE_DECISION_SIMULATED",
+                    "execution_mode": exec_mode,
+                    "execution_backend": exec_backend,
+                    "stages_verified_count": len(previous_results),
+                    "passed_rules": policy_eval.passed_rules,
+                },
+            )
+
         release_decision = {
             "status": "APPROVED",
-            "reason": f"All constitutional pipeline gates passed under policy '{policy_eval.policy_name}'.",
+            "reason": f"All constitutional pipeline gates passed under policy '{policy_eval.policy_name}' with {exec_mode} execution assurance ({exec_backend}).",
             "approval_allowed": True,
+            "execution_mode": exec_mode,
+            "execution_backend": exec_backend,
             "policy_evaluation": policy_eval.to_dict(),
         }
 
@@ -143,6 +174,8 @@ class ReleaseDecisionStage(PipelineStage):
 
         evidence = {
             "release_status": "APPROVED",
+            "execution_mode": exec_mode,
+            "execution_backend": exec_backend,
             "stages_verified_count": len(previous_results),
             "passed_rules": policy_eval.passed_rules,
         }

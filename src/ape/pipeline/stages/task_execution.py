@@ -5,8 +5,9 @@ Enforces fail-closed invariants:
 - Rejects FORBIDDEN actions according to ExecutionPolicy.
 - Orchestrates task execution through TaskStateMachine and returns structured execution summary.
 
-Stage Purity: Orchestrates task execution; relies on TaskStateMachine and TaskExecutor as domain services.
-Emits governance audit events for task state transitions (STARTED, COMPLETED, PAUSED, FAILED, REQUIRES_APPROVAL, APPROVED, DENIED).
+Stage Purity: Orchestrates task execution.
+Relies on TaskStateMachine and TaskExecutor as domain services.
+Emits governance audit events for task state transitions.
 """
 
 from __future__ import annotations
@@ -15,10 +16,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from ape.intelligence.execution.evaluators import CompositeRuntimeEvaluator
 from ape.intelligence.execution.executor import (
     DockerSandboxExecutor,
     SimulationTaskExecutor,
     TaskExecutor,
+)
+from ape.intelligence.execution.intervention import (
+    GovernedInterventionPolicy,
+    InterventionAction,
 )
 from ape.intelligence.execution.models import (
     ExecutionState,
@@ -28,6 +34,7 @@ from ape.intelligence.execution.models import (
 )
 from ape.intelligence.execution.policy import ExecutionPolicy, validate_path_containment
 from ape.intelligence.execution.state import TaskStateMachine
+from ape.intelligence.execution.trajectory import ExecutionTrajectory, TrajectoryStep
 from ape.pipeline.contracts import (
     BasePipelineContext,
     ExecutionContext,
@@ -151,6 +158,14 @@ class TaskExecutionStage(PipelineStage):
                 tasks=tasks_list,
             )
 
+        trajectory = ExecutionTrajectory(
+            execution_id=state.execution_id,
+            topic_slug=topic_slug,
+            decision_id=state.decision_id or decision_id,
+            policy_decision=state.policy_decision or policy_decision,
+            evidence_hash=state.evidence_hash or evidence_hash,
+        )
+
         summary: Dict[str, List[str]] = {
             "executed": [],
             "retried": [],
@@ -189,7 +204,14 @@ class TaskExecutionStage(PipelineStage):
                                 if not ok:
                                     sm.start()
                                     sm.fail(error=err)
-                                    self._emit(topic_slug, "FAILED", task.task_id, state=state, reason="PATH_TRAVERSAL_REJECTED", error=err)
+                                    self._emit(
+                                        topic_slug,
+                                        "FAILED",
+                                        task.task_id,
+                                        state=state,
+                                        reason="PATH_TRAVERSAL_REJECTED",
+                                        error=err,
+                                    )
                                     path_blocked = True
                                     execution_error = f"Path containment rejected: {err}"
                                     break
@@ -198,7 +220,13 @@ class TaskExecutionStage(PipelineStage):
 
                     if safety == "FORBIDDEN":
                         sm.fail(error="Action is FORBIDDEN by ExecutionPolicy.")
-                        self._emit(topic_slug, "FAILED", task.task_id, state=state, reason="FORBIDDEN")
+                        self._emit(
+                            topic_slug,
+                            "FAILED",
+                            task.task_id,
+                            state=state,
+                            reason="FORBIDDEN",
+                        )
                         execution_error = "Action is FORBIDDEN by ExecutionPolicy."
                         continue
 
@@ -207,7 +235,13 @@ class TaskExecutionStage(PipelineStage):
                         self._emit(topic_slug, "REQUIRES_APPROVAL", task.task_id, state=state)
                         if auto_deny or dry_run:
                             sm.deny(reason="AUTO_DENIED")
-                            self._emit(topic_slug, "DENIED", task.task_id, state=state, reason="AUTO_DENIED")
+                            self._emit(
+                                topic_slug,
+                                "DENIED",
+                                task.task_id,
+                                state=state,
+                                reason="AUTO_DENIED",
+                            )
                             continue
                         sm.approve()
                         self._emit(topic_slug, "APPROVED", task.task_id, state=state)
@@ -235,6 +269,28 @@ class TaskExecutionStage(PipelineStage):
                             workspace_root=self._root,
                         )
                         for step in res.steps:
+                            import hashlib as _hashlib
+
+                            out_bytes = (step.stdout or "").encode("utf-8")
+                            stdout_h = _hashlib.sha256(out_bytes).hexdigest()
+                            raw_err = step.stderr or getattr(step, "error", None) or ""
+                            stderr_sig = raw_err.strip().split("\n")[0][:100]
+
+                            ts_step = TrajectoryStep(
+                                step_id=f"step_{task.task_id}_{step.attempt}",
+                                task_id=task.task_id,
+                                attempt=step.attempt,
+                                thought=step.thought,
+                                action=step.action,
+                                params=step.params,
+                                exit_code=step.exit_code,
+                                stdout_hash=stdout_h,
+                                stderr_signature=stderr_sig,
+                                status=step.status,
+                                timestamp=datetime.now(timezone.utc).isoformat(),
+                            )
+                            trajectory.append_step(ts_step)
+
                             agent_steps.append({
                                 "task_id": task.task_id,
                                 "thought": step.thought,
@@ -258,10 +314,18 @@ class TaskExecutionStage(PipelineStage):
                                 "evidence_hash": state.evidence_hash,
                                 "timestamp": datetime.now(timezone.utc).isoformat(),
                             }
-                            append_to_evidence(self._root / ".governance" / "evidence", "execution_agent", step_payload)
+                            evidence_dir = self._root / ".governance" / "evidence"
+                            append_to_evidence(evidence_dir, "execution_agent", step_payload)
+
                         if res.status == "FAILED":
                             sm.fail(error=res.error or "Agent execution failed")
-                            self._emit(topic_slug, "FAILED", task.task_id, state=state, error=res.error)
+                            self._emit(
+                                topic_slug,
+                                "FAILED",
+                                task.task_id,
+                                state=state,
+                                error=res.error,
+                            )
                             if task.task_id in summary["executed"]:
                                 summary["executed"].remove(task.task_id)
                             execution_error = res.error or "Agent execution failed"
@@ -271,7 +335,12 @@ class TaskExecutionStage(PipelineStage):
                             self._emit(topic_slug, "COMPLETED", task.task_id, state=state)
                     else:
                         try:
-                            executor.execute(task.description, task.deliverables, workspace_root=self._root, dry_run=dry_run)
+                            executor.execute(
+                                task.description,
+                                task.deliverables,
+                                workspace_root=self._root,
+                                dry_run=dry_run,
+                            )
                         except TypeError:
                             executor.execute(task.description, task.deliverables)
                         sm.complete()
@@ -298,7 +367,8 @@ class TaskExecutionStage(PipelineStage):
 
             state_dir = self._root / ".build" / "execution" / topic_slug
             state_dir.mkdir(parents=True, exist_ok=True)
-            (state_dir / "current.json").write_text(_json.dumps(state.to_dict(), indent=2), encoding="utf-8")
+            formatted_json = _json.dumps(state.to_dict(), indent=2)
+            (state_dir / "current.json").write_text(formatted_json, encoding="utf-8")
 
             self._emit(topic_slug, "PAUSED", "engine", state=state, reason="KeyboardInterrupt")
             return StageResult(
@@ -326,9 +396,21 @@ class TaskExecutionStage(PipelineStage):
         else:
             state.status = ExecutionStatus.IN_PROGRESS
 
+        # Run deterministic supervisory evaluators over execution trajectory
+        evaluator = CompositeRuntimeEvaluator()
+        health_signals = evaluator.evaluate(trajectory)
+        serialized_signals = [sig.to_dict() for sig in health_signals]
+
+        # Resolve governed adaptive intervention policy
+        intervention_policy = GovernedInterventionPolicy()
+        intervention_proposal = intervention_policy.resolve(health_signals)
+
         output_data = {
             "execution_summary": summary,
             "agent_steps": agent_steps,
+            "trajectory": trajectory.to_dict(),
+            "health_signals": serialized_signals,
+            "intervention_proposal": intervention_proposal.to_dict(),
             "state": state.to_dict(),
             "tasks_executed_count": len(summary["executed"]),
             "status": state.status.value,
@@ -337,6 +419,9 @@ class TaskExecutionStage(PipelineStage):
         evidence = {
             "execution_summary": summary,
             "agent_steps_count": len(agent_steps),
+            "trajectory_hash": trajectory.compute_trajectory_hash(),
+            "health_signals_count": len(health_signals),
+            "intervention_action": intervention_proposal.proposed_action.value,
             "state_status": state.status.value,
         }
 
@@ -359,6 +444,13 @@ class TaskExecutionStage(PipelineStage):
             state_file.write_text(_json.dumps(state.to_dict(), indent=2), encoding="utf-8")
 
         stage_status = StageStatus.FAILED if any_failed else StageStatus.SUCCESS
+        if intervention_proposal.proposed_action == InterventionAction.SAFE_HOLD:
+            stage_status = StageStatus.BLOCKED
+            execution_error = intervention_proposal.reason
+        elif intervention_proposal.proposed_action == InterventionAction.ABORT:
+            stage_status = StageStatus.FAILED
+            execution_error = intervention_proposal.reason
+
         return StageResult(
             stage_name=self.name,
             status=stage_status,

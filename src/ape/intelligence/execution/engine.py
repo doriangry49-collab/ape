@@ -159,6 +159,14 @@ class ExecutionEngine:
         # Enforce RFC-014 exception semantics for backwards compatibility
         decision_data = self._verify_decision_gate(topic_slug)
 
+        # Auto-generate roadmap if decision exists but roadmap is missing
+        roadmaps_dir = self._root / ".build" / "roadmaps"
+        if not get_current_artifact(roadmaps_dir, topic_slug):
+            decisions_dir = self._root / ".build" / "decisions"
+            if get_current_artifact(decisions_dir, topic_slug):
+                from ape.intelligence.roadmap.engine import RoadmapGenerator
+                RoadmapGenerator(self._root).generate_roadmap(topic, topic_slug)
+
         ctx = ExecutionContext(
             run_id=f"run_exec_{uuid.uuid4().hex[:8]}",
             topic_slug=topic_slug,
@@ -166,6 +174,8 @@ class ExecutionEngine:
             dry_run=self._dry_run,
             auto_deny_approvals=self._auto_deny,
             interrupt_after_tasks=self._interrupt_after,
+            execution_mode="REAL_SANDBOX" if not self._dry_run else "SIMULATION",
+            execution_backend="DOCKER_SANDBOX" if not self._dry_run else "SIMULATION_STUB",
         )
 
         pipeline = self._build_pipeline()

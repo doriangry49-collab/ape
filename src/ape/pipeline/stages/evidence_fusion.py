@@ -51,6 +51,8 @@ class EvidenceFusionStage(PipelineStage):
         all_sources: List[str] = []
         confidence_scores: List[float] = []
 
+        business_evidence_items: List[Dict[str, Any]] = []
+
         for obs in validated_observations:
             if obs.get("capability_verified"):
                 source = obs.get("source", "unknown")
@@ -83,6 +85,47 @@ class EvidenceFusionStage(PipelineStage):
                     else:
                         fused_signals[k] = v
 
+                # Map raw observations to structured BusinessEvidence item
+                discussions = signals.get("discussions", [])
+                market_signals = signals.get("market_signals", [])
+                audience = signals.get("target_audience", [])
+                competitors = signals.get("competitors", [])
+                risks = signals.get("risks", [])
+
+                search_intent = True if (discussions or audience) else "UNKNOWN"
+                pain_obs = True if pains else "UNKNOWN"
+                manual_work = True if risks else "UNKNOWN"
+                pricing_obs = "UNKNOWN"
+                if pains:
+                    pains_str = " ".join(str(p) for p in pains).lower()
+                    if any(kw in pains_str for kw in ["cost", "pricing", "expensive", "pay", "fee"]):
+                        pricing_obs = True
+                entity_obs = True if (market_signals or audience) else "UNKNOWN"
+                comp_obs = True if competitors else "UNKNOWN"
+
+                ref_url = None
+                if isinstance(discussions, list) and discussions:
+                    top_disc = discussions[0]
+                    if isinstance(top_disc, dict) and top_disc.get("url"):
+                        ref_url = top_disc.get("url")
+
+                raw_obs_summary = f"Source: {source}, Pain points: {len(pains) if isinstance(pains, list) else 0}, Discussions: {len(discussions) if isinstance(discussions, list) else 0}"
+
+                business_evidence_items.append({
+                    "search_intent_observation": search_intent,
+                    "pain_observation": pain_obs,
+                    "manual_work_observation": manual_work,
+                    "pricing_observation": pricing_obs,
+                    "entity_observation": entity_obs,
+                    "competition_observation": comp_obs,
+                    "provenance": {
+                        "source_adapter": source,
+                        "raw_observation": raw_obs_summary,
+                        "reference_url": ref_url,
+                        "request_context": f"EvidenceFusionStage:{topic}",
+                    },
+                })
+
         overall_confidence = (
             min(confidence_scores) if confidence_scores else 0.80
         )
@@ -98,6 +141,7 @@ class EvidenceFusionStage(PipelineStage):
             "fused_pain_points": all_pain_points,
             "fused_sources": all_sources,
             "fused_signals": fused_signals,
+            "business_evidence": business_evidence_items,
         }
 
         evidence = {

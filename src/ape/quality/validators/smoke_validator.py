@@ -47,6 +47,7 @@ class SmokeValidator:
 
         # Discover entrypoint deliverable python files
         entrypoint: Optional[Path] = None
+        # Prefer __main__.py or the first non-test .py in deliverables under src/
         for item in context.deliverables:
             p = context.project_root / item
             if p.exists() and p.name.endswith(".py") and not p.name.startswith("test_"):
@@ -73,14 +74,31 @@ class SmokeValidator:
                 findings=["No runnable python entrypoint found in deliverables or project root"],
             )
 
-        module_name = entrypoint.stem
-        # Inline smoke execution snippet
+        # Resolve src_root for PYTHONPATH injection (handles src/-layout packages)
+        import os
+        src_root = context.src_root
+        if src_root is None:
+            candidate = context.project_root / "src"
+            if candidate.is_dir():
+                src_root = candidate
+
+        extra_env: dict[str, str] = {}
+        if src_root is not None:
+            existing = os.environ.get("PYTHONPATH", "")
+            extra_env["PYTHONPATH"] = str(src_root) + (os.pathsep + existing if existing else "")
+
+        # Use importlib.util.spec_from_file_location so the module is loaded
+        # by file path — works for src/-layout submodules (e.g. csv_analyzer.analyzer).
+        # Use forward slashes: they work on Windows and avoid raw-string/backslash issues.
+        entrypoint_fwd = str(entrypoint.resolve()).replace("\\", "/")
         smoke_code = (
-            f"import ast, {module_name}; "
-            f"ast.parse(open('{entrypoint.name}').read()); "
-            f"main_fn = getattr({module_name}, 'main', None); "
-            f"res = main_fn() if callable(main_fn) else {{'status': 'ok', 'message': 'module imported cleanly'}}; "
-            f"print('Smoke Output:', res)"
+            f"import importlib.util; "
+            f"spec = importlib.util.spec_from_file_location('_ape_smoke', '{entrypoint_fwd}'); "
+            f"mod = importlib.util.module_from_spec(spec); "
+            f"spec.loader.exec_module(mod); "
+            f"main_fn = getattr(mod, 'main', None); "
+            f"res = main_fn() if callable(main_fn) else {{'status': 'ok', 'message': 'module loaded cleanly'}}; "
+            f"print('Smoke OK:', res)"
         )
 
         cmd = [sys.executable, "-c", smoke_code]
@@ -89,6 +107,7 @@ class SmokeValidator:
             cwd=context.project_root,
             validator_name=self.name,
             log_filename="smoke.log",
+            env=extra_env if extra_env else None,
         )
 
         artifacts = []

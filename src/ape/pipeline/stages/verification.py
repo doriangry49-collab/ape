@@ -81,11 +81,24 @@ class VerificationStage(PipelineStage):
             )
 
         # Run Quality OS Validation Engine
+        # Infer src_root: if any deliverable lives under .../src/..., extract that src/ dir.
+        # This lets validators inject the correct PYTHONPATH for src/-layout packages.
+        src_root = None
+        for d in deliverables:
+            parts = Path(d).parts
+            if "src" in parts:
+                src_idx = parts.index("src")
+                candidate = self._root / Path(*parts[:src_idx + 1])
+                if candidate.is_dir():
+                    src_root = candidate
+                    break
+
         val_ctx = ValidationContext(
             project_root=self._root,
             topic_slug=getattr(context, "topic", "deliverable"),
             deliverables=deliverables,
             dry_run=dry_run,
+            src_root=src_root,
         )
         quality_report = self._quality_runner.run(val_ctx)
 

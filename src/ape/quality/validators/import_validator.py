@@ -57,11 +57,30 @@ class ImportValidator:
         total_files = len(py_files)
 
         import sys
+
+        # Build the path entries to inject: project_root + src_root (if any).
+        # src_root is provided by ValidationContext when a src/-layout package is detected.
+        # If not provided, auto-detect by checking project_root/src/.
+        paths_to_inject: list[str] = []
+
         str_root = str(context.project_root)
-        path_inserted = False
         if str_root not in sys.path:
-            sys.path.insert(0, str_root)
-            path_inserted = True
+            paths_to_inject.append(str_root)
+
+        # src_root: explicit or auto-detected
+        src_root = context.src_root
+        if src_root is None:
+            candidate = context.project_root / "src"
+            if candidate.is_dir():
+                src_root = candidate
+
+        if src_root is not None:
+            str_src = str(src_root)
+            if str_src not in sys.path:
+                paths_to_inject.append(str_src)
+
+        for p in paths_to_inject:
+            sys.path.insert(0, p)
 
         try:
             for p in py_files:
@@ -79,8 +98,9 @@ class ImportValidator:
                 except Exception as exc:
                     errors.append(f"ImportError in {p.name}: {type(exc).__name__}: {str(exc)}")
         finally:
-            if path_inserted and str_root in sys.path:
-                sys.path.remove(str_root)
+            for p in paths_to_inject:
+                if p in sys.path:
+                    sys.path.remove(p)
 
         duration_ms = (time.perf_counter() - start_time) * 1000
         score = (passed_files / total_files * 100.0) if total_files > 0 else 100.0

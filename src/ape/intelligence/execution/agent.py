@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ape.intelligence.execution.models import ExecutionTask
-from ape.intelligence.execution.policy import CANONICAL_ACTIONS, validate_path_containment
+from ape.intelligence.execution.policy import (
+    CANONICAL_ACTIONS,
+    validate_action_parameters,
+    validate_path_containment,
+)
 from ape.intelligence.roadmap.llm import PlannerModel
 
 # Actions explicitly restricted in RFC-016 MVP
@@ -145,6 +149,14 @@ class ApeCoderAgent:
                     last_error = error_msg
                     continue
 
+                # 2.4 Constitutional Parameter Schema Check
+                param_valid, param_err = validate_action_parameters(proposed_action, params)
+                if not param_valid:
+                    error_msg = f"Rejected: {param_err}"
+                    steps.append(AgentStepResult(attempt, thought, proposed_action, params, -1, "", error_msg, "REJECTED"))
+                    last_error = error_msg
+                    continue
+
                 # 2.5 Path Containment Check
                 if proposed_action in ("create_file", "modify_file") and params.get("path"):
                     target_root = workspace_root or Path.cwd()
@@ -153,9 +165,6 @@ class ApeCoderAgent:
                         steps.append(AgentStepResult(attempt, thought, proposed_action, params, -1, "", err_msg, "REJECTED"))
                         last_error = err_msg
                         continue
-
-
-
 
                 # 3. Sandbox / Simulation Execution
                 exit_code = 0
@@ -170,9 +179,10 @@ class ApeCoderAgent:
                             if proposed_action in ("create_file", "modify_file") and params.get("path") and "content" in params:
                                 path = params["path"]
                                 content = params["content"]
-                                # Use python inline script inside container to safely write text file
-                                escaped_content = json.dumps(content)
-                                cmd = f'python -c "import pathlib, json; pathlib.Path({json.dumps(path)}).write_text(json.loads({escaped_content}))"'
+                                import base64
+                                b64_p = base64.b64encode(path.encode("utf-8")).decode("ascii")
+                                b64_c = base64.b64encode(content.encode("utf-8")).decode("ascii")
+                                cmd = f'python -c "import base64, pathlib; pathlib.Path(base64.b64decode(\'{b64_p}\').decode(\'utf-8\')).write_text(base64.b64decode(\'{b64_c}\').decode(\'utf-8\'), encoding=\'utf-8\')"'
                             elif proposed_action == "read_file" and params.get("path"):
                                 cmd = f'cat {json.dumps(params["path"])}'
                             elif proposed_action == "run_tests":

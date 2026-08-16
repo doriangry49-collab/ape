@@ -26,6 +26,10 @@ class ValidationContext:
     dry_run: bool = False
     quality_profile: str = "strict"
     metadata: dict[str, Any] = field(default_factory=dict)
+    # Optional: explicit src root for src/-layout packages.
+    # When set, validators inject this into PYTHONPATH for subprocess calls.
+    # When None, validators auto-detect by checking project_root/src/.
+    src_root: Path | None = None
 
 
 @dataclass
