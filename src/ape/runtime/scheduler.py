@@ -216,27 +216,10 @@ class MissionScheduler:
             if runner_override:
                 results = runner_override.run(ctx)
             else:
-                # Default pipeline execution
-                from ape.intelligence.execution.executor import SimulationTaskExecutor
-                from ape.pipeline.stages.capability_check import CapabilityCheckStage
-                from ape.pipeline.stages.execution_evidence import ExecutionEvidenceStage
-                from ape.pipeline.stages.execution_persist import ExecutionPersistStage
-                from ape.pipeline.stages.execution_plan import ExecutionPlanStage
-                from ape.pipeline.stages.policy_gate import PolicyGateStage
-                from ape.pipeline.stages.release_decision import ReleaseDecisionStage
-                from ape.pipeline.stages.task_execution import TaskExecutionStage
-                from ape.pipeline.stages.verification import VerificationStage
-
-                runner = ConstitutionalPipelineRunner([
-                    ExecutionPlanStage(self._root),
-                    PolicyGateStage(self._root),
-                    CapabilityCheckStage(self._root),
-                    TaskExecutionStage(self._root, executor=SimulationTaskExecutor()),
-                    VerificationStage(self._root),
-                    ExecutionEvidenceStage(),
-                    ExecutionPersistStage(self._root),
-                    ReleaseDecisionStage(),
-                ])
+                # Default pipeline execution via canonical ExecutionEngine
+                from ape.intelligence.execution.engine import ExecutionEngine
+                engine = ExecutionEngine(self._root, dry_run=False)
+                runner = engine._build_pipeline()
                 results = runner.run(ctx)
 
             failed_stages = [r for r in results if r.status in (StageStatus.FAILED, StageStatus.BLOCKED)]

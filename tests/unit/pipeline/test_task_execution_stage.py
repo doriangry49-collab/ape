@@ -83,3 +83,51 @@ def test_task_execution_stage_keyboard_interrupt(tmp_path: Path):
     res = stage.execute(ctx, [plan_result])
     assert res.status == StageStatus.BLOCKED
     assert res.evidence["failure_reason"] == "KEYBOARD_INTERRUPT"
+
+
+class DummyStep:
+    attempt = 1
+    thought = "think"
+    action = "create_file"
+    params = {}
+    exit_code = 0
+    stdout = "out"
+    stderr = ""
+    status = "SUCCESS"
+
+class DummyRes:
+    steps = [DummyStep()]
+    status = "SUCCESS"
+    error = None
+
+class DummyAgent:
+    def execute_task(self, *args, **kwargs):
+        return DummyRes()
+
+def test_task_execution_stage_production_fail_without_agent(tmp_path: Path):
+    stage = TaskExecutionStage(project_root=tmp_path, agent=None)
+    ctx = ExecutionContext(run_id="run-exec-prod", topic_slug="test-topic", dry_run=False)
+    plan_result = StageResult(
+        stage_name="execution_plan",
+        status=StageStatus.SUCCESS,
+        output_data={
+            "tasks": [{"task_id": "t1", "description": "T1", "deliverables": ["t1.txt"], "action": "create_file"}]
+        }
+    )
+    res = stage.execute(ctx, [plan_result])
+    assert res.status == StageStatus.FAILED
+    assert "Production execution requires an active Agent" in str(res.error)
+
+def test_task_execution_stage_production_success_with_agent(tmp_path: Path):
+    stage = TaskExecutionStage(project_root=tmp_path, agent=DummyAgent())
+    ctx = ExecutionContext(run_id="run-exec-prod-agent", topic_slug="test-topic", dry_run=False)
+    plan_result = StageResult(
+        stage_name="execution_plan",
+        status=StageStatus.SUCCESS,
+        output_data={
+            "tasks": [{"task_id": "t1", "description": "T1", "deliverables": ["t1.txt"], "action": "create_file"}]
+        }
+    )
+    res = stage.execute(ctx, [plan_result])
+    assert res.status == StageStatus.SUCCESS
+    assert "t1" in res.output_data["execution_summary"]["executed"]

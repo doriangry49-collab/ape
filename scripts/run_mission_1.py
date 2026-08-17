@@ -352,17 +352,8 @@ def run_mission(workspace: Path | None = None, verbose: bool = False) -> dict:
         topic_slug="csv_analyzer",
         dry_run=False,
     )
-    stages = [
-        ExecutionPlanStage(root),
-        PolicyGateStage(root),
-        CapabilityCheckStage(root),
-        TaskExecutionStage(root),
-        VerificationStage(root),
-        ExecutionEvidenceStage(),
-        ExecutionPersistStage(root),
-        ReleaseDecisionStage(),
-    ]
-    runner = ConstitutionalPipelineRunner(stages)
+    engine = ExecutionEngine(root, dry_run=False)
+    runner = engine._build_pipeline()
 
     t0 = time.perf_counter()
     results = []

@@ -66,11 +66,12 @@ def _make_runner(root: "Path") -> "ConstitutionalPipelineRunner":
     satisfies deliverable verification. This is the correct executor for
     local-sandbox environments without Docker.
     """
+    from tests.dummy_agent import DummyAgent
     return ConstitutionalPipelineRunner([
         ExecutionPlanStage(root),
         PolicyGateStage(root),
         CapabilityCheckStage(root),
-        TaskExecutionStage(root, executor=SimulationTaskExecutor()),
+        TaskExecutionStage(root, executor=SimulationTaskExecutor(), agent=DummyAgent()),
         VerificationStage(root),
         ExecutionEvidenceStage(),
         ExecutionPersistStage(root),
@@ -87,11 +88,12 @@ def _make_runner_no_verify(root: "Path") -> "ConstitutionalPipelineRunner":
     triggering VerificationStage quality scoring or ReleaseDecisionStage
     verification checks.
     """
+    from tests.dummy_agent import DummyAgent
     return ConstitutionalPipelineRunner([
         ExecutionPlanStage(root),
         PolicyGateStage(root),
         CapabilityCheckStage(root),
-        TaskExecutionStage(root, executor=SimulationTaskExecutor()),
+        TaskExecutionStage(root, executor=SimulationTaskExecutor(), agent=DummyAgent()),
         ExecutionEvidenceStage(),
         ExecutionPersistStage(root),
     ])

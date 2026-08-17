@@ -50,11 +50,12 @@ def _make_full_runner(root: Path) -> ConstitutionalPipelineRunner:
     SimulationTaskExecutor is explicitly documented as FINDING-001:
     Docker is unavailable in this environment; simulation is the local equivalent.
     """
+    from tests.dummy_agent import DummyAgent
     return ConstitutionalPipelineRunner([
         ExecutionPlanStage(root),
         PolicyGateStage(root),
         CapabilityCheckStage(root),
-        TaskExecutionStage(root, executor=SimulationTaskExecutor()),
+        TaskExecutionStage(root, executor=SimulationTaskExecutor(), agent=DummyAgent()),
         VerificationStage(root),          # QualityRunner fires here
         ExecutionEvidenceStage(),
         ExecutionPersistStage(root),

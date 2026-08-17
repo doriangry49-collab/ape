@@ -44,11 +44,12 @@ TOPIC_SLUG = "ollama_local_llm_ecosystem"
 
 def _build_constitutional_runner(root: Path) -> ConstitutionalPipelineRunner:
     """Instantiates the complete 8-stage Constitutional Pipeline — zero stage bypasses."""
+    from tests.dummy_agent import DummyAgent
     return ConstitutionalPipelineRunner([
         ExecutionPlanStage(root),
         PolicyGateStage(root),
         CapabilityCheckStage(root),
-        TaskExecutionStage(root, executor=SimulationTaskExecutor()),
+        TaskExecutionStage(root, executor=SimulationTaskExecutor(), agent=DummyAgent()),
         VerificationStage(root),
         ExecutionEvidenceStage(),
         ExecutionPersistStage(root),

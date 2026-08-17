@@ -152,7 +152,7 @@ class ExecutionEngine:
             ReleaseDecisionStage(),
         ])
 
-    def execute(self, topic: str, topic_slug: str) -> dict:
+    def execute(self, topic: str, topic_slug: str, run_id: Optional[str] = None) -> dict:
         """
         Main entry point for `ape execute` powered by ConstitutionalPipelineRunner.
         """
@@ -168,7 +168,7 @@ class ExecutionEngine:
                 RoadmapGenerator(self._root).generate_roadmap(topic, topic_slug)
 
         ctx = ExecutionContext(
-            run_id=f"run_exec_{uuid.uuid4().hex[:8]}",
+            run_id=run_id or f"run_exec_{uuid.uuid4().hex[:8]}",
             topic_slug=topic_slug,
             topic=topic,
             dry_run=self._dry_run,

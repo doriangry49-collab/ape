@@ -152,11 +152,12 @@ def test_scenario_4_verification_failure_guard(tmp_path: Path):
                 error = ""
             return Dummy()
 
+    from tests.dummy_agent import DummyAgent
     runner = ConstitutionalPipelineRunner([
         ExecutionPlanStage(tmp_path),
         PolicyGateStage(tmp_path),
         CapabilityCheckStage(tmp_path),
-        TaskExecutionStage(tmp_path, executor=NoOpExecutor()),
+        TaskExecutionStage(tmp_path, executor=NoOpExecutor(), agent=DummyAgent()),
         VerificationStage(tmp_path),
         ExecutionEvidenceStage(),
         ExecutionPersistStage(tmp_path),

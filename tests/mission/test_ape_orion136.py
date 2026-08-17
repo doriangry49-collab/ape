@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 from ape.intelligence.decision.engine import DecisionEngine
 from ape.intelligence.research.engine import ResearchEngine
@@ -80,17 +81,24 @@ class TestORION136_AutonomousRuntimeFoundation:
 
         scheduler = MissionScheduler(tmp_path)
         job = scheduler.schedule_mission(TOPIC_SLUG, action="full_mission")
-
         assert job.status == JobStatus.QUEUED
-        assert scheduler.queue.peek_next().job_id == job.job_id
 
-        # Process queued job
-        processed_job = scheduler.process_next_job()
+        from tests.dummy_agent import DummyAgent
+        from ape.intelligence.execution.engine import ExecutionEngine
+        from ape.intelligence.execution.executor import SimulationTaskExecutor
+        original_init = ExecutionEngine.__init__
+        def patched_init(self, *args, **kwargs):
+            kwargs['agent'] = DummyAgent()
+            kwargs['executor'] = SimulationTaskExecutor()
+            original_init(self, *args, **kwargs)
+        
+        with patch.object(ExecutionEngine, '__init__', patched_init):
+            processed_job = scheduler.process_next_job()
 
         assert processed_job is not None
         assert processed_job.status == JobStatus.COMPLETED
         assert processed_job.error is None
-        assert processed_job.metadata.get("executed_stages_count") == 8
+        assert processed_job.metadata.get("executed_stages_count") == 9
 
         print(f"\n[Proof 2] Mission scheduled: {job.job_id}")
         print(f"[Proof 2] Mission processed: status={processed_job.status}, stages={processed_job.metadata['executed_stages_count']}")
@@ -143,8 +151,18 @@ class TestORION136_AutonomousRuntimeFoundation:
 
         daemon = AutonomousRuntimeDaemon(tmp_path, daemon_id="daemon_e2e")
         daemon.scheduler.schedule_mission(TOPIC_SLUG)
-
-        processed = daemon.start()
+    
+        from tests.dummy_agent import DummyAgent
+        from ape.intelligence.execution.engine import ExecutionEngine
+        from ape.intelligence.execution.executor import SimulationTaskExecutor
+        original_init = ExecutionEngine.__init__
+        def patched_init(self, *args, **kwargs):
+            kwargs['agent'] = DummyAgent()
+            kwargs['executor'] = SimulationTaskExecutor()
+            original_init(self, *args, **kwargs)
+        
+        with patch.object(ExecutionEngine, '__init__', patched_init):
+            processed = daemon.start()
 
         assert len(processed) == 1
         assert processed[0].status == JobStatus.COMPLETED

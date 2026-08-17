@@ -66,11 +66,12 @@ def _write_decision_artifact(
 
 def _build_execution_runner(root: Path) -> ConstitutionalPipelineRunner:
     """Full 8-stage pipeline — same as ORION-127/128, zero bypasses."""
+    from tests.dummy_agent import DummyAgent
     return ConstitutionalPipelineRunner([
         ExecutionPlanStage(root),
         PolicyGateStage(root),
         CapabilityCheckStage(root),
-        TaskExecutionStage(root, executor=SimulationTaskExecutor()),
+        TaskExecutionStage(root, executor=SimulationTaskExecutor(), agent=DummyAgent()),
         VerificationStage(root),
         ExecutionEvidenceStage(),
         ExecutionPersistStage(root),

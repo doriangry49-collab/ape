@@ -334,6 +334,8 @@ class TaskExecutionStage(PipelineStage):
                             sm.complete()
                             self._emit(topic_slug, "COMPLETED", task.task_id, state=state)
                     else:
+                        if not dry_run:
+                            raise RuntimeError("Production execution requires an active Agent. Agentless execution fallback is forbidden in non-simulation environments.")
                         try:
                             executor.execute(
                                 task.description,
