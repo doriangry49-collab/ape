@@ -184,8 +184,9 @@ def test_governed_real_sandbox_e2e_live_g3_chain(governed_real_sandbox_env):
 
     # 3. Verify agent evidence recorded execution_mode and execution_backend
     evidence_dir = project_root / ".governance" / "evidence"
-    agent_log_file = evidence_dir / "execution_agent.jsonl"
-    assert agent_log_file.exists()
+    agent_log_files = list(evidence_dir.glob("execution_agent*.jsonl"))
+    assert len(agent_log_files) > 0
+    agent_log_file = agent_log_files[0]
 
     agent_logs = [json.loads(line) for line in agent_log_file.read_text().strip().split("\n") if line.strip()]
     assert len(agent_logs) >= 1
