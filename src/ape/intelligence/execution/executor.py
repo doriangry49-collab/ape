@@ -134,7 +134,7 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
 
         return None
 
-    def execute_command(self, cmd: str, cwd: str = "/tmp", timeout: int = 60, workspace_dir: str | None = None) -> SandboxResult:
+    def execute_command(self, cmd: str, cwd: str = "/workspace", timeout: int = 60, workspace_dir: str | None = None) -> SandboxResult:
         docker_prefix = self.get_docker_prefix()
         if not docker_prefix:
             return SandboxResult(
@@ -154,6 +154,8 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
         
         if workspace_dir:
             docker_cmd.extend(["-v", f"{workspace_dir}:/workspace:rw"])
+            if cwd == "/tmp":
+                cwd = "/workspace"
 
         docker_cmd.extend([
             "-w", cwd,
