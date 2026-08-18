@@ -54,3 +54,10 @@ To enable local secret scanning before committing:
 pip install pre-commit
 pre-commit install
 ```
+
+---
+
+## 📋 Project Status & Tracking
+
+Live project status, sprint backlog, and mission tracking are managed via [GitHub Issues](https://github.com/doriangry49-collab/ape/issues).
+
