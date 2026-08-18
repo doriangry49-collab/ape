@@ -42,3 +42,15 @@ USER CLI: ape build "<topic>" [--yes]
 1. **No Automatic `git push`**: Remote pushing is FORBIDDEN and blocked by policy. Releases create local commits with human approval.
 2. **Fail-Closed Container Sandbox**: Isolated execution runs inside Docker sandboxes with `--network=none`, CPU/memory quotas, and zero host environment propagation. If Docker is unavailable, live execution fails closed (`BLOCKED`).
 3. **Audit Lineage**: All events log immutable, append-only audit evidence under `.governance/evidence/<track>-YYYY-MM.jsonl` with embedded `decision_id`, `policy_decision`, and `evidence_hash` lineage.
+
+---
+
+## 🔒 Secret Scanning
+
+This repository uses [gitleaks](https://github.com/gitleaks/gitleaks) for local pre-commit secret scanning and CI workflow protection.
+
+To enable local secret scanning before committing:
+```bash
+pip install pre-commit
+pre-commit install
+```
