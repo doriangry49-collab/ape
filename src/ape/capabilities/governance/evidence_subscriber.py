@@ -25,15 +25,12 @@ class GovernanceEvidenceSubscriber:
         event_bus.subscribe(self.handle_event)
 
     def handle_event(self, event: RuntimeEvent) -> None:
-        """Handle incoming RuntimeEvent and append to JSONL ledger."""
+        """Handle incoming RuntimeEvent and append to JSONL ledger via append_to_evidence boundary."""
         try:
-            os.makedirs(self.evidence_dir, exist_ok=True)
-            month_str = time.strftime("%Y-%m")
+            from pathlib import Path
+            from ape.utils import append_to_evidence
 
-            if event.event_type == "GovernedCapabilityStarted":
-                target_file = os.path.join(self.evidence_dir, f"decisions-{month_str}.jsonl")
-            else:
-                target_file = os.path.join(self.evidence_dir, f"execution-{month_str}.jsonl")
+            track = "decisions" if event.event_type == "GovernedCapabilityStarted" else "execution"
 
             payload = {
                 "event_type": event.event_type,
@@ -44,8 +41,8 @@ class GovernanceEvidenceSubscriber:
                 "timestamp": event.timestamp,
             }
 
-            with open(target_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(payload) + "\n")
+            append_to_evidence(Path(self.evidence_dir), track, payload)
         except Exception:
             # Non-blocking exception guard: evidence persistence failure NEVER blocks execution
             pass
+

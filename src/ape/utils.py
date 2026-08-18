@@ -60,12 +60,83 @@ def get_artifact_history(evidence_dir: Path, track: str) -> Path:
     return evidence_dir / f"{track}-{partition}.jsonl"
 
 
+DENYLIST_KEYS = {
+    "api_key", "secret", "password", "credential", "private_key",
+    "access_token", "refresh_token", "authorization", "auth", "bearer",
+    "api_token", "jwt_token", "client_secret", "ssh_key"
+}
+
+ALLOWLIST_KEYS = {
+    "provider", "model", "request_id", "status", "exit_code", "token_count",
+    "duration_ms", "topic_slug", "timestamp", "event", "task_id", "decision_id",
+    "policy_decision", "evidence_hash", "attempt", "attempt_count",
+    "schema_version", "ape_version"
+}
+
+REGEX_RULES = [
+    (re.compile(r'Bearer\s+[a-zA-Z0-9_\-\.]{16,}'), 'Bearer [REDACTED_BEARER_TOKEN]'),
+    (re.compile(r'(ghp|gho|ghu|ghs|ghr)_[a-zA-Z0-9]{36}'), '[REDACTED_GITHUB_TOKEN]'),
+    (re.compile(r'(AKIA|ASIA)[A-Z0-9]{16}'), '[REDACTED_AWS_KEY]'),
+    (re.compile(r'([?&](?:api[_-]?key|token|auth|secret)=)[^&\s]+', re.IGNORECASE), r'\1[REDACTED_QUERY_PARAM]'),
+    (re.compile(r'(?i)(api[_-]?key|secret|password|token)\s*[:=]\s*["\']?([a-zA-Z0-9_\-\.]{16,})["\']?'), r'\1=[REDACTED_VALUE]'),
+]
+
+
+def sanitize_string(text: str) -> str:
+    sanitized = text
+    for pattern, replacement in REGEX_RULES:
+        sanitized = pattern.sub(replacement, sanitized)
+    return sanitized
+
+
+def sanitize_evidence_payload(data: Any, max_depth: int = 10, _current_depth: int = 0) -> Any:
+    """
+    Recursively sanitize dictionaries, lists, and strings for sensitive credentials.
+    """
+    if _current_depth > max_depth:
+        raise RecursionError("Sanitizer maximum recursion depth exceeded.")
+
+    if isinstance(data, dict):
+        sanitized_dict = {}
+        for key, val in data.items():
+            key_str = str(key).lower()
+
+            if any(deny in key_str for deny in DENYLIST_KEYS) and key_str not in ALLOWLIST_KEYS:
+                sanitized_dict[key] = "[REDACTED_DENYLIST_KEY]"
+            else:
+                sanitized_dict[key] = sanitize_evidence_payload(val, max_depth, _current_depth + 1)
+        return sanitized_dict
+
+    elif isinstance(data, list):
+        return [sanitize_evidence_payload(item, max_depth, _current_depth + 1) for item in data]
+
+    elif isinstance(data, str):
+        return sanitize_string(data)
+
+    else:
+        return data
+
+
 def append_to_evidence(evidence_dir: Path, track: str, payload: dict) -> None:
     """
     Append a JSON payload as a new line to the track's JSONL evidence log.
     This is the ONLY correct way to write to the immutable history.
     """
     import json
+
+    try:
+        sanitized_payload = sanitize_evidence_payload(payload)
+    except Exception as exc:
+        sanitized_payload = {
+            "event": "REDACTION_FAILURE",
+            "track": track,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "error": "Sanitizer failed to process payload safely. Raw payload suppressed to prevent credential leakage.",
+            "sanitizer_error": type(exc).__name__,
+        }
+
     log_path = get_artifact_history(evidence_dir, track)
     with open(log_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(payload, default=str) + "\n")
+        f.write(json.dumps(sanitized_payload, default=str) + "\n")
+
+
