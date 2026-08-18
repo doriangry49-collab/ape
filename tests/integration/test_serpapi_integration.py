@@ -11,8 +11,8 @@ from ape.intelligence.scanner.adapters.web_search_adapter import (
 # Mark all tests in this file as integration tests
 pytestmark = pytest.mark.integration
 
-from unittest.mock import patch
-
+import sys
+from unittest.mock import MagicMock, patch
 
 def test_missing_api_key_raises_error():
     # If key is missing, verify clean failure (AdapterError)
@@ -22,7 +22,11 @@ def test_missing_api_key_raises_error():
     if os.path.exists(cache_path):
         os.remove(cache_path)
 
-    with patch.dict(os.environ, {}, clear=True), patch("winreg.QueryValueEx", side_effect=FileNotFoundError):
+    mock_winreg = MagicMock()
+    mock_winreg.QueryValueEx.side_effect = FileNotFoundError
+    mock_winreg.HKEY_CURRENT_USER = 0
+
+    with patch.dict(os.environ, {}, clear=True), patch.dict(sys.modules, {"winreg": mock_winreg}):
         # Should raise AdapterError, not BudgetExhaustedError or network errors
         with pytest.raises(AdapterError) as exc_info:
             adapter.scan_segment("real_estate")

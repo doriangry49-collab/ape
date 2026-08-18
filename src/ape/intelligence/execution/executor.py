@@ -157,7 +157,7 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
 
         docker_cmd.extend([
             "-w", cwd,
-            "alpine", "sh", "-c", cmd
+            "python:3.12-alpine", "sh", "-c", cmd
         ])
         
         try:
