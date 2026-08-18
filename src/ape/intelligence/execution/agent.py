@@ -191,9 +191,11 @@ class ApeCoderAgent:
                                 cmd = f"echo {proposed_action}"
 
                         # Execute in sandbox
+                        target_dir = str(workspace_root or Path.cwd())
                         res = sandbox_executor.execute_command(
                             cmd=cmd,
-                            cwd="/workspace"
+                            cwd="/workspace",
+                            workspace_dir=target_dir
                         )
                         exit_code = res.exit_code
                         stdout = res.output
