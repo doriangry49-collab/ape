@@ -177,9 +177,17 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
         timeout: int = 60,
         workspace_dir: str | None = None,
         auth_token: ExecutionAuthToken | None = None,
+        authorization_signal: Any | None = None,
     ) -> SandboxResult:
+        from ape.governance import ActionSemantic, CanonicalGovernanceBoundary
         from ape.intelligence.execution.auth_token import get_governance_secret
 
+        # 1. Action Semantics Classification & Governance Boundary Check
+        semantic = CanonicalGovernanceBoundary.classify_command(cmd)
+        if semantic != ActionSemantic.READ_ONLY_INSPECTION:
+            CanonicalGovernanceBoundary.validate_action(semantic, authorization_signal=authorization_signal, command_args=cmd)
+
+        # 2. Execution Token Verification
         secret_key = get_governance_secret()
         if not auth_token or not auth_token.verify(secret_key):
             if self.evidence_dir:

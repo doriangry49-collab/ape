@@ -17,6 +17,23 @@ class GovernanceService:
         self._gov_dir = project.root / ".governance"
         self._build_dir = project.root / ".build"
 
+    def execute_git_command(
+        self,
+        args: list[str],
+        authorization_signal: Any | None = None,
+    ) -> subprocess.CompletedProcess:
+        """
+        Executes git/subprocess commands via the Canonical Governance Boundary.
+        Enforces that high-impact operations (push/merge to main) require valid human authorization.
+        """
+        from ape.governance import ActionSemantic, CanonicalGovernanceBoundary
+
+        semantic = CanonicalGovernanceBoundary.classify_command(args)
+        if semantic != ActionSemantic.READ_ONLY_INSPECTION:
+            CanonicalGovernanceBoundary.validate_action(semantic, authorization_signal=authorization_signal, command_args=args)
+
+        return subprocess.run(args, cwd=self._project.root, capture_output=True, text=True, check=True)
+
     def _ensure_dirs(self) -> None:
         self._build_dir.mkdir(parents=True, exist_ok=True)
 
