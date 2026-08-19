@@ -88,7 +88,7 @@ class ExecutionEngine:
         elif dry_run:
             self._executor = SimulationTaskExecutor()
         else:
-            self._executor = DockerSandboxExecutor()
+            self._executor = DockerSandboxExecutor(evidence_dir=project_root / ".governance" / "evidence")
         self._verifier = DeliverableVerifier(project_root, dry_run=dry_run)
 
         # RFC-016: Wire ApeCoderAgent if provided or if ConfigService has API Key configured

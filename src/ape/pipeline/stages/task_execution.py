@@ -129,7 +129,7 @@ class TaskExecutionStage(PipelineStage):
         elif dry_run or execution_backend == "simulation":
             executor = SimulationTaskExecutor()
         else:
-            executor = DockerSandboxExecutor()
+            executor = DockerSandboxExecutor(evidence_dir=self._root / ".governance" / "evidence")
 
         # Build or rehydrate tasks & ExecutionState
         if existing_state_dict:

@@ -95,6 +95,9 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
     Applies strict constraints: network=none, resource limits, clean env.
     """
 
+    def __init__(self, evidence_dir: Path | None = None) -> None:
+        self.evidence_dir = evidence_dir
+
     def execute(
         self,
         task_description: str,
@@ -179,12 +182,35 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
 
         secret_key = get_governance_secret()
         if not auth_token or not auth_token.verify(secret_key):
+            if self.evidence_dir:
+                try:
+                    from datetime import datetime, timezone
+                    from ape.utils import append_to_evidence
+
+                    task_id = getattr(auth_token, "task_id", "UNKNOWN") if auth_token else "UNKNOWN"
+                    payload = {
+                        "event": "UNAUTHORIZED_EXECUTION_ATTEMPT",
+                        "task_id": task_id,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "reason": "Missing or invalid ExecutionAuthToken",
+                        "cmd": cmd,
+                    }
+                    append_to_evidence(self.evidence_dir, "execution_unauthorized", payload)
+                except Exception:
+                    pass
+            else:
+                import logging
+                logging.getLogger("ape.security").warning(
+                    "Unauthorized execute_command() attempt rejected without evidence_dir configured — attempt not persisted to audit trail."
+                )
+
             return SandboxResult(
                 exit_code=-1,
                 output="",
                 error="Unauthorized: valid ExecutionAuthToken required.",
                 status="BLOCKED",
             )
+
 
         docker_prefix = self.get_docker_prefix()
         if not docker_prefix:
