@@ -4,6 +4,7 @@ Testing DockerSandboxExecutor constraints and fail-closed behavior.
 """
 from unittest import mock
 
+from ape.intelligence.execution.auth_token import create_test_auth_token
 from ape.intelligence.execution.executor import DockerSandboxExecutor
 from ape.intelligence.execution.policy import ExecutionPolicy
 
@@ -12,7 +13,7 @@ def test_docker_unavailable_fails_closed_no_fallback():
     """If Docker is not installed/running, execution must FAIL CLOSED."""
     with mock.patch("shutil.which", return_value=None):
         executor = DockerSandboxExecutor()
-        result = executor.execute_command("echo hello", cwd="/tmp")
+        result = executor.execute_command("echo hello", cwd="/tmp", auth_token=create_test_auth_token())
 
         assert result.exit_code != 0
         assert "Docker unavailable" in result.error
@@ -41,7 +42,7 @@ def test_network_disabled_by_default():
         mock_run.return_value.returncode = 0
         mock_run.return_value.stdout = ""
         mock_run.return_value.stderr = ""
-        executor.execute_command("curl http://example.com", cwd="/tmp")
+        executor.execute_command("curl http://example.com", cwd="/tmp", auth_token=create_test_auth_token())
 
         cmd_called = mock_run.call_args[0][0]
         assert "--network=none" in cmd_called or (
@@ -60,7 +61,7 @@ def test_credential_leakage_prevented():
         mock_run.return_value.returncode = 0
         mock_run.return_value.stdout = ""
         mock_run.return_value.stderr = ""
-        executor.execute_command("env", cwd="/tmp")
+        executor.execute_command("env", cwd="/tmp", auth_token=create_test_auth_token())
 
         cmd_called = mock_run.call_args[0][0]
         env_args = [
@@ -80,12 +81,13 @@ def test_resource_and_time_limits_applied():
         mock_run.return_value.returncode = 0
         mock_run.return_value.stdout = ""
         mock_run.return_value.stderr = ""
-        executor.execute_command("stress --cpu 8", cwd="/tmp")
+        executor.execute_command("stress --cpu 8", cwd="/tmp", auth_token=create_test_auth_token())
 
         cmd_called = mock_run.call_args[0][0]
         cmd_str = " ".join(cmd_called)
         assert "--memory=" in cmd_str or "-m " in cmd_str
         assert "--cpus=" in cmd_str
+
 
 
 def test_policy_gate_operates_independently():

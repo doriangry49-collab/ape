@@ -254,8 +254,11 @@ class TaskExecutionStage(PipelineStage):
                 if task.status != TaskStatus.IN_PROGRESS:
                     continue
 
-                # Execute task via Agent or Executor
+                # Execute task via Agent or Executor with Governance Authorization Token
                 try:
+                    from ape.pipeline.stages.policy_gate import PolicyGateStage
+                    auth_token = PolicyGateStage.issue_execution_token(task.task_id)
+
                     if self._agent:
                         lineage = {
                             "decision_id": state.decision_id,
@@ -267,7 +270,9 @@ class TaskExecutionStage(PipelineStage):
                             lineage=lineage,
                             sandbox_executor=executor,
                             workspace_root=self._root,
+                            auth_token=auth_token,
                         )
+
                         for step in res.steps:
                             import hashlib as _hashlib
 

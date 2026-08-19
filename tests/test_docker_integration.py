@@ -9,6 +9,7 @@ import subprocess
 
 import pytest
 
+from ape.intelligence.execution.auth_token import create_test_auth_token
 from ape.intelligence.execution.executor import DockerSandboxExecutor
 
 
@@ -28,7 +29,7 @@ class TestDockerIntegration:
     def test_real_docker_execution(self):
         """A simple command should execute inside the container."""
         executor = DockerSandboxExecutor()
-        result = executor.execute_command("echo hello world", cwd="/tmp")
+        result = executor.execute_command("echo hello world", cwd="/tmp", auth_token=create_test_auth_token())
 
         assert result.exit_code == 0
         assert result.status == "COMPLETED"
@@ -39,7 +40,7 @@ class TestDockerIntegration:
         os.environ["SECRET_TEST_VAR"] = "SUPER_SECRET"
         try:
             executor = DockerSandboxExecutor()
-            result = executor.execute_command("env", cwd="/tmp")
+            result = executor.execute_command("env", cwd="/tmp", auth_token=create_test_auth_token())
 
             assert result.exit_code == 0
             assert "SECRET_TEST_VAR" not in result.output
@@ -48,23 +49,11 @@ class TestDockerIntegration:
             del os.environ["SECRET_TEST_VAR"]
 
     def test_network_isolation(self):
-        """
-        Container must not have external network access (--network=none).
-
-        Uses 'wget' (available in Alpine busybox) rather than 'ping' to
-        distinguish between two failure modes:
-          - "binary not found"  → would mean the test is vacuous
-          - "network unreachable" → proves --network=none is effective
-
-        Alpine busybox wget exits non-zero and writes to stderr:
-            wget: can't connect to remote host (1.1.1.1): Network is unreachable
-        whereas a missing binary produces:
-            sh: wget: not found
-        """
         executor = DockerSandboxExecutor()
         result = executor.execute_command(
             "wget -q --timeout=3 -O /dev/null http://1.1.1.1",
             cwd="/tmp",
+            auth_token=create_test_auth_token(),
         )
 
         # wget must fail (network blocked)
@@ -90,7 +79,7 @@ class TestDockerIntegration:
         """Execution must be terminated and return FAILED when timeout is exceeded."""
         executor = DockerSandboxExecutor()
         # Real Docker container sleeps 5 seconds; Python timeout is 1 second
-        result = executor.execute_command("sleep 5", cwd="/tmp", timeout=1)
+        result = executor.execute_command("sleep 5", cwd="/tmp", timeout=1, auth_token=create_test_auth_token())
 
         assert result.exit_code == -1
         assert result.status == "FAILED"
@@ -99,7 +88,7 @@ class TestDockerIntegration:
     def test_exit_code_propagation(self):
         """Container exit code must propagate faithfully through SandboxResult."""
         executor = DockerSandboxExecutor()
-        result = executor.execute_command("exit 42", cwd="/tmp")
+        result = executor.execute_command("exit 42", cwd="/tmp", auth_token=create_test_auth_token())
 
         assert result.exit_code == 42
         assert result.status == "FAILED"
@@ -111,17 +100,9 @@ class TestDockerIntegration:
 
 @pytest.mark.integration
 def test_blocked_status_when_docker_unavailable(monkeypatch):
-    """
-    When Docker is unavailable, execute_command must return status=BLOCKED.
-    BLOCKED = task stopped before execution began (environment failure).
-    FAILED  = task started but failed during execution.
-
-    This test uses monkeypatch and does NOT require a real Docker daemon.
-    It MUST run even when the host Docker daemon is inactive.
-    """
     monkeypatch.setattr("shutil.which", lambda _: None)
     executor = DockerSandboxExecutor()
-    result = executor.execute_command("echo test", cwd="/tmp")
+    result = executor.execute_command("echo test", cwd="/tmp", auth_token=create_test_auth_token())
 
     assert result.status == "BLOCKED"
     assert "Docker unavailable" in result.error

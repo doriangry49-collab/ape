@@ -148,3 +148,10 @@ class PolicyGateStage(PipelineStage):
             output_data=output_data,
             evidence=evidence,
         )
+
+    @staticmethod
+    def issue_execution_token(task_id: str) -> ExecutionAuthToken:
+        """Issues an ExecutionAuthToken for task_id using the governance secret key."""
+        from ape.intelligence.execution.auth_token import ExecutionAuthToken, get_governance_secret
+        secret = get_governance_secret()
+        return ExecutionAuthToken.create(task_id, secret)

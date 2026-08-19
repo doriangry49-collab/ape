@@ -96,6 +96,7 @@ class ApeCoderAgent:
         lineage: Optional[Dict[str, str]] = None,
         sandbox_executor: Optional[Any] = None,
         workspace_root: Optional[Path] = None,
+        auth_token: Optional[Any] = None,
     ) -> AgentExecutionResult:
         """
         Executes a task autonomously with bounded repair iterations.
@@ -195,7 +196,8 @@ class ApeCoderAgent:
                         res = sandbox_executor.execute_command(
                             cmd=cmd,
                             cwd="/workspace",
-                            workspace_dir=target_dir
+                            workspace_dir=target_dir,
+                            auth_token=auth_token
                         )
                         exit_code = res.exit_code
                         stdout = res.output

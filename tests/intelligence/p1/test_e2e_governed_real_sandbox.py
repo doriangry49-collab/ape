@@ -129,7 +129,7 @@ def test_real_sandbox_fail_closed_when_docker_blocked(governed_real_sandbox_env,
     executor = DockerSandboxExecutor()
 
     # Force executor to simulate blocked Docker daemon
-    def mock_blocked_execute_command(cmd, cwd="/tmp", timeout=60, workspace_dir=None):
+    def mock_blocked_execute_command(cmd, cwd="/tmp", timeout=60, workspace_dir=None, auth_token=None):
         return SandboxResult(
             exit_code=-1,
             output="",
@@ -138,6 +138,7 @@ def test_real_sandbox_fail_closed_when_docker_blocked(governed_real_sandbox_env,
         )
 
     monkeypatch.setattr(executor, "execute_command", mock_blocked_execute_command)
+
 
     agent = ApeCoderAgent(model=MockGovernedPlannerLLM())
     engine = ExecutionEngine(

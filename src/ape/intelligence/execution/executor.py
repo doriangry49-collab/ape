@@ -83,6 +83,7 @@ class SandboxExecutor(ABC):
         cwd: str = "/workspace",
         timeout: int = 60,
         workspace_dir: str | None = None,
+        auth_token: ExecutionAuthToken | None = None,
     ) -> SandboxResult:
         """Execute command in an isolated sandbox environment."""
 
@@ -94,10 +95,17 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
     Applies strict constraints: network=none, resource limits, clean env.
     """
 
-    def execute(self, task_description: str, deliverables: list[str], workspace_root: Path | None = None, dry_run: bool = False) -> str:
+    def execute(
+        self,
+        task_description: str,
+        deliverables: list[str],
+        workspace_root: Path | None = None,
+        dry_run: bool = False,
+        auth_token: ExecutionAuthToken | None = None,
+    ) -> str:
         from pathlib import Path
         root = str(workspace_root or Path.cwd())
-        result = self.execute_command("echo " + task_description, cwd="/workspace", workspace_dir=root)
+        result = self.execute_command("echo " + task_description, cwd="/workspace", workspace_dir=root, auth_token=auth_token)
         if result.status == "BLOCKED":
             raise RuntimeError(f"Docker unavailable. Sandbox execution blocked: {result.error}")
         if result.exit_code != 0:
@@ -118,8 +126,9 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
                 
                 b64_c = base64.b64encode(content.encode("utf-8")).decode("ascii")
                 cmd = f'python -c "import base64, pathlib; p = pathlib.Path(base64.b64decode(\'{b64_p}\').decode(\'utf-8\')); p.parent.mkdir(parents=True, exist_ok=True); p.write_text(base64.b64decode(\'{b64_c}\').decode(\'utf-8\'), encoding=\'utf-8\')"'
-                res = self.execute_command(cmd, cwd="/workspace", workspace_dir=root)
+                res = self.execute_command(cmd, cwd="/workspace", workspace_dir=root, auth_token=auth_token)
                 if res.exit_code != 0:
+                    from pathlib import Path
                     p = Path(root) / d
                     p.parent.mkdir(parents=True, exist_ok=True)
                     p.write_text(content, encoding="utf-8")
@@ -158,7 +167,25 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
 
         return None
 
-    def execute_command(self, cmd: str, cwd: str = "/workspace", timeout: int = 60, workspace_dir: str | None = None) -> SandboxResult:
+    def execute_command(
+        self,
+        cmd: str,
+        cwd: str = "/workspace",
+        timeout: int = 60,
+        workspace_dir: str | None = None,
+        auth_token: ExecutionAuthToken | None = None,
+    ) -> SandboxResult:
+        from ape.intelligence.execution.auth_token import get_governance_secret
+
+        secret_key = get_governance_secret()
+        if not auth_token or not auth_token.verify(secret_key):
+            return SandboxResult(
+                exit_code=-1,
+                output="",
+                error="Unauthorized: valid ExecutionAuthToken required.",
+                status="BLOCKED",
+            )
+
         docker_prefix = self.get_docker_prefix()
         if not docker_prefix:
             return SandboxResult(

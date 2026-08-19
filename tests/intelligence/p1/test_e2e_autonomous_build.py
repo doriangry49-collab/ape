@@ -76,7 +76,7 @@ class RealWorkspaceSandboxExecutor(TaskExecutor):
     def execute(self, task_description: str, deliverables: list[str]) -> str:
         return f"[OFFLINE E2E] Executed {task_description}"
 
-    def execute_command(self, cmd: str, cwd: str = "/workspace", timeout: int = 60, workspace_dir: str | None = None) -> SandboxResult:
+    def execute_command(self, cmd: str, cwd: str = "/workspace", timeout: int = 60, workspace_dir: str | None = None, auth_token: str | None = None) -> SandboxResult:
         target_dir = self.workspace_root
         try:
             proc = subprocess.run(
