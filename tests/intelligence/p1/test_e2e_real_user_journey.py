@@ -58,7 +58,7 @@ class LocalTestSandboxExecutor:
     def __init__(self, workspace_root: Path):
         self._root = workspace_root
 
-    def execute_command(self, cmd: str, cwd: str = "/workspace", timeout: int = 60, workspace_dir: str | None = None):
+    def execute_command(self, cmd: str, cwd: str = "/workspace", timeout: int = 60, workspace_dir: str | None = None, auth_token: str | None = None):
         proc = subprocess.run(cmd, shell=True, cwd=self._root, capture_output=True, text=True, timeout=timeout)
         class MockRes:
             pass
