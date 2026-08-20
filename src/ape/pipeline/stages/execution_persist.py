@@ -110,6 +110,14 @@ class ExecutionPersistStage(PipelineStage):
             policy_decision = state_dict.get("policy_decision") or (evidence_bundle.get("policy_info", {}).get("policy_decision") if evidence_bundle else "UNKNOWN")
             evidence_hash = state_dict.get("evidence_hash", "")
 
+            # SPEC-0019 INV-4 (dual-channel): include ResourceUsage from context metadata
+            # if the runner has populated it. Defaults to empty dict when unavailable.
+            resource_usage_payload: Dict[str, Any] = (
+                context.metadata.get("resource_usage", {})
+                if isinstance(getattr(context, "metadata", None), dict)
+                else {}
+            )
+
             payload = {
                 "event": "PIPELINE_EXECUTION_COMPLETED",
                 "topic_slug": topic_slug,
@@ -119,6 +127,7 @@ class ExecutionPersistStage(PipelineStage):
                 "policy_decision": policy_decision,
                 "evidence_hash": evidence_hash,
                 "evidence_bundle": evidence_bundle or {},
+                "resource_usage": resource_usage_payload,
             }
             append_to_evidence(evidence_dir, "execution", payload)
             audit_appended = True
