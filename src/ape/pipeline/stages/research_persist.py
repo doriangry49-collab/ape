@@ -59,6 +59,7 @@ class ResearchPersistStage(PipelineStage):
         if not slug:
             slug = "unnamed_topic"
 
+        fused_signals = fusion_data.get("fused_signals", {})
         json_data = {
             "metadata": {
                 "schema_version": "1.0",
@@ -72,7 +73,12 @@ class ResearchPersistStage(PipelineStage):
             "confidence": fusion_data.get("overall_confidence", 0.80),
             "sources": fusion_data.get("fused_sources", []),
             "pain_points": fusion_data.get("fused_pain_points", []),
-            "fused_signals": fusion_data.get("fused_signals", {}),
+            "target_audience": fused_signals.get("target_audience", []),
+            "competitors": fused_signals.get("competitors", []),
+            "market_signals": fused_signals.get("market_signals", []),
+            "risks": fused_signals.get("risks", []),
+            "discussions": fused_signals.get("discussions", []),
+            "suggested_mvp": fused_signals.get("suggested_mvp", []),
             "business_evidence": fusion_data.get("business_evidence", []),
         }
 

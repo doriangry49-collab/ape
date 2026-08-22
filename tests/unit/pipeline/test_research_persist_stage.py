@@ -36,3 +36,38 @@ def test_research_persist_stage_success(tmp_path):
     md_path = tmp_path / ".build" / "research" / "event_driven_architecture.md"
     assert json_path.exists()
     assert md_path.exists()
+
+    # Regression check: Verify top-level canonical ResearchReport schema fields in persisted JSON
+    import json
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    assert "discussions" in data
+    assert "competitors" in data
+    assert "risks" in data
+    assert "target_audience" in data
+    assert "fused_signals" not in data  # Strictly canonical schema - no redundant dual schema
+    assert isinstance(data["discussions"], list)
+    assert isinstance(data["competitors"], list)
+    assert isinstance(data["risks"], list)
+    assert isinstance(data["target_audience"], list)
+
+    # Verify DecisionEngine reads top-level fields from persisted JSON without falling back to 100 defaults
+    from ape.intelligence.decision.engine import DecisionEngine
+    engine = DecisionEngine(tmp_path)
+    report = engine.run_decision("Event Driven Architecture", "event_driven_architecture")
+
+    # Dynamic calculation verification: When risks and competitors are present in canonical top-level schema,
+    # raw feasibility and raw competition must be calculated from them (not defaulting to 100)
+    expected_raw_feasibility = max(0, 100 - (len(data["risks"]) * 15))
+    expected_raw_competition = max(0, 100 - (len(data["competitors"]) * 20))
+
+    assert report.vector_scores["feasibility"] == expected_raw_feasibility
+    assert report.vector_scores["competition"] == expected_raw_competition
+
+    if len(data["risks"]) > 0:
+        assert report.vector_scores["feasibility"] < 100
+    if len(data["competitors"]) > 0:
+        assert report.vector_scores["competition"] < 100
+
+
