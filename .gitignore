@@ -21,3 +21,7 @@ build/
 .clinerules
 deliverables/
 test_run.txt
+
+# Credential files — never commit secrets
+.env
+.env.*

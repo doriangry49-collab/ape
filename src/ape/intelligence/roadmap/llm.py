@@ -3,6 +3,7 @@ LLM Provider Abstractions for the Intelligent Planning Boundary.
 (RFC-015)
 """
 import json
+import urllib.error
 import urllib.request
 from abc import ABC, abstractmethod
 from typing import Any, Dict
@@ -64,7 +65,7 @@ class OpenAICompatibleProvider(PlannerModel):
             with urllib.request.urlopen(req, timeout=30) as response:
                 result = json.loads(response.read().decode("utf-8"))
                 content = result["choices"][0]["message"]["content"]
-                
+
                 # Cleanup potential markdown ticks if the model ignores the instruction
                 content = content.strip()
                 if content.startswith("```json"):
@@ -73,8 +74,23 @@ class OpenAICompatibleProvider(PlannerModel):
                     content = content[3:]
                 if content.endswith("```"):
                     content = content[:-3]
-                    
+
                 return json.loads(content.strip())
+        except urllib.error.HTTPError as http_err:
+            # Read body — some providers echo credentials in 401/403 responses.
+            # Sanitize before surfacing so the raw key never appears in logs.
+            try:
+                body = http_err.read().decode("utf-8", errors="replace")
+            except Exception:
+                body = ""
+            err_msg = f"HTTP {http_err.code} {http_err.reason}: {body}"
+            if self.api_key and self.api_key in err_msg:
+                err_msg = err_msg.replace(self.api_key, "[REDACTED_API_KEY]")
+            raise RuntimeError(f"Planner LLM API Error: {err_msg}") from http_err
         except Exception as e:
-            # We raise this to be caught by the RoadmapGenerator fallback logic
-            raise RuntimeError(f"Planner LLM API Error: {str(e)}") from e
+            # We raise this to be caught by the RoadmapGenerator fallback logic.
+            # Sanitize any accidental key inclusion in generic exception messages.
+            err_msg = str(e)
+            if self.api_key and self.api_key in err_msg:
+                err_msg = err_msg.replace(self.api_key, "[REDACTED_API_KEY]")
+            raise RuntimeError(f"Planner LLM API Error: {err_msg}") from e

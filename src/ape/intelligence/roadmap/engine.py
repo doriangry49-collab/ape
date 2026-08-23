@@ -120,7 +120,10 @@ class RoadmapGenerator:
                 )
 
             except Exception as e:
-                print(f"Intelligent planning failed ({e}). Falling back to deterministic templates.")
+                err_msg = str(e)
+                if api_key and api_key in err_msg:
+                    err_msg = err_msg.replace(api_key, "[REDACTED_API_KEY]")
+                print(f"Intelligent planning failed ({err_msg}). Falling back to deterministic templates.")
                 # Fallthrough to deterministic generator
 
         # Deterministic Fallback
