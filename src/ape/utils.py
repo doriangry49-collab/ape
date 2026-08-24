@@ -22,12 +22,21 @@ from pathlib import Path
 def slugify(text: str) -> str:
     """
     Convert text to a slug.
-    Example: 'AI Agents' -> 'ai_agents'
+    Limits length to 50 characters and appends an MD5 hash of the original text
+    to prevent Windows MAX_PATH errors and ensure uniqueness for long inputs.
+    Example short: 'AI Agents' -> 'ai_agents'
+    Example long: 'Very long text...' -> 'very_long_text_..._d41d8cd9'
     """
-    text = text.lower()
-    text = re.sub(r'[^\w\s-]', '', text)
-    text = re.sub(r'[\s]+', '_', text).strip('_')
-    return text
+    import hashlib
+    slug = text.lower()
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[\s]+', '_', slug).strip('_')
+
+    if len(slug) > 50:
+        text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()[:8]
+        slug = slug[:50].rstrip('_') + f"_{text_hash}"
+
+    return slug
 
 
 def make_artifact_id() -> str:
@@ -138,5 +147,3 @@ def append_to_evidence(evidence_dir: Path, track: str, payload: dict) -> None:
     log_path = get_artifact_history(evidence_dir, track)
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(json.dumps(sanitized_payload, default=str) + "\n")
-
-

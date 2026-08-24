@@ -6,10 +6,35 @@ from ape.intelligence.decision.scorer import Scorer
 from ape.utils import slugify
 
 
-def test_slugify():
+def test_slugify_backwards_compatibility():
+    # Normal short topics remain unchanged
     assert slugify("AI Agents") == "ai_agents"
     assert slugify("   Machine Learning   ") == "machine_learning"
     assert slugify("GPT-4 & LLMs") == "gpt-4_llms"
+
+def test_slugify_long_topic():
+    # Long topic should not exceed safe length and should have hash
+    long_topic = "This is a very long topic that definitely exceeds the fifty character limit we established"
+    slug = slugify(long_topic)
+    assert len(slug) <= 59 # 50 chars + "_" + 8 char hash = 59
+    assert "_" in slug
+    assert len(slug.split("_")[-1]) == 8 # hash part is 8 chars
+
+def test_slugify_collision():
+    # Topics that share the first 50 characters but differ at the end must yield different slugs
+    prefix = "a" * 50
+    slug1 = slugify(prefix + "b")
+    slug2 = slugify(prefix + "c")
+    assert slug1 != slug2
+    assert slug1.startswith("a" * 50)
+    assert slug2.startswith("a" * 50)
+
+def test_slugify_determinism():
+    # Same input must always produce the same slug
+    long_topic = "Build a python script that does exactly what I want and nothing else 1234567890"
+    slug1 = slugify(long_topic)
+    slug2 = slugify(long_topic)
+    assert slug1 == slug2
 
 def test_scorer():
     weights = {"demand": 0.30, "feasibility": 0.30, "competition": 0.20, "revenue": 0.20}

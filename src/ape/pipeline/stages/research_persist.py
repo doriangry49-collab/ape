@@ -55,7 +55,8 @@ class ResearchPersistStage(PipelineStage):
         build_dir.mkdir(parents=True, exist_ok=True)
         evidence_dir = self._project_root / ".governance" / "evidence"
 
-        slug = re.sub(r"[^a-z0-9_]", "", topic.lower().replace(" ", "_"))
+        from ape.utils import slugify
+        slug = slugify(topic)
         if not slug:
             slug = "unnamed_topic"
 

@@ -31,7 +31,7 @@ def test_research_persist_stage_success(tmp_path):
     assert persist_res.status == StageStatus.SUCCESS
     assert persist_res.stage_name == "research_persist"
     assert persist_res.output_data["persisted"] is True
-    
+
     json_path = tmp_path / ".build" / "research" / "event_driven_architecture.json"
     md_path = tmp_path / ".build" / "research" / "event_driven_architecture.md"
     assert json_path.exists()
@@ -71,3 +71,28 @@ def test_research_persist_stage_success(tmp_path):
         assert report.vector_scores["competition"] < 100
 
 
+def test_research_persist_stage_long_topic_persistence(tmp_path):
+    persist_stage = ResearchPersistStage(project_root=tmp_path)
+    long_topic = "This is an extremely long topic designed specifically to trigger OS MAX_PATH limitations when converted into a slug and appended to a long file path inside the build directory structure"
+    ctx = PipelineContext(topic_slug=long_topic, run_id="run-long-1")
+
+    from ape.pipeline.contracts import StageResult
+    fusion_res = StageResult(
+        stage_name="evidence_fusion",
+        status=StageStatus.SUCCESS,
+        output_data={"fused_signals": {}, "overall_confidence": 0.85}
+    )
+    explain_res = StageResult(
+        stage_name="explainability",
+        status=StageStatus.SUCCESS,
+        output_data={"summary": "Mock summary"},
+        evidence={"stage_hash": "mock_hash"}
+    )
+
+    res = persist_stage.execute(ctx, [fusion_res, explain_res])
+    assert res.status == StageStatus.SUCCESS
+
+    # Verify the file was written without raising OS errors
+    import os
+    assert os.path.exists(res.output_data["json_path"])
+    assert len(res.output_data["slug"]) <= 59
