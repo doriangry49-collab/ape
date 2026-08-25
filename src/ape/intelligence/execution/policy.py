@@ -164,3 +164,21 @@ def validate_path_containment(project_root: Path, target_path: str | Path) -> Tu
             return False, f"Path traversal rejected: target path '{target_path}' resolves outside workspace root ({root_resolved})."
     except Exception as e:
         return False, f"Invalid path '{target_path}': {str(e)}"
+
+def translate_sandbox_path(path: str) -> str:
+    """
+    Translates a sandbox namespace path (e.g., /workspace/foo.py) into a host-relative candidate.
+    Does NOT resolve traversals or validate security - simply strips the sandbox namespace prefix
+    so the host containment guard can evaluate the true intent.
+    """
+    if path.startswith("/workspace/"):
+        return path[11:]
+    elif path.startswith("\\workspace\\"):
+        return path[11:]
+    elif path.startswith("/workspace\\"):
+        return path[11:]
+    elif path.startswith("\\workspace/"):
+        return path[11:]
+    elif path == "/workspace" or path == "\\workspace":
+        return "."
+    return path

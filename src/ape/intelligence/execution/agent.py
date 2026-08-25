@@ -17,6 +17,7 @@ from ape.intelligence.execution.policy import (
     CANONICAL_ACTIONS,
     validate_action_parameters,
     validate_path_containment,
+    translate_sandbox_path,
 )
 from ape.intelligence.roadmap.llm import PlannerModel
 
@@ -157,6 +158,10 @@ class ApeCoderAgent:
                     steps.append(AgentStepResult(attempt, thought, proposed_action, params, -1, "", error_msg, "REJECTED"))
                     last_error = error_msg
                     continue
+
+                # 2.45 Sandbox-to-Host Path Translation
+                if proposed_action in ("create_file", "modify_file", "read_file") and params.get("path"):
+                    params["path"] = translate_sandbox_path(params["path"])
 
                 # 2.5 Path Containment Check
                 if proposed_action in ("create_file", "modify_file") and params.get("path"):
