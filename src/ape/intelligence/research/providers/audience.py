@@ -11,9 +11,9 @@ class HeuristicAudienceProvider(BaseResearchProvider):
     def fetch_signals(self, topic: str) -> dict[str, Any]:
         topic_lower = topic.lower()
         
-        # Default fallback values
+        # Default fallback values (heuristics for audience / risks only, no synthetic competitors)
         target_audience = ["Solo Founders", "Indie Hackers", "Software Developers"]
-        competitors = [f"Generic {topic} API Providers", "Manual custom implementations"]
+        competitors: list[str] = []
         risks = ["High time-to-market if building from scratch", "Platform dependency risks"]
         suggested_mvp = [
             "Local CLI interface for rapid prototype testing",
@@ -25,11 +25,7 @@ class HeuristicAudienceProvider(BaseResearchProvider):
         # Heuristic rules matching topic keywords
         if any(kw in topic_lower for kw in ["ai", "llm", "gpt", "agent", "model"]):
             target_audience = ["AI Engineers", "Solo Founders", "Product Managers"]
-            competitors = [
-                "OpenAI Assistants Platform",
-                "LangChain Framework Ecosystem",
-                "Coze/Dify platforms",
-            ]
+            competitors = []
             risks = [
                 "API rate-limiting overhead",
                 "Token cost scaling issues",
@@ -44,11 +40,7 @@ class HeuristicAudienceProvider(BaseResearchProvider):
             
         elif any(kw in topic_lower for kw in ["saas", "dashboard", "tool"]):
             target_audience = ["SaaS Developers", "Indie Hackers", "Digital Marketers"]
-            competitors = [
-                "Vercel templates",
-                "Stripe billing integrations",
-                "Supabase authentication services",
-            ]
+            competitors = []
             risks = ["Low user retention barriers", "High marketing/acquisition costs"]
             suggested_mvp = [
                 "Clean database migrations builder",
@@ -63,5 +55,6 @@ class HeuristicAudienceProvider(BaseResearchProvider):
             "risks": risks,
             "suggested_mvp": suggested_mvp,
             "confidence": confidence,
-            "sources": ["AudienceHeuristics"]
+            "sources": ["AudienceHeuristics"],
+            "is_heuristic": True,
         }

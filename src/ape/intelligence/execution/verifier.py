@@ -15,6 +15,32 @@ class DeliverableVerifier:
         self._root = project_root
         self._dry_run = dry_run
 
+    @staticmethod
+    def _parse_deliverable_item(item: str) -> list[str]:
+        """
+        Parses a deliverable description string into candidate file paths.
+        Supports:
+        - Alternatives via ' or ' (e.g., 'package.json or pyproject.toml' -> ['package.json', 'pyproject.toml'])
+        - Descriptive suffixes (e.g., 'README.md file' -> ['README.md'])
+        """
+        cleaned = item.strip()
+        for suffix in (" file", " module", " script", " entry point script"):
+            if cleaned.lower().endswith(suffix):
+                cleaned = cleaned[:-len(suffix)].strip()
+
+        if " or " in cleaned:
+            parts = [p.strip() for p in cleaned.split(" or ")]
+            candidates = []
+            for p in parts:
+                for suffix in (" file", " module", " script", " entry point script"):
+                    if p.lower().endswith(suffix):
+                        p = p[:-len(suffix)].strip()
+                if p:
+                    candidates.append(p)
+            return candidates
+
+        return [cleaned] if cleaned else []
+
     def verify(self, deliverables: list[str]) -> Tuple[bool, list[str]]:
         """
         Returns (ok, missing_items).
@@ -26,9 +52,16 @@ class DeliverableVerifier:
 
         missing = []
         for d in deliverables:
-            # Only enforce file existence check if deliverable specifies a concrete file path
-            if ("." in d or "/" in d or "\\" in d) and not d.startswith("."):
-                if not (self._root / d).exists():
-                    missing.append(d)
+            candidates = self._parse_deliverable_item(d)
+            concrete_candidates = [
+                c for c in candidates
+                if ("." in c or "/" in c or "\\" in c) and not c.startswith(".")
+            ]
+            if not concrete_candidates:
+                continue
+
+            exists = any((self._root / c).exists() for c in concrete_candidates)
+            if not exists:
+                missing.append(d)
 
         return (len(missing) == 0), missing

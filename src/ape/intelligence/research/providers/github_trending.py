@@ -74,7 +74,7 @@ class GitHubTrendingResearchProvider(BaseResearchProvider):
             else:
                 market_signals.append(f"Low repository count on GitHub for '{topic}'")
 
-            if not pain_points:
+            if not pain_points and len(items) > 0:
                 pain_points.add("Custom local setup required for developer integrations")
 
             return {
@@ -111,6 +111,6 @@ class GitHubTrendingResearchProvider(BaseResearchProvider):
                 f"Found 45 GitHub repositories for '{topic}'",
                 f"Top repository 'awesome-{topic}/core' reached 1250 stars",
             ],
-            "competitors": [f"awesome-{topic}/core", f"{topic}-tools/cli"],
+            "competitors": [],
             "sources": ["GitHubTrending"],
         }

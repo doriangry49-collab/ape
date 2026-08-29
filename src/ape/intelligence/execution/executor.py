@@ -170,6 +170,15 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
 
         return None
 
+    @staticmethod
+    def convert_to_wsl_path(path_str: str) -> str:
+        """Converts Windows drive paths (e.g. C:\\Users\\...) to WSL /mnt/c/... paths."""
+        if len(path_str) >= 2 and path_str[1] == ":":
+            drive = path_str[0].lower()
+            rest = path_str[2:].replace("\\", "/")
+            return f"/mnt/{drive}{rest}"
+        return path_str.replace("\\", "/")
+
     def execute_command(
         self,
         cmd: str,
@@ -238,7 +247,10 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
         ]
         
         if workspace_dir:
-            docker_cmd.extend(["-v", f"{workspace_dir}:/workspace:rw"])
+            mount_path = workspace_dir
+            if docker_prefix and docker_prefix[0] == "wsl":
+                mount_path = self.convert_to_wsl_path(workspace_dir)
+            docker_cmd.extend(["-v", f"{mount_path}:/workspace:rw"])
             if cwd == "/tmp":
                 cwd = "/workspace"
 

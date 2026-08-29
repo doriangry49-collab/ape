@@ -85,23 +85,37 @@ class EvidenceFusionStage(PipelineStage):
                     else:
                         fused_signals[k] = v
 
-                # Map raw observations to structured BusinessEvidence item
+                # Map raw observations to structured BusinessEvidence item ONLY if from real domain provider
                 discussions = signals.get("discussions", [])
                 market_signals = signals.get("market_signals", [])
                 audience = signals.get("target_audience", [])
                 competitors = signals.get("competitors", [])
                 risks = signals.get("risks", [])
 
-                search_intent = True if (discussions or audience) else "UNKNOWN"
-                pain_obs = True if pains else "UNKNOWN"
-                manual_work = True if risks else "UNKNOWN"
-                pricing_obs = "UNKNOWN"
-                if pains:
-                    pains_str = " ".join(str(p) for p in pains).lower()
-                    if any(kw in pains_str for kw in ["cost", "pricing", "expensive", "pay", "fee"]):
-                        pricing_obs = True
-                entity_obs = True if (market_signals or audience) else "UNKNOWN"
-                comp_obs = True if competitors else "UNKNOWN"
+                is_heuristic = signals.get("is_heuristic", False) or source == "AudienceHeuristics"
+
+                if is_heuristic:
+                    search_intent = "UNKNOWN"
+                    pain_obs = "UNKNOWN"
+                    manual_work = "UNKNOWN"
+                    pricing_obs = "UNKNOWN"
+                    entity_obs = "UNKNOWN"
+                    comp_obs = "UNKNOWN"
+                else:
+                    search_intent = True if discussions else "UNKNOWN"
+                    pain_obs = True if pains else "UNKNOWN"
+                    manual_work = True if risks else "UNKNOWN"
+                    pricing_obs = "UNKNOWN"
+                    if pains:
+                        pains_str = " ".join(str(p) for p in pains).lower()
+                        if any(kw in pains_str for kw in ["cost", "pricing", "expensive", "pay", "fee"]):
+                            pricing_obs = True
+                    has_positive_market_signals = any(
+                        isinstance(s, str) and ("Found" in s or "reached" in s or "velocity" in s)
+                        for s in market_signals
+                    )
+                    entity_obs = True if has_positive_market_signals else "UNKNOWN"
+                    comp_obs = True if competitors else "UNKNOWN"
 
                 ref_url = None
                 if isinstance(discussions, list) and discussions:
@@ -130,6 +144,13 @@ class EvidenceFusionStage(PipelineStage):
             min(confidence_scores) if confidence_scores else 0.80
         )
         agreement_score = 1.0 if len(confidence_scores) > 1 else 0.85
+        has_real_evidence = any(
+            ev.get("search_intent_observation") is True
+            or ev.get("pain_observation") is True
+            or ev.get("competition_observation") is True
+            for ev in business_evidence_items
+        )
+        evidence_status = "SUFFICIENT" if has_real_evidence else "INSUFFICIENT_DOMAIN_EVIDENCE"
 
         fusion_report = {
             "topic": topic,
@@ -138,6 +159,7 @@ class EvidenceFusionStage(PipelineStage):
             "clusters_count": len(fused_signals),
             "agreement_score": agreement_score,
             "overall_confidence": overall_confidence,
+            "evidence_status": evidence_status,
             "fused_pain_points": all_pain_points,
             "fused_sources": all_sources,
             "fused_signals": fused_signals,
@@ -148,6 +170,7 @@ class EvidenceFusionStage(PipelineStage):
             "agreement_score": agreement_score,
             "overall_confidence": overall_confidence,
             "fused_sources_count": len(all_sources),
+            "evidence_status": evidence_status,
             "synthetic": False,
         }
 

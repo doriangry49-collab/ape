@@ -69,8 +69,8 @@ class HackerNewsResearchProvider(BaseResearchProvider):
             else:
                 market_signals.append("Low discussion volume on HackerNews")
 
-            # Fallback if no specific pain points detected
-            if not pain_points:
+            # Fallback if no specific pain points detected but hits were found
+            if not pain_points and len(hits) > 0:
                 pain_points.add("Lack of robust integration options reported in community threads")
                 
             return {

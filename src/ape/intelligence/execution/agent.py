@@ -212,6 +212,15 @@ class ApeCoderAgent:
                         stderr = str(e)
 
                 if exit_code == 0:
+                    is_exploratory = proposed_action in ("search", "read_file", "analyze")
+                    has_file_objective = bool(task.deliverables) or (task.action in ("create_file", "modify_file"))
+
+                    if is_exploratory and has_file_objective and attempt < self._max_repair_attempts:
+                        steps.append(AgentStepResult(attempt, thought, proposed_action, params, exit_code, stdout, stderr, "SUCCESS"))
+                        workspace_context += f"\nAttempt {attempt} ({proposed_action}) Findings:\n{stdout[:1000]}"
+                        last_error = f"Inspection step succeeded, but task requires creating/updating deliverables: {', '.join(task.deliverables) if task.deliverables else task.action}. Propose a create_file or modify_file action next."
+                        continue
+
                     steps.append(AgentStepResult(attempt, thought, proposed_action, params, exit_code, stdout, stderr, "SUCCESS"))
                     return AgentExecutionResult(task.task_id, "COMPLETED", attempt, steps)
                 else:

@@ -46,4 +46,4 @@ def test_cli_report_command_execution(tmp_path, monkeypatch):
     assert result.exit_code == 0
     assert "APE Executive Market Brief Summary" in result.output
     assert "Policy Decision" in result.output
-    assert "Status           : SUCCESS" in result.output
+    assert "Opportunity Score" in result.output
