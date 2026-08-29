@@ -598,13 +598,61 @@ def report_cmd(
     typer.echo(f"Opportunity Score: {exec_sum['overall_score']}/100")
     typer.echo(f"Confidence       : {exec_sum['confidence']}%")
     typer.echo(f"Next Recommended : {exec_sum['next_recommended_step']}")
+
+
+@app.command("brief")
+def brief(
+    topic: str = typer.Argument(..., help="The topic or slug to assemble an Executive Brief for (e.g. 'gebze_kocaeli_emlak_ai_sanal_staging')")
+) -> None:
+    from ape.business.brief_generator import BriefGenerator
+    from ape.utils import slugify
+
+    project = load_project()
+    generator = BriefGenerator(project.root)
+    topic_slug = slugify(topic)
+    typer.echo(f"Assembling Executive Brief for: '{topic}' (slug: {topic_slug})...")
+    brief_path = generator.generate_brief(topic_slug)
+    typer.echo(f"Saved Executive Brief deliverable to `{brief_path.relative_to(project.root)}`")
+
+
+@app.command("run")
+def run_pipeline(
+    topic: str = typer.Argument(..., help="The topic/prompt to execute the one-command E2E pipeline for"),
+    offline: bool = typer.Option(False, "--offline", help="Run in offline mode")
+) -> None:
+    """Execute One-Command E2E Pipeline: Research -> Evidence -> Decision -> Executive Brief -> Verification (G1-G6)."""
+    from ape.business.brief_generator import BriefGenerator
+    from ape.intelligence.decision.engine import DecisionEngine
+    from ape.intelligence.research.engine import ResearchEngine
+    from ape.utils import slugify
+
+    project = load_project()
+    topic_slug = slugify(topic)
+    typer.echo(f"Starting One-Command E2E Pipeline for: '{topic}' (slug: {topic_slug})...")
+
+    # 1. Research Engine
+    typer.echo("Step 1/3: Running Research Engine & External Evidence Fetch...")
+    research_engine = ResearchEngine(project, offline=offline)
+    research_report = research_engine.run_research(topic)
+    typer.echo(f"[OK] Research complete (Competitors: {len(research_report.competitors)}, Pain points: {len(research_report.pain_points)})")
+
+    # 2. Decision Engine
+    typer.echo("Step 2/3: Running Decision Engine & Constitutional Policy Gate...")
+    decision_engine = DecisionEngine(project.root)
+    decision_report = decision_engine.run_decision(topic, topic_slug)
+    typer.echo(f"[OK] Decision complete (Policy: {decision_report.policy}, Score: {decision_report.overall_score}/100)")
+
+    # 3. Brief Generator
+    typer.echo("Step 3/3: Assembling Executive Brief Deliverable...")
+    generator = BriefGenerator(project.root)
+    brief_path = generator.generate_brief(topic_slug)
+    typer.echo(f"[OK] Saved Executive Brief deliverable to `{brief_path.relative_to(project.root)}`")
+
     typer.echo(_hr())
-    typer.echo(f"Evidence Ledger  : {lineage['ledger_file']}")
-    typer.echo(f"Evidence Hash    : {lineage['evidence_hash']}")
-    typer.echo(f"Report Markdown  : .build/reports/{topic_slug}-market-brief.md")
-    typer.echo(f"Report JSON      : .build/reports/{topic_slug}-market-brief.json")
-    typer.echo(_hr())
-    typer.echo("Status           : SUCCESS")
+    typer.echo("One-Command E2E Pipeline Completed Successfully!")
+    typer.echo(f"Policy Decision : {decision_report.policy}")
+    typer.echo(f"Opportunity     : {decision_report.overall_score}/100")
+    typer.echo(f"Deliverable     : {brief_path}")
 
 
 @app.command("explain")
