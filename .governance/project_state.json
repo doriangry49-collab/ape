@@ -1,25 +1,33 @@
 {
   "version": "v0.1.0",
-  "current_sprint": "Sprint 7.0 – Governance Engine",
-  "last_completed_sprint": "Sprint 6.9 – Lightweight Project Factory",
+  "current_phase": "post-RA-022 / product-first pivot (USE THE MACHINE)",
+  "last_completed_milestone": "RA-022 — Deliverable Contract & Completion Semantics Remediation + ReportAssembler live-execution verification",
   "repository_status": "Active",
   "primary_branch": "main",
-  "source_of_truth": "GitHub",
-  "current_features": [
-    "ape doctor",
-    "ape version",
-    "ape init",
-    "ape config",
-    "ape context",
-    "ape validate"
+  "source_of_truth": "GitHub + PROJECT_CONTEXT.md (kept in sync per AGENT_RULES.md)",
+  "working_modules": [
+    "governance (evidence ledger, fail-closed release gate)",
+    "research engine (HackerNews + GitHub Trending only — known limitation)",
+    "decision engine (weighted scorer)",
+    "roadmap generator",
+    "execution engine (Docker sandbox, task state machine)",
+    "deliverable verifier (alternative-path parsing, RA-022)",
+    "report assembler / brief generator (ape brief command)"
   ],
-  "quality_status": {
-    "ruff": "passing",
-    "pytest": "passing",
-    "test_count": 35
-  },
+  "known_open_issues": [
+    "Research engine has no source coverage for niche/local/non-tech topics",
+    "Score calculation uses int() truncation (minor downward bias, unfixed, low priority)",
+    "ReportAssembler byte-identical claim verified via git diff on a possibly-untracked file — direct SHA256 hash comparison still pending",
+    "APE-SECURITY-OBS-001: read_file has no path containment enforcement (predates current work, not yet scheduled)"
+  ],
+  "debunked_claims": [
+    "ORION-155 '5/5 real-world tasks passed' — confirmed mock/dry-run only, no real artifacts"
+  ],
   "constitution": [
-    "Every module must increase at least one of the following: Knowledge, Revenue, Decision Quality. If it increases none of them, it does not belong in APE."
+    "No new architecture, RFC, governance system, or R&D promotion without a demonstrated real-workload blocker.",
+    "Every COMPLETED/PASS claim requires live command evidence (mtime, git status, real pytest/CLI output) — not code-reading, not summarized counts.",
+    "No automatic commit or push, ever, without explicit human approval.",
+    "Update PROJECT_CONTEXT.md and NEXT_SESSION.md after every RA-round or completed real-workload run."
   ],
-  "next_goal": "Governance Engine and Self-Governing Repository"
+  "next_goal": "Select 1 niche product opportunity, ship MVP in <=14 days, get first real user and first real payment."
 }
