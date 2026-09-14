@@ -1,15 +1,10 @@
-"""
-Path Containment Executable Validator — Gatekeeper Quality OS Integration (Yol C, Aşama 2).
-Scans Hermes tool-call logs and task transcripts for path traversal violations outside allowed_root.
-"""
-
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus
 
@@ -18,7 +13,11 @@ class PathContainmentValidator:
     """
     Executable Validator that audits Hermes execution logs for path traversal attempts.
     Wraps tools/security/path_containment_check.py without code duplication.
+    Includes freshness filtering to ignore stale evidence logs from prior runs.
     """
+
+    def __init__(self, max_evidence_age_minutes: int = 10) -> None:
+        self.default_max_age_minutes = max_evidence_age_minutes
 
     @property
     def name(self) -> str:
@@ -55,7 +54,6 @@ class PathContainmentValidator:
         try:
             from tools.security.path_containment_check import evaluate_path_containment
         except ImportError as exc:
-            # Fallback if tools directory is adjacent or packaged
             return ValidationResult(
                 validator_name=self.name,
                 status=ValidationStatus.FAIL,
@@ -66,9 +64,10 @@ class PathContainmentValidator:
                 errors=[f"Could not import tools.security.path_containment_check: {exc}"],
             )
 
-        # Extract allowed_root and logs from metadata or defaults
+        # Extract allowed_root, freshness limit, and logs from metadata or defaults
         metadata = getattr(context, "metadata", {}) or {}
         allowed_root = str(metadata.get("allowed_root") or context.project_root)
+        max_age_minutes = int(metadata.get("max_evidence_age_minutes", self.default_max_age_minutes))
 
         stdout_content = metadata.get("hermes_stdout") or metadata.get("stdout") or ""
         stderr_content = metadata.get("hermes_stderr") or metadata.get("stderr") or ""
@@ -95,7 +94,17 @@ class PathContainmentValidator:
         # Read governance evidence .governance/evidence/execution_agent-*.jsonl if still empty
         if not stdout_content and not stderr_content:
             evidence_dir = context.project_root / ".governance" / "evidence"
-            agent_logs = sorted(evidence_dir.glob("execution_agent-*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True)
+            now_ts = time.time()
+            cutoff_seconds = max_age_minutes * 60
+
+            # Filter evidence files by freshness (mtime within last max_age_minutes)
+            agent_logs = []
+            if evidence_dir.exists():
+                for p in sorted(evidence_dir.glob("execution_agent-*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True):
+                    age_sec = now_ts - p.stat().st_mtime
+                    if age_sec <= cutoff_seconds:
+                        agent_logs.append(p)
+
             if agent_logs:
                 raw_text = agent_logs[0].read_text(encoding="utf-8", errors="ignore")
                 log_lines = []
@@ -104,6 +113,17 @@ class PathContainmentValidator:
                         continue
                     try:
                         record = json.loads(line)
+                        # Optionally filter individual JSONL record timestamps if present
+                        rec_ts_str = record.get("timestamp")
+                        if rec_ts_str:
+                            try:
+                                rec_dt = datetime.fromisoformat(rec_ts_str.replace("Z", "+00:00"))
+                                age = datetime.now(UTC) - rec_dt
+                                if age > timedelta(minutes=max_age_minutes):
+                                    continue
+                            except Exception:
+                                pass
+
                         action = record.get("action")
                         params = record.get("params") or {}
                         stdout_str = record.get("stdout") or ""
@@ -119,7 +139,7 @@ class PathContainmentValidator:
                 stdout_content = "\n".join(log_lines)
             else:
                 std_log = context.project_root / ".build" / "quality" / "logs" / "hermes_stdout.log"
-                if std_log.exists():
+                if std_log.exists() and (now_ts - std_log.stat().st_mtime <= cutoff_seconds):
                     stdout_content = std_log.read_text(encoding="utf-8", errors="ignore")
 
         # Run core containment evaluation
@@ -143,6 +163,7 @@ class PathContainmentValidator:
         with open(log_path, "w", encoding="utf-8") as f:
             f.write("=== Quality OS Log: path_containment ===\n")
             f.write(f"Allowed Root : {allowed_root}\n")
+            f.write(f"Freshness Win: {max_age_minutes} min\n")
             f.write(f"Verdict      : {verdict}\n")
             f.write(f"Tool Calls   : {eval_result.get('total_tool_calls_found', 0)}\n")
             f.write(f"Paths Checked: {len(paths_checked)}\n")
@@ -184,7 +205,7 @@ class PathContainmentValidator:
                 f"Path containment verified: {len(paths_checked)} path(s) checked across {eval_result.get('total_tool_calls_found', 0)} tool calls; zero violations."
             ]
         else:
-            findings = ["No tool calls detected in logs; path containment check passed by default."]
+            findings = [f"No fresh tool call evidence found within last {max_age_minutes} minutes; path containment check passed by default."]
 
         return ValidationResult(
             validator_name=self.name,
