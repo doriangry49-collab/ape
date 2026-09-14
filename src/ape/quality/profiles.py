@@ -37,6 +37,8 @@ VALIDATOR_NAME_MAP: dict[str, str] = {
     "runtimevalidator": "runtime",
     "replayvalidator": "replay",
     "sbomvalidator": "sbom",
+    "pathcontainmentvalidator": "path_containment",
+    "path_containment": "path_containment",
 }
 
 
@@ -70,6 +72,7 @@ PROFILE_VALIDATOR_MAP: dict[QualityProfile, set[str]] = {
         "smoke",
         "runtime",
         "security",
+        "path_containment",
     },
     QualityProfile.RELEASE: {
         "syntax",
@@ -82,6 +85,7 @@ PROFILE_VALIDATOR_MAP: dict[QualityProfile, set[str]] = {
         "security",
         "replay",
         "sbom",
+        "path_containment",
     },
 }
 
@@ -93,6 +97,7 @@ VALIDATOR_WEIGHTS: dict[str, float] = {
     "packaging": 15.0,
     "pytest": 20.0,
     "security": 20.0,
+    "path_containment": 20.0,
     "runtime": 15.0,
     "smoke": 10.0,
     "replay": 15.0,
