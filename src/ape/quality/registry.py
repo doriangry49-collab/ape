@@ -14,6 +14,7 @@ from ape.quality.validators.runtime_validator import RuntimeValidator
 from ape.quality.validators.security_validator import SecurityValidator
 from ape.quality.validators.smoke_validator import SmokeValidator
 from ape.quality.validators.syntax import SyntaxValidator
+from ape.quality.validators.path_containment_validator import PathContainmentValidator
 
 
 class ValidatorRegistry:
@@ -30,6 +31,7 @@ class ValidatorRegistry:
         self.register("python", PytestValidator())
         self.register("python", SmokeValidator())
         self.register("python", RuntimeValidator())
+        self.register("python", PathContainmentValidator())
 
     def register(self, language: str, validator: Validator) -> None:
         """Register a validator under a specific language or domain capability pack."""
