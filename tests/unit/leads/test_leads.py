@@ -1,4 +1,6 @@
+import json
 from pathlib import Path
+
 from ape.intelligence.leads.finder import LeadFinderEngine
 from ape.intelligence.leads.models import LeadItem, LeadReport
 
@@ -56,3 +58,35 @@ def test_lead_finder_v02_distinct_approaches(tmp_path: Path):
     for lead in report.leads:
         assert "x.com/snaplet$" not in lead.source_url
         assert "MonadState" not in lead.quote
+
+
+def test_save_deliverable_writes_json(tmp_path: Path):
+    engine = LeadFinderEngine(project_root=tmp_path)
+
+    lead = LeadItem(
+        source_url="https://x.com/example_user/status/123456",
+        source_type="twitter",
+        quote="Test quote about database seeding",
+        relevance_reason="Relevant discussion",
+        suggested_approach="Suggested draft outreach",
+        verification_status="VERIFIED_EXISTS",
+    )
+    report = LeadReport(
+        product="test-product",
+        pain_point="test-pain",
+        discovered_at="2026-09-06T12:00:00Z",
+        total_leads=1,
+        verified_leads=1,
+        leads=[lead],
+    )
+
+    output_path = tmp_path / "deliverables" / "leads_test-product.json"
+    result_path = engine.save_deliverable(report, output_path=output_path)
+
+    assert result_path == output_path
+    assert output_path.exists()
+
+    with open(output_path, "r", encoding="utf-8") as f:
+        saved_data = json.load(f)
+
+    assert saved_data == report.to_dict()
