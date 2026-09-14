@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 from typing import Optional
 
 import typer
@@ -247,6 +248,45 @@ def research(
         typer.echo(f" - {m}")
     typer.echo(_hr())
     typer.echo("Saved report artifacts in `.build/research/`.")
+
+
+@app.command("find-leads")
+def find_leads(
+    product: str = typer.Option(..., "--product", help="Product description or name"),
+    pain_point: str = typer.Option(..., "--pain-point", help="Target user pain point or issue"),
+    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Custom JSON output deliverable path"),
+) -> None:
+    """Discover and verify targeted warm leads from public community discussions (GitHub, Twitter/X, forums)."""
+    from ape.intelligence.leads.finder import LeadFinderEngine
+
+    project = load_project()
+    engine = LeadFinderEngine(project_root=project.root)
+
+    typer.echo(f"Searching warm leads for product: '{product}'...")
+    typer.echo(f"Target pain point: '{pain_point}'...")
+    typer.echo(_hr())
+
+    report = engine.find_leads(product=product, pain_point=pain_point)
+    saved_path = engine.save_deliverable(report, output_path=output)
+
+    typer.echo(f"Lead Discovery Complete ({report.total_leads} leads found, {report.verified_leads} verified live)")
+    typer.echo(_hr())
+    for i, lead in enumerate(report.leads, 1):
+        clean_q = lead.quote[:100].encode(sys.stdout.encoding or "utf-8", errors="replace").decode(sys.stdout.encoding or "utf-8", errors="replace").replace("\n", " ")
+        clean_r = lead.relevance_reason.encode(sys.stdout.encoding or "utf-8", errors="replace").decode(sys.stdout.encoding or "utf-8", errors="replace")
+        clean_a = lead.suggested_approach.encode(sys.stdout.encoding or "utf-8", errors="replace").decode(sys.stdout.encoding or "utf-8", errors="replace")
+        typer.echo(f"[{i}] {lead.source_type.upper()} | Status: {lead.verification_status}")
+        typer.echo(f"    URL     : {lead.source_url}")
+        typer.echo(f"    Quote   : {clean_q}...")
+        typer.echo(f"    Reason  : {clean_r}")
+        typer.echo(f"    Approach: {clean_a}")
+        typer.echo(_hr())
+
+    try:
+        rel_path = saved_path.relative_to(project.root)
+    except Exception:
+        rel_path = saved_path
+    typer.echo(f"Saved deliverable JSON report to: {rel_path}")
 
 
 @app.command("decide")
@@ -1226,5 +1266,10 @@ def venture_replay(
     typer.echo(_hr())
 
 
+from ape.etsy.cli import etsy_app
+app.add_typer(etsy_app, name="etsy")
+
+
 if __name__ == "__main__":
     app()
+
