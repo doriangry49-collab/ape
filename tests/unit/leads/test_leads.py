@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from ape.intelligence.leads.finder import LeadFinderEngine
 from ape.intelligence.leads.models import LeadItem, LeadReport
 
@@ -90,3 +92,29 @@ def test_save_deliverable_writes_json(tmp_path: Path):
         saved_data = json.load(f)
 
     assert saved_data == report.to_dict()
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        # Special characters: &, !, . stripped; surrounding spaces collapse into one underscore
+        ("AI & DB Seeder v1.0!", "ai_db_seeder_v10"),
+        # Multiple consecutive spaces collapse into a single underscore
+        ("hello   world", "hello_world"),
+        # Leading/trailing whitespace stripped, internal punctuation removed
+        ("  spaced  out  ", "spaced_out"),
+        # Hyphens and spaces both collapse into underscore
+        ("test-case (v2.0)", "test_case_v20"),
+        # Mixed punctuation and symbols
+        ("C++ / Rust: Systems!!", "c_rust_systems"),
+        # Empty-ish / whitespace only
+        ("   ", ""),
+        # Single word, no change beyond lowering
+        ("Seeder", "seeder"),
+        # Underscores in input are word chars, preserved, adjacent spaces still collapse
+        ("foo _ bar", "foo___bar"),
+    ],
+)
+def test_slugify_edge_cases(input_text: str, expected: str):
+    engine = LeadFinderEngine(project_root=Path("/tmp"))
+    assert engine._slugify(input_text) == expected
