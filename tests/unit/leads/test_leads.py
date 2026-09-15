@@ -118,3 +118,16 @@ def test_save_deliverable_writes_json(tmp_path: Path):
 def test_slugify_edge_cases(input_text: str, expected: str):
     engine = LeadFinderEngine(project_root=Path("/tmp"))
     assert engine._slugify(input_text) == expected
+
+
+def test_is_official_account_trailing_slash(tmp_path: Path):
+    """Regression: URLs with trailing slash must still match official-account patterns."""
+    engine = LeadFinderEngine(project_root=tmp_path)
+    # 1. Trailing slash was broken (regex ended with '$'); now fixed
+    assert engine._is_official_account("https://x.com/snaplet/") is True
+    # 2. Without trailing slash still works
+    assert engine._is_official_account("https://x.com/snaplet") is True
+    # 3. Empty string guarded
+    assert engine._is_official_account("") is False
+    # 4. None guarded
+    assert engine._is_official_account(None) is False

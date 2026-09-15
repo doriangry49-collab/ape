@@ -65,9 +65,11 @@ class LeadFinderEngine:
 
     def _is_official_account(self, url: str) -> bool:
         """Check if URL belongs to official corporate/brand page rather than a customer/user."""
-        url_lower = url.lower()
+        if not url:
+            return False
+        url_clean = url.strip().rstrip('/').lower()
         for pattern in self.OFFICIAL_EXCLUSIONS:
-            if re.search(pattern, url_lower):
+            if re.search(pattern, url_clean):
                 return True
         return False
 
