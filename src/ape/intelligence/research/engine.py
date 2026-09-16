@@ -57,7 +57,7 @@ class ResearchEngine:
         combined_signals = fusion_data.get("fused_signals", {})
         # --------------------------------------------------------
 
-        confidence = fusion_data.get("overall_confidence", 0.80)
+        confidence = fusion_data.get("overall_confidence", 0.0)
         pains_list = fusion_data.get("fused_pain_points", [])
         sources_list = fusion_data.get("fused_sources", ["HackerNews", "GitHubTrending", "AudienceHeuristics"])
         if not isinstance(sources_list, list):

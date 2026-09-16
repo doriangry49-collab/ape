@@ -20,7 +20,6 @@ class HeuristicAudienceProvider(BaseResearchProvider):
             "Simple single-page web ui showing raw results",
             "Export raw data format in JSON / CSV"
         ]
-        confidence = 0.80
 
         # Heuristic rules matching topic keywords
         if any(kw in topic_lower for kw in ["ai", "llm", "gpt", "agent", "model"]):
@@ -36,7 +35,6 @@ class HeuristicAudienceProvider(BaseResearchProvider):
                 "Lightweight API wrapper caching tokens locally",
                 "Single-file configuration interface"
             ]
-            confidence = 0.85
             
         elif any(kw in topic_lower for kw in ["saas", "dashboard", "tool"]):
             target_audience = ["SaaS Developers", "Indie Hackers", "Digital Marketers"]
@@ -47,14 +45,12 @@ class HeuristicAudienceProvider(BaseResearchProvider):
                 "Basic OAuth configuration template",
                 "Pricing table mockup utility"
             ]
-            confidence = 0.78
 
         return {
             "target_audience": target_audience,
             "competitors": competitors,
             "risks": risks,
             "suggested_mvp": suggested_mvp,
-            "confidence": confidence,
             "sources": ["AudienceHeuristics"],
             "is_heuristic": True,
         }

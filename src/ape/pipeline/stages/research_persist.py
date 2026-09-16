@@ -60,6 +60,17 @@ class ResearchPersistStage(PipelineStage):
         if not slug:
             slug = "unnamed_topic"
 
+        conf_val = float(fusion_data.get("overall_confidence", 0.0))
+        pains_count = len(fusion_data.get("fused_pain_points", []))
+        if conf_val < 0.60:
+            rec_action = "IGNORE" if conf_val == 0.0 else "WATCH"
+        elif conf_val >= 0.80 and pains_count >= 3:
+            rec_action = "BUILD"
+        elif conf_val >= 0.75 and pains_count >= 1:
+            rec_action = "VALIDATE"
+        else:
+            rec_action = "WATCH"
+
         fused_signals = fusion_data.get("fused_signals", {})
         json_data = {
             "metadata": {
@@ -70,8 +81,8 @@ class ResearchPersistStage(PipelineStage):
                 "explainability_summary": explain_data.get("summary"),
             },
             "topic": topic,
-            "next_recommended_action": "BUILD" if fusion_data.get("overall_confidence", 0.8) >= 0.8 else "VALIDATE",
-            "confidence": fusion_data.get("overall_confidence", 0.80),
+            "next_recommended_action": rec_action,
+            "confidence": conf_val,
             "sources": fusion_data.get("fused_sources", []),
             "pain_points": fusion_data.get("fused_pain_points", []),
             "target_audience": fused_signals.get("target_audience", []),

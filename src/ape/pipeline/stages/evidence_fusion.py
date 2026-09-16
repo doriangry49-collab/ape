@@ -140,10 +140,6 @@ class EvidenceFusionStage(PipelineStage):
                     },
                 })
 
-        overall_confidence = (
-            min(confidence_scores) if confidence_scores else 0.80
-        )
-        agreement_score = 1.0 if len(confidence_scores) > 1 else 0.85
         has_real_evidence = any(
             ev.get("search_intent_observation") is True
             or ev.get("pain_observation") is True
@@ -151,6 +147,29 @@ class EvidenceFusionStage(PipelineStage):
             for ev in business_evidence_items
         )
         evidence_status = "SUFFICIENT" if has_real_evidence else "INSUFFICIENT_DOMAIN_EVIDENCE"
+
+        discussions_count = len(fused_signals.get("discussions", []))
+        pain_count = len(all_pain_points)
+        active_sources = {
+            ev["provenance"]["source_adapter"]
+            for ev in business_evidence_items
+            if (
+                ev.get("search_intent_observation") is True
+                or ev.get("pain_observation") is True
+                or ev.get("competition_observation") is True
+            )
+        }
+
+        if not has_real_evidence or (discussions_count == 0 and pain_count == 0):
+            overall_confidence = 0.0
+            agreement_score = 0.0
+        else:
+            # Empirical confidence directly derived from real data volume and multi-source corroboration
+            src_score = min(0.30, len(active_sources) * 0.15)
+            disc_score = min(0.40, discussions_count * 0.08)
+            pain_score = min(0.30, pain_count * 0.15)
+            overall_confidence = round(min(0.95, src_score + disc_score + pain_score), 2)
+            agreement_score = 1.0 if len(active_sources) > 1 else 0.85
 
         fusion_report = {
             "topic": topic,

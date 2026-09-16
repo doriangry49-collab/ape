@@ -16,7 +16,13 @@ class HackerNewsResearchProvider(BaseResearchProvider):
 
     def fetch_signals(self, topic: str) -> dict[str, Any]:
         if self._offline:
-            return self._get_mock_signals(topic)
+            return {
+                "discussions": [],
+                "pain_points": [],
+                "market_signals": [f"Offline mode: no HackerNews data for '{topic}'"],
+                "sources": ["HackerNews"],
+                "status": "NO_DATA",
+            }
 
         try:
             query_encoded = urllib.parse.quote(topic)
@@ -66,46 +72,25 @@ class HackerNewsResearchProvider(BaseResearchProvider):
                 market_signals.append(
                     f"Top discussion thread reached {top_points} points"
                 )
+                status = "SUCCESS"
             else:
-                market_signals.append("Low discussion volume on HackerNews")
+                market_signals.append(f"Low discussion volume on HackerNews for '{topic}'")
+                status = "NO_DATA"
 
-            # Fallback if no specific pain points detected but hits were found
-            if not pain_points and len(hits) > 0:
-                pain_points.add("Lack of robust integration options reported in community threads")
-                
             return {
                 "discussions": discussions,
                 "pain_points": list(pain_points),
                 "market_signals": market_signals,
-                "sources": ["HackerNews"]
+                "sources": ["HackerNews"],
+                "status": status,
             }
 
-        except Exception:
-            return self._get_mock_signals(topic)
-
-    def _get_mock_signals(self, topic: str) -> dict[str, Any]:
-        """Returns reproducible deterministic mock signals for offline testing."""
-        return {
-            "discussions": [
-                {
-                    "title": f"Show HN: Fast local {topic} framework",
-                    "url": "https://news.ycombinator.com/item?id=12345",
-                    "points": 150
-                },
-                {
-                    "title": f"Ask HN: What is the best {topic} tool?",
-                    "url": "https://news.ycombinator.com/item?id=12346",
-                    "points": 85
-                }
-            ],
-            "pain_points": [
-                "High API pricing and pricing model complexity",
-                f"Difficult local setup and installation overhead for {topic}",
-                "Integration support missing for major development tools"
-            ],
-            "market_signals": [
-                f"Increasing HackerNews thread velocity for '{topic}' search",
-                "High developer interest indicated by discussion score avg (117 pts)"
-            ],
-            "sources": ["HackerNews"]
-        }
+        except Exception as exc:
+            return {
+                "discussions": [],
+                "pain_points": [],
+                "market_signals": [f"HackerNews search failed or unavailable for '{topic}'"],
+                "sources": ["HackerNews"],
+                "status": "NO_DATA",
+                "error": str(exc),
+            }

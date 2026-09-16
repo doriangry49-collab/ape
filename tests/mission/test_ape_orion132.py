@@ -67,16 +67,17 @@ class TestORION132_MultiSourceResearchProof:
 
     def test_github_trending_provider_offline_acquisition(self) -> None:
         """
-        Proof 1b: GitHubTrendingResearchProvider offline mock fallback works deterministically.
+        Proof 1b: GitHubTrendingResearchProvider offline enforces fail-closed NO_DATA.
         """
         provider = GitHubTrendingResearchProvider(offline=True)
         signals = provider.fetch_signals(TOPIC)
 
-        assert len(signals["discussions"]) == 2
         assert signals["sources"] == ["GitHubTrending"]
-        assert "github.com" in signals["discussions"][0]["url"]
+        assert signals.get("status") == "NO_DATA"
+        assert len(signals["discussions"]) == 0
+        assert len(signals["pain_points"]) == 0
 
-        print(f"\n[Proof 1b] Offline GitHub mock repos: {len(signals['discussions'])}")
+        print(f"\n[Proof 1b] Offline GitHub fail-closed: status={signals.get('status')}")
 
     # ------------------------------------------------------------------
     # 2. Source Isolation Tests
