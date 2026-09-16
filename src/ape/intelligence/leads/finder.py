@@ -55,6 +55,66 @@ class LeadFinderEngine:
         "snaplet.dev",
     ]
 
+    PERSONALIZATION_TEMPLATES: tuple[
+        tuple[Any, str, str], ...
+    ] = (
+        # Each entry: (matcher, reason_template, approach_template)
+        # matcher is a callable (quote_lower, url_lower) -> bool
+        (
+            lambda ql, ul: "windows" in ql or "win11" in ql or "init" in ql,
+            "Developer encountering OS/CLI initialization issues: '{clean_snippet}' ({url_tail}).",
+            (
+                "Hi! Saw your issue regarding '{clean_snippet}' ({url_tail}). "
+                "We built {product} as a zero-dependency CLI that runs cross-platform "
+                "without environment setup errors."
+            ),
+        ),
+        (
+            lambda ql, ul: "drizzle" in ql or "seed.sql" in ql,
+            "Developer requesting automated seed.sql generation: '{clean_snippet}' ({url_tail}).",
+            (
+                "Hey! Saw your request in '{clean_snippet}' ({url_tail}). "
+                "With {product}, cross-column state machine rules are inferred "
+                "automatically to generate valid seed.sql files."
+            ),
+        ),
+        (
+            lambda ql, ul: "the-rhapsodies" in ul or "generate seed data" in ql,
+            "Repository issue evaluating Snaplet alternatives: '{clean_snippet}' ({url_tail}).",
+            (
+                "Hi! Noticed your repository task '{clean_snippet}' ({url_tail}). "
+                "Following Snaplet's shutdown, {product} provides automated "
+                "zero-config cross-column relational seeding."
+            ),
+        ),
+        (
+            lambda ql, ul: "jianreis" in ul or "highlight of my career" in ql,
+            "Snaplet team member post reflecting on the tool's legacy ({url_tail}).",
+            (
+                "Thank you for building Snaplet! ({url_tail}) "
+                "Inspired by that mission, we're building open-source {product} "
+                "to keep zero-config state seeding accessible."
+            ),
+        ),
+        (
+            lambda ql, ul: "mojitane" in ul,
+            "Community announcement regarding Snaplet open-source transition ({url_tail}).",
+            (
+                "Great point regarding Supabase community seed tech ({url_tail})! "
+                "For zero-config cross-column state rules, check out open-source {product}."
+            ),
+        ),
+        (
+            lambda ql, ul: "check constraints" in ql or "syn-012" in ql,
+            "Engineering issue regarding CHECK constraints & state logic: '{clean_snippet}' ({url_tail}).",
+            (
+                "Hi! Saw your discussion in '{clean_snippet}' ({url_tail}). "
+                "{product} targets cross-column CHECK constraints and state machines "
+                "specifically for relational databases."
+            ),
+        ),
+    )
+
     def __init__(self, project_root: Optional[Path] = None) -> None:
         self.project_root = project_root or Path.cwd()
 
@@ -127,48 +187,34 @@ class LeadFinderEngine:
         clean_snippet = quote.split(":")[0] if ":" in quote else quote[:50]
         clean_snippet = re.sub(r"\s+", " ", clean_snippet).strip()
 
-        # Scenario-specific context matching with unique quote snippet & URL tail
-        if "windows" in quote_lower or "win11" in quote_lower or "init" in quote_lower:
-            reason = f"Developer encountering OS/CLI initialization issues: '{clean_snippet}' ({url_tail})."
-            approach = (
-                f"Hi! Saw your issue regarding '{clean_snippet}' ({url_tail}). "
-                f"We built {product} as a zero-dependency CLI that runs cross-platform without environment setup errors."
+        format_kwargs = {
+            "clean_snippet": clean_snippet,
+            "url_tail": url_tail,
+            "product": product,
+            "pain_point": pain_point,
+            "item_index": item_index,
+        }
+
+        # Walk through PERSONALIZATION_TEMPLATES in priority order;
+        # the first entry whose matcher succeeds determines the output.
+        reason = None
+        approach = None
+        for matcher, reason_tpl, approach_tpl in self.PERSONALIZATION_TEMPLATES:
+            if not matcher(quote_lower, url_lower):
+                continue
+            reason = reason_tpl.format(**format_kwargs)
+            approach = approach_tpl.format(**format_kwargs)
+            break
+
+        if reason is None:  # no template matched → fallback
+            reason = (
+                f"Public technical discussion #{item_index} ({url_tail}) "
+                f"on database seeding context: '{clean_snippet}'."
             )
-        elif "drizzle" in quote_lower or "seed.sql" in quote_lower:
-            reason = f"Developer requesting automated seed.sql generation: '{clean_snippet}' ({url_tail})."
-            approach = (
-                f"Hey! Saw your request in '{clean_snippet}' ({url_tail}). "
-                f"With {product}, cross-column state machine rules are inferred automatically to generate valid seed.sql files."
-            )
-        elif "the-rhapsodies" in url_lower or "generate seed data" in quote_lower:
-            reason = f"Repository issue evaluating Snaplet alternatives: '{clean_snippet}' ({url_tail})."
-            approach = (
-                f"Hi! Noticed your repository task '{clean_snippet}' ({url_tail}). "
-                f"Following Snaplet's shutdown, {product} provides automated zero-config cross-column relational seeding."
-            )
-        elif "jianreis" in url_lower or "highlight of my career" in quote_lower:
-            reason = f"Snaplet team member post reflecting on the tool's legacy ({url_tail})."
-            approach = (
-                f"Thank you for building Snaplet! ({url_tail}) "
-                f"Inspired by that mission, we're building open-source {product} to keep zero-config state seeding accessible."
-            )
-        elif "mojitane" in url_lower:
-            reason = f"Community announcement regarding Snaplet open-source transition ({url_tail})."
-            approach = (
-                f"Great point regarding Supabase community seed tech ({url_tail})! "
-                f"For zero-config cross-column state rules, check out open-source {product}."
-            )
-        elif "check constraints" in quote_lower or "syn-012" in quote_lower:
-            reason = f"Engineering issue regarding CHECK constraints & state logic: '{clean_snippet}' ({url_tail})."
-            approach = (
-                f"Hi! Saw your discussion in '{clean_snippet}' ({url_tail}). "
-                f"{product} targets cross-column CHECK constraints and state machines specifically for relational databases."
-            )
-        else:
-            reason = f"Public technical discussion #{item_index} ({url_tail}) on database seeding context: '{clean_snippet}'."
             approach = (
                 f"Hi! Saw your post #{item_index} regarding '{clean_snippet}' ({url_tail}). "
-                f"If you need an automated solution for {pain_point}, {product} offers zero-config state machine seed generation."
+                f"If you need an automated solution for {pain_point}, "
+                f"{product} offers zero-config state machine seed generation."
             )
 
         return reason, approach
