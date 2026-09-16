@@ -30,6 +30,17 @@ class LeadItem:
             "verification_status": self.verification_status,
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> LeadItem:
+        return cls(
+            source_url=data["source_url"],
+            source_type=data["source_type"],
+            quote=data["quote"],
+            relevance_reason=data["relevance_reason"],
+            suggested_approach=data["suggested_approach"],
+            verification_status=data.get("verification_status", "UNVERIFIED_OR_404"),
+        )
+
 
 @dataclass
 class LeadReport:
@@ -51,3 +62,15 @@ class LeadReport:
             "verified_leads": self.verified_leads,
             "leads": [lead.to_dict() for lead in self.leads],
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> LeadReport:
+        leads = [LeadItem.from_dict(item) for item in data.get("leads", [])]
+        return cls(
+            product=data["product"],
+            pain_point=data["pain_point"],
+            discovered_at=data["discovered_at"],
+            total_leads=data["total_leads"],
+            verified_leads=data["verified_leads"],
+            leads=leads,
+        )
