@@ -342,3 +342,14 @@ class LeadFinderEngine:
             json.dump(report.to_dict(), f, indent=2, ensure_ascii=False)
 
         return output_path
+
+    def load_deliverable(self, path: str) -> LeadReport:
+        """Load a LeadReport from a JSON deliverable file."""
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            raise ValueError(f"Deliverable file not found: {path}")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in deliverable file {path}: {e}")
+        return LeadReport.from_dict(data)

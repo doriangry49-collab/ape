@@ -131,3 +131,93 @@ def test_is_official_account_trailing_slash(tmp_path: Path):
     assert engine._is_official_account("") is False
     # 4. None guarded
     assert engine._is_official_account(None) is False
+
+
+def test_lead_item_from_dict_round_trip():
+    lead = LeadItem(
+        source_url="https://x.com/example_user/status/123456",
+        source_type="twitter",
+        quote="Test quote about database seeding",
+        relevance_reason="Relevant discussion",
+        suggested_approach="Suggested draft outreach",
+        verification_status="VERIFIED_EXISTS",
+    )
+    data = lead.to_dict()
+    restored = LeadItem.from_dict(data)
+    assert restored.source_url == lead.source_url
+    assert restored.source_type == lead.source_type
+    assert restored.quote == lead.quote
+    assert restored.relevance_reason == lead.relevance_reason
+    assert restored.suggested_approach == lead.suggested_approach
+    assert restored.verification_status == lead.verification_status
+
+
+def test_lead_report_from_dict_round_trip():
+    lead = LeadItem(
+        source_url="https://x.com/example_user/status/123456",
+        source_type="twitter",
+        quote="Test quote about database seeding",
+        relevance_reason="Relevant discussion",
+        suggested_approach="Suggested draft outreach",
+        verification_status="VERIFIED_EXISTS",
+    )
+    report = LeadReport(
+        product="test-product",
+        pain_point="test-pain",
+        discovered_at="2026-09-06T12:00:00Z",
+        total_leads=1,
+        verified_leads=1,
+        leads=[lead],
+    )
+    data = report.to_dict()
+    restored = LeadReport.from_dict(data)
+    assert restored.product == report.product
+    assert restored.pain_point == report.pain_point
+    assert restored.discovered_at == report.discovered_at
+    assert restored.total_leads == report.total_leads
+    assert restored.verified_leads == report.verified_leads
+    assert len(restored.leads) == 1
+    assert isinstance(restored.leads[0], LeadItem)
+    assert restored.leads[0].source_url == lead.source_url
+
+
+def test_load_deliverable_happy_path(tmp_path: Path):
+    engine = LeadFinderEngine(project_root=tmp_path)
+    lead = LeadItem(
+        source_url="https://x.com/example_user/status/123456",
+        source_type="twitter",
+        quote="Test quote about database seeding",
+        relevance_reason="Relevant discussion",
+        suggested_approach="Suggested draft outreach",
+        verification_status="VERIFIED_EXISTS",
+    )
+    report = LeadReport(
+        product="test-product",
+        pain_point="test-pain",
+        discovered_at="2026-09-06T12:00:00Z",
+        total_leads=1,
+        verified_leads=1,
+        leads=[lead],
+    )
+    json_path = tmp_path / "deliverables" / "leads_test-product.json"
+    engine.save_deliverable(report, output_path=json_path)
+    loaded = engine.load_deliverable(str(json_path))
+    assert loaded.product == report.product
+    assert loaded.pain_point == report.pain_point
+    assert loaded.total_leads == report.total_leads
+    assert len(loaded.leads) == 1
+    assert loaded.leads[0].source_url == lead.source_url
+
+
+def test_load_deliverable_file_not_found(tmp_path: Path):
+    engine = LeadFinderEngine(project_root=tmp_path)
+    with pytest.raises(ValueError, match="Deliverable file not found"):
+        engine.load_deliverable(str(tmp_path / "nonexistent.json"))
+
+
+def test_load_deliverable_invalid_json(tmp_path: Path):
+    engine = LeadFinderEngine(project_root=tmp_path)
+    bad_json = tmp_path / "bad.json"
+    bad_json.write_text("{not valid json", encoding="utf-8")
+    with pytest.raises(ValueError, match="Invalid JSON"):
+        engine.load_deliverable(str(bad_json))
