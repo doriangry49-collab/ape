@@ -80,21 +80,33 @@ class ExplainabilityStage(PipelineStage):
             })
 
         fusion_data = fusion_res.output_data if fusion_res else {}
-        overall_conf = fusion_data.get("overall_confidence", 0.80)
-        agreement_score = fusion_data.get("agreement_score", 1.0)
+        overall_conf = fusion_data.get("overall_confidence", 0.0)
+        agreement_score = fusion_data.get("agreement_score", 0.0)
+
+        if overall_conf == 0.0:
+            summary_text = (
+                f"Research for '{topic}' completed across 5 constitutional pipeline stages: "
+                f"NO verified domain evidence found (confidence 0%)."
+            )
+            conf_reasoning = (
+                f"Confidence is 0% due to absence of verified domain discussions or pain points for '{topic}'."
+            )
+        else:
+            summary_text = (
+                f"Research for '{topic}' completed across 5 constitutional pipeline stages "
+                f"with overall confidence of {overall_conf:.0%} and agreement score of {agreement_score:.2f}."
+            )
+            conf_reasoning = (
+                f"Confidence ({overall_conf:.0%}) derived from {len(fusion_data.get('fused_sources', []))} verified sources "
+                f"with {len(fusion_data.get('fused_pain_points', []))} distinct pain points identified."
+            )
 
         narrative = {
             "topic": topic,
-            "summary": (
-                f"Research for '{topic}' completed across 5 constitutional pipeline stages "
-                f"with overall confidence of {overall_conf:.0%} and agreement score of {agreement_score:.2f}."
-            ),
+            "summary": summary_text,
             "decision_path": decision_path,
             "evidence_path": evidence_path,
-            "confidence_reasoning": (
-                f"Confidence ({overall_conf:.0%}) derived from {len(fusion_data.get('fused_sources', []))} verified sources "
-                f"with {len(fusion_data.get('fused_pain_points', []))} distinct pain points identified."
-            ),
+            "confidence_reasoning": conf_reasoning,
             "unknown_reasons": (
                 f"Handled {val_res.output_data.get('invalid_count', 0)} invalid/errored provider observations "
                 "in accordance with SPEC-0012 zero-synthetic invariants."

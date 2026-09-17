@@ -16,7 +16,14 @@ class GitHubTrendingResearchProvider(BaseResearchProvider):
 
     def fetch_signals(self, topic: str) -> dict[str, Any]:
         if self._offline:
-            return self._get_mock_signals(topic)
+            return {
+                "discussions": [],
+                "pain_points": [],
+                "market_signals": [f"Offline mode: no GitHub data for '{topic}'"],
+                "competitors": [],
+                "sources": ["GitHubTrending"],
+                "status": "NO_DATA",
+            }
 
         try:
             query_encoded = urllib.parse.quote(topic)
@@ -71,11 +78,10 @@ class GitHubTrendingResearchProvider(BaseResearchProvider):
                 market_signals.append(
                     f"Top repository '{top_repo}' reached {top_stars} stars"
                 )
+                status = "SUCCESS"
             else:
-                market_signals.append(f"Low repository count on GitHub for '{topic}'")
-
-            if not pain_points and len(items) > 0:
-                pain_points.add("Custom local setup required for developer integrations")
+                market_signals.append(f"No repositories found on GitHub for '{topic}'")
+                status = "NO_DATA"
 
             return {
                 "discussions": discussions,
@@ -83,34 +89,16 @@ class GitHubTrendingResearchProvider(BaseResearchProvider):
                 "market_signals": market_signals,
                 "competitors": competitors,
                 "sources": ["GitHubTrending"],
+                "status": status,
             }
 
-        except Exception:
-            return self._get_mock_signals(topic)
-
-    def _get_mock_signals(self, topic: str) -> dict[str, Any]:
-        """Returns reproducible deterministic mock signals for offline testing."""
-        return {
-            "discussions": [
-                {
-                    "title": f"GitHub Repo: awesome-{topic}/core (1250 stars)",
-                    "url": f"https://github.com/awesome-{topic}/core",
-                    "points": 1250,
-                },
-                {
-                    "title": f"GitHub Repo: {topic}-tools/cli (420 stars)",
-                    "url": f"https://github.com/{topic}-tools/cli",
-                    "points": 420,
-                },
-            ],
-            "pain_points": [
-                f"Custom local setup required for developer integrations for {topic}",
-                "Integration support missing for major development frameworks",
-            ],
-            "market_signals": [
-                f"Found 45 GitHub repositories for '{topic}'",
-                f"Top repository 'awesome-{topic}/core' reached 1250 stars",
-            ],
-            "competitors": [],
-            "sources": ["GitHubTrending"],
-        }
+        except Exception as exc:
+            return {
+                "discussions": [],
+                "pain_points": [],
+                "market_signals": [f"GitHub search failed or unavailable for '{topic}'"],
+                "competitors": [],
+                "sources": ["GitHubTrending"],
+                "status": "NO_DATA",
+                "error": str(exc),
+            }
