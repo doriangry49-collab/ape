@@ -61,10 +61,22 @@ class VerificationStage(PipelineStage):
                     deliverables.extend(t.get("deliverables", []))
 
         # Perform deliverable existence verification via DeliverableVerifier
-        ok, missing = verifier.verify(deliverables)
+        res = verifier.verify(deliverables)
+        ok, missing = res.passed, res.missing_items
 
         if not ok:
-            error_msg = f"Verification FAILED: Missing deliverables: {missing}"
+            reasons = getattr(res, "reasons", {})
+
+            # Determine failure_reason based on reasons
+            all_reasons = list(reasons.values())
+            if all_reasons and all(r == "EMPTY_FILE" for r in all_reasons):
+                failure_reason = "EMPTY_DELIVERABLES"
+            elif all_reasons and all(r.startswith("INVALID_JSON") for r in all_reasons):
+                failure_reason = "INVALID_JSON_DELIVERABLES"
+            else:
+                failure_reason = "MISSING_DELIVERABLES"
+
+            error_msg = f"Verification FAILED: {failure_reason}: {missing}"
             return StageResult(
                 stage_name=self.name,
                 status=StageStatus.FAILED,
@@ -73,10 +85,12 @@ class VerificationStage(PipelineStage):
                     "verification_passed": False,
                     "verified_deliverables": [d for d in deliverables if d not in missing],
                     "missing_deliverables": missing,
+                    "failure_details": reasons,
                 },
                 evidence={
-                    "failure_reason": "MISSING_DELIVERABLES",
+                    "failure_reason": failure_reason,
                     "missing_deliverables": missing,
+                    "failure_details": reasons,
                 },
             )
 
