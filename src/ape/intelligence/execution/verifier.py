@@ -10,18 +10,34 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import NamedTuple, Optional, Union
+from typing import Optional, Union
 
 
-class DeliverableVerificationResult(NamedTuple):
+class DeliverableVerificationResult:
     """
     Result of deliverable verification.
 
     Iterable/unpackable as (passed, missing_items) for backward compatibility,
-    with .passed (bool) and .missing_items (list[str]) attributes.
+    with .passed (bool), .missing_items (list[str]), and .reasons (dict[str, str])
+    attributes mapping failed deliverable -> failure reason.
     """
-    passed: bool
-    missing_items: list[str]
+
+    def __init__(
+        self,
+        passed: bool,
+        missing_items: list[str],
+        reasons: dict[str, str] | None = None,
+    ) -> None:
+        self.passed: bool = passed
+        self.missing_items: list[str] = missing_items
+        self.reasons: dict[str, str] = reasons if reasons is not None else {}
+
+    def __iter__(self):
+        yield self.passed
+        yield self.missing_items
+
+    def __getitem__(self, index):
+        return (self.passed, self.missing_items)[index]
 
 
 class DeliverableVerifier:
@@ -56,37 +72,40 @@ class DeliverableVerifier:
         return [cleaned] if cleaned else []
 
     @staticmethod
-    def _validate_file(path: Path) -> bool:
+    def _validate_file(path: Path) -> str | None:
         """
         Validates a candidate file path.
 
-        - Must exist.
-        - Must not be zero bytes.
-        - If .json (case-insensitive), must be valid JSON.
+        Returns None if valid, or a failure reason string:
+        - "NOT_FOUND" if file does not exist
+        - "EMPTY_FILE" if stat.st_size == 0
+        - "INVALID_JSON: <error>" if json parsing fails
         """
         if not path.exists():
-            return False
+            return "NOT_FOUND"
 
         try:
             stat = path.stat()
         except OSError:
-            return False
+            return "NOT_FOUND"
 
         if stat.st_size == 0:
-            return False
+            return "EMPTY_FILE"
 
         if path.suffix.lower() == ".json":
             try:
                 json.loads(path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, UnicodeDecodeError, OSError):
-                return False
+            except json.JSONDecodeError as e:
+                return f"INVALID_JSON: {e}"
+            except (UnicodeDecodeError, OSError) as e:
+                return f"INVALID_JSON: {e}"
 
-        return True
+        return None
 
     def verify(self, deliverables: Union[str, list[str]]) -> DeliverableVerificationResult:
         """
-        Returns DeliverableVerificationResult(passed, missing_items).
-        In dry-run mode always returns DeliverableVerificationResult(True, []) — nothing was produced.
+        Returns DeliverableVerificationResult(passed, missing_items, reasons).
+        In dry-run mode always returns DeliverableVerificationResult(True, [], {}) — nothing was produced.
         For concrete file deliverables (with extension/path), verifies existence on disk,
         non-zero size, and JSON validity for .json files.
         """
@@ -97,6 +116,7 @@ class DeliverableVerifier:
             return DeliverableVerificationResult(passed=True, missing_items=[])
 
         missing: list[str] = []
+        reasons: dict[str, str] = {}
         for d in deliverables:
             candidates = self._parse_deliverable_item(d)
             concrete_candidates = [
@@ -106,8 +126,19 @@ class DeliverableVerifier:
             if not concrete_candidates:
                 continue
 
-            valid = any(self._validate_file(self._root / c) for c in concrete_candidates)
-            if not valid:
-                missing.append(d)
+            failed_reason: str | None = None
+            for c in concrete_candidates:
+                reason = self._validate_file(self._root / c)
+                if reason is None:
+                    failed_reason = None
+                    break
+                if failed_reason is None:
+                    failed_reason = reason
 
-        return DeliverableVerificationResult(passed=(len(missing) == 0), missing_items=missing)
+            if failed_reason is not None:
+                missing.append(d)
+                reasons[d] = failed_reason
+
+        return DeliverableVerificationResult(
+            passed=(len(missing) == 0), missing_items=missing, reasons=reasons
+        )
