@@ -144,6 +144,14 @@ class ConstitutionValidator:
 
         # Complete evidence verified
         if overall_score >= 60:
+            demand = vector_scores.get("demand")
+            if demand is not None and demand < 40:
+                return PolicyGateResult(
+                    decision=PolicyDecision.VALIDATE,
+                    policy_code="VALIDATE_WITH_USERS",
+                    message="Overall score meets threshold but demand score is too low (<40). Validate demand before building.",
+                    rule_id="RULE_DEMAND_MINIMUM_GATE",
+                )
             return PolicyGateResult(
                 decision=PolicyDecision.BUILD,
                 policy_code="BUILD_NOW",
