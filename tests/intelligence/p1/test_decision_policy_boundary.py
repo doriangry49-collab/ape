@@ -77,6 +77,35 @@ def test_constitution_evaluate_policy_verified_evidence_build():
     assert res_val.rule_id == "RULE_GO_VALIDATE_BORDERLINE"
 
 
+def test_constitution_evaluate_policy_low_demand_masks_overall_score():
+    validator = ConstitutionValidator()
+    bridge_result = BridgeResult(
+        evidence_flags={
+            "payment_signal": True,
+            "identifiable_customer": True,
+            "ai_solvability": True,
+        }
+    )
+
+    # Verified evidence + overall_score=75 but demand=30 (<40) -> VALIDATE, not BUILD
+    res_low = validator.evaluate_policy(
+        overall_score=75,
+        vector_scores={"feasibility": 90, "competition": 90, "demand": 30},
+        bridge_result=bridge_result,
+    )
+    assert res_low.decision == PolicyDecision.VALIDATE
+    assert res_low.rule_id == "RULE_DEMAND_MINIMUM_GATE"
+
+    # Verified evidence + overall_score=75 + demand=60 (>=40) -> BUILD
+    res_ok = validator.evaluate_policy(
+        overall_score=75,
+        vector_scores={"feasibility": 90, "competition": 90, "demand": 60},
+        bridge_result=bridge_result,
+    )
+    assert res_ok.decision == PolicyDecision.BUILD
+    assert res_ok.rule_id == "RULE_GO_BUILD_APPROVED"
+
+
 def test_decision_engine_lineage_and_provenance_preservation(tmp_path: Path):
     # Setup test workspace
     build_dir = tmp_path / ".build" / "research"
