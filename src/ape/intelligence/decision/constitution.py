@@ -152,6 +152,14 @@ class ConstitutionValidator:
                     message="Overall score meets threshold but demand score is too low (<40). Validate demand before building.",
                     rule_id="RULE_DEMAND_MINIMUM_GATE",
                 )
+            competition = vector_scores.get("competition")
+            if competition is not None and competition < 30:
+                return PolicyGateResult(
+                    decision=PolicyDecision.VALIDATE,
+                    policy_code="VALIDATE_WITH_USERS",
+                    message="Overall score meets threshold but competition score is too low (<30). Saturated market; validate differentiation before building.",
+                    rule_id="RULE_COMPETITION_SATURATION_GATE",
+                )
             return PolicyGateResult(
                 decision=PolicyDecision.BUILD,
                 policy_code="BUILD_NOW",

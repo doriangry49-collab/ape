@@ -106,6 +106,53 @@ def test_constitution_evaluate_policy_low_demand_masks_overall_score():
     assert res_ok.rule_id == "RULE_GO_BUILD_APPROVED"
 
 
+def test_constitution_evaluate_policy_low_competition_masks_overall_score():
+    validator = ConstitutionValidator()
+    bridge_result = BridgeResult(
+        evidence_flags={
+            "payment_signal": True,
+            "identifiable_customer": True,
+            "ai_solvability": True,
+        }
+    )
+
+    # Verified evidence + overall_score=75 + demand=80 but competition=20 (<30) -> VALIDATE
+    res_20 = validator.evaluate_policy(
+        overall_score=75,
+        vector_scores={"feasibility": 90, "demand": 80, "competition": 20},
+        bridge_result=bridge_result,
+    )
+    assert res_20.decision == PolicyDecision.VALIDATE
+    assert res_20.rule_id == "RULE_COMPETITION_SATURATION_GATE"
+
+    # Verified evidence + overall_score=75 + demand=80 but competition=29 (<30) -> VALIDATE
+    res_29 = validator.evaluate_policy(
+        overall_score=75,
+        vector_scores={"feasibility": 90, "demand": 80, "competition": 29},
+        bridge_result=bridge_result,
+    )
+    assert res_29.decision == PolicyDecision.VALIDATE
+    assert res_29.rule_id == "RULE_COMPETITION_SATURATION_GATE"
+
+    # Verified evidence + overall_score=75 + demand=80 + competition=30 (>=30) -> BUILD
+    res_30 = validator.evaluate_policy(
+        overall_score=75,
+        vector_scores={"feasibility": 90, "demand": 80, "competition": 30},
+        bridge_result=bridge_result,
+    )
+    assert res_30.decision == PolicyDecision.BUILD
+    assert res_30.rule_id == "RULE_GO_BUILD_APPROVED"
+
+    # Verified evidence + overall_score=75 + demand=80 + competition=60 (>=30) -> BUILD
+    res_60 = validator.evaluate_policy(
+        overall_score=75,
+        vector_scores={"feasibility": 90, "demand": 80, "competition": 60},
+        bridge_result=bridge_result,
+    )
+    assert res_60.decision == PolicyDecision.BUILD
+    assert res_60.rule_id == "RULE_GO_BUILD_APPROVED"
+
+
 def test_decision_engine_lineage_and_provenance_preservation(tmp_path: Path):
     # Setup test workspace
     build_dir = tmp_path / ".build" / "research"
