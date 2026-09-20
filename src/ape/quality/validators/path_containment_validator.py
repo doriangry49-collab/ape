@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import sys
 import time
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 from ape.quality.contracts import ValidationContext, ValidationResult, ValidationStatus
 

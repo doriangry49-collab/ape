@@ -9,25 +9,23 @@ Enforces:
 """
 
 import copy
-import pytest
 from pathlib import Path
 
+import pytest
+
 from ape.intelligence.ablation.representation_contract import (
-    FeatureRubricLevel,
-    FeatureRubric,
-    R2Representation,
-    RepresentationContract,
-    TargetIsolationViolationError,
-    HoldoutAccessViolationError,
-    RUBRIC_PAIN_DEPTH,
+    GLOBAL_ALLOWED_FIELDS,
+    RUBRIC_COMMERCIAL_INTENT,
     RUBRIC_DEMAND_INTENSITY,
     RUBRIC_DISCUSSION_ENGAGEMENT,
-    RUBRIC_COMMERCIAL_INTENT,
-    GLOBAL_ALLOWED_FIELDS,
-    GLOBAL_FORBIDDEN_FIELDS,
+    RUBRIC_PAIN_DEPTH,
+    FeatureRubricLevel,
+    HoldoutAccessViolationError,
+    RepresentationContract,
+    TargetIsolationViolationError,
+    assert_holdout_protection,
     extract_r2_features_isolated,
     map_r2_to_scorer_v1_input,
-    assert_holdout_protection,
     verify_static_target_isolation,
 )
 from ape.intelligence.decision.scorer import Scorer, load_weights

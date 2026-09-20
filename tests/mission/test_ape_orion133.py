@@ -27,7 +27,6 @@ from ape.intelligence.decision.constitution import ConstitutionValidator
 from ape.intelligence.decision.engine import DecisionEngine
 from ape.intelligence.decision.models import PolicyDecision
 from ape.intelligence.models import UNKNOWN, BusinessEvidence, EvidenceProvenance
-from ape.project import Project
 
 
 class TestORION133_ConflictResolutionProof:

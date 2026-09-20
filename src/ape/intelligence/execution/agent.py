@@ -15,9 +15,9 @@ from typing import Any, Dict, List, Optional
 from ape.intelligence.execution.models import ExecutionTask
 from ape.intelligence.execution.policy import (
     CANONICAL_ACTIONS,
+    translate_sandbox_path,
     validate_action_parameters,
     validate_path_containment,
-    translate_sandbox_path,
 )
 from ape.intelligence.roadmap.llm import PlannerModel
 

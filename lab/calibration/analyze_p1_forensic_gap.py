@@ -4,7 +4,8 @@ No code changes. No scorer changes. No G3b modifications.
 Traces ev_p1_001..004 through every mapping step to produce
 a per-step PRESENT / MISSING / INCONSISTENT / UNVERIFIABLE audit.
 """
-import json, sys
+import json
+import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -129,7 +130,7 @@ confidence_score = round(avg_rel * 100, 1)
 
 print("STEP 4: Confidence Score Derivation")
 print("-" * 70)
-print(f"  formula: avg(relevance_scores) * 100")
+print("  formula: avg(relevance_scores) * 100")
 print(f"  relevance_scores: {[ev['relevance_score'] for ev in raw_evidence]}")
 print(f"  avg_relevance:    {round(avg_rel, 4)}")
 print(f"  confidence_score: {confidence_score}")

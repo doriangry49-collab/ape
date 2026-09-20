@@ -38,9 +38,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT))
 
-from ape.intelligence.decision.scorer import Scorer, load_weights
 from ape.intelligence.ablation.representation_contract import sanitize_snapshot_input
-from ape.intelligence.evidence import EvidenceInterpreter, ClaimAggregator, ClaimType
+from ape.intelligence.decision.scorer import Scorer, load_weights
+from ape.intelligence.evidence import ClaimAggregator, ClaimType, EvidenceInterpreter
 
 # Governance Path Anchors
 CALIBRATION_PATH = REPO_ROOT / ".governance" / "calibration_dataset_2026.json"
@@ -397,7 +397,6 @@ The evidence set shows a coherent demand signal: operational pain (resource exha
 
 
 if __name__ == "__main__":
-    import os
 
     SEP = "=" * 70
     print(SEP)

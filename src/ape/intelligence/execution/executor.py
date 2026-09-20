@@ -202,6 +202,7 @@ class DockerSandboxExecutor(TaskExecutor, SandboxExecutor):
             if self.evidence_dir:
                 try:
                     from datetime import datetime, timezone
+
                     from ape.utils import append_to_evidence
 
                     task_id = getattr(auth_token, "task_id", "UNKNOWN") if auth_token else "UNKNOWN"

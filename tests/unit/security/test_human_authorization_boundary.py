@@ -2,7 +2,6 @@
 Security & Governance Tests for Human Authorization Boundary — ORION-GOV-DEV-002.
 """
 
-from unittest import mock
 import pytest
 
 from ape.governance import (

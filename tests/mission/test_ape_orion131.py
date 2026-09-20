@@ -28,7 +28,6 @@ from ape.pipeline.stages.research_plan import ResearchPlanStage
 from ape.pipeline.stages.source_selection import SourceSelectionStage
 from ape.project import Project
 
-
 TOPIC = "ollama_local_llm_ecosystem"
 TOPIC_SLUG = "ollama_local_llm_ecosystem"
 

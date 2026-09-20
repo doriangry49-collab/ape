@@ -5,9 +5,8 @@ Provides deterministic, target-isolated, 0–4 bounded feature representation mo
 Strictly isolated from ground truth target labels (human_expert_decision, actual_market_outcome).
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Set, Tuple
-
+from dataclasses import dataclass
+from typing import Any, Dict, Set
 
 SCHEMA_VERSION = "RepresentationContract_v1.0"
 

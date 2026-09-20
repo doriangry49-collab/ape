@@ -14,9 +14,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
+
 from ape.intelligence.decision.engine import DecisionEngine
 from ape.intelligence.research.engine import ResearchEngine
 from ape.intelligence.research.providers.github_trending import GitHubTrendingResearchProvider
@@ -30,7 +31,6 @@ from ape.pipeline.stages.research_persist import ResearchPersistStage
 from ape.pipeline.stages.research_plan import ResearchPlanStage
 from ape.pipeline.stages.source_selection import SourceSelectionStage
 from ape.project import Project
-
 
 TOPIC = "ollama_local_llm_ecosystem"
 TOPIC_SLUG = "ollama_local_llm_ecosystem"

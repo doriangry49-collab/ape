@@ -9,23 +9,21 @@ GOVERNANCE INVARIANTS:
 - Fail-Closed: Halts execution on any invariant break.
 """
 
-import json
 import hashlib
+import json
 import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT))
 
-from ape.intelligence.decision.scorer import Scorer, load_weights
 from ape.intelligence.ablation.representation_contract import (
     sanitize_snapshot_input,
-    RepresentationContract,
 )
+from ape.intelligence.decision.scorer import Scorer, load_weights
 from lab.calibration.run_g3b3c_ablation import build_r1_scorer_input
 
 # Governance Path Anchors

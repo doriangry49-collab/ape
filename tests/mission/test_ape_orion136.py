@@ -23,7 +23,6 @@ from ape.project import Project
 from ape.runtime.daemon import AutonomousRuntimeDaemon, HeartbeatMonitor
 from ape.runtime.scheduler import Job, JobStatus, MissionScheduler, PersistentJobQueue
 
-
 TOPIC = "ollama_local_llm_ecosystem"
 TOPIC_SLUG = "ollama_local_llm_ecosystem"
 
@@ -83,9 +82,9 @@ class TestORION136_AutonomousRuntimeFoundation:
         job = scheduler.schedule_mission(TOPIC_SLUG, action="full_mission")
         assert job.status == JobStatus.QUEUED
 
-        from tests.dummy_agent import DummyAgent
         from ape.intelligence.execution.engine import ExecutionEngine
         from ape.intelligence.execution.executor import SimulationTaskExecutor
+        from tests.dummy_agent import DummyAgent
         original_init = ExecutionEngine.__init__
         def patched_init(self, *args, **kwargs):
             kwargs['agent'] = DummyAgent()
@@ -152,9 +151,9 @@ class TestORION136_AutonomousRuntimeFoundation:
         daemon = AutonomousRuntimeDaemon(tmp_path, daemon_id="daemon_e2e")
         daemon.scheduler.schedule_mission(TOPIC_SLUG)
     
-        from tests.dummy_agent import DummyAgent
         from ape.intelligence.execution.engine import ExecutionEngine
         from ape.intelligence.execution.executor import SimulationTaskExecutor
+        from tests.dummy_agent import DummyAgent
         original_init = ExecutionEngine.__init__
         def patched_init(self, *args, **kwargs):
             kwargs['agent'] = DummyAgent()

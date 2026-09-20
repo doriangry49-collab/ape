@@ -15,10 +15,9 @@ Key rules:
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from .interpreter import ClaimType, EvidenceClaim
-
 
 _SCORER_FIELDS = ("pain_points", "discussions", "risks", "competitors", "target_audience")
 

@@ -157,14 +157,14 @@ def main() -> None:
     
     summary = run_experiment(repo_root, topics)
     for topic, res in summary.items():
-        print(f"\n========================================================")
+        print("\n========================================================")
         print(f"Topic: {topic}")
         print(f"  Production Heuristic Score : {res['production_heuristic']['score']}/100")
         print(f"  Experimental R&D Score     : {res['experimental_rd']['score']}/100")
         print(f"  Experimental Recommendation: {res['experimental_rd']['recommendation']}")
         print(f"  Recommendation Reason      : {res['experimental_rd']['recommendation_reason']}")
         print(f"  Brief Markdown Artifact    : {res['brief_md_path']}")
-        print(f"========================================================")
+        print("========================================================")
 
 
 if __name__ == "__main__":

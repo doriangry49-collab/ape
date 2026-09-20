@@ -11,23 +11,23 @@ GOVERNANCE INVARIANTS (per Şef 2026-09-01 GO):
 """
 
 import json
-import sys
 import math
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 # ── Path anchor ──────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from ape.intelligence.decision.scorer import Scorer, load_weights
 from ape.intelligence.ablation.representation_contract import (
+    RepresentationContract,
     extract_r2_features_isolated,
     map_r2_to_scorer_v1_input,
     sanitize_snapshot_input,
-    RepresentationContract,
 )
+from ape.intelligence.decision.scorer import Scorer, load_weights
 
 # ── Governance: holdout guard ─────────────────────────────────────────────────
 CALIBRATION_PATH = REPO_ROOT / ".governance" / "calibration_dataset_2026.json"

@@ -6,9 +6,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import pytest
-from lab.candidates.threshold_audit import EvidenceThresholdAuditor
-from lab.candidates.real_user_evidence_ingestion import RealUserEvidenceIngestionValidator
+
 from lab.candidates.real_user_evidence_analysis import RealUserEvidenceAnalyzer
+from lab.candidates.real_user_evidence_ingestion import RealUserEvidenceIngestionValidator
+from lab.candidates.threshold_audit import EvidenceThresholdAuditor
 
 
 @pytest.fixture

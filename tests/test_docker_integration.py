@@ -4,8 +4,6 @@ These tests run REAL Docker commands. They are skipped locally if Docker is
 unavailable and run unconditionally in CI (ubuntu-latest runner has Docker).
 """
 import os
-import shutil
-import subprocess
 
 import pytest
 

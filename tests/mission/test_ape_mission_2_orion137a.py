@@ -13,7 +13,6 @@ Mission Scope:
 
 from __future__ import annotations
 
-import json
 import os
 import urllib.request
 from pathlib import Path
@@ -22,7 +21,6 @@ import pytest
 
 from ape.intelligence.execution.agent import ApeCoderAgent
 from ape.intelligence.execution.models import ExecutionTask
-from ape.intelligence.execution.providers import auto_detect_provider
 from ape.intelligence.roadmap.llm import OpenAICompatibleProvider
 
 MAX_EXTERNAL_HTTP_REQUESTS = 3
@@ -112,7 +110,7 @@ class TestORION137A_Step3B_LiveProof:
             )
 
             assert isinstance(result, dict)
-            print(f"\n[G1] Provider Class: OpenAICompatibleProvider")
+            print("\n[G1] Provider Class: OpenAICompatibleProvider")
             print(f"[G1] Model: {model_name}")
             print(f"[G1] Endpoint Host: {base_url}")
             print(f"[G1] Response Result: {result}")
@@ -254,7 +252,7 @@ class TestORION137A_Step3B_LiveProof:
         assert result.steps[0].status == "BLOCKED"
         assert len(post_files - pre_files) == 0
 
-        print(f"\n[G4a] Malicious Action: git_push -> BLOCKED")
+        print("\n[G4a] Malicious Action: git_push -> BLOCKED")
         print("[G4a] Status: PROVEN (0 HTTP calls consumed)")
 
     def test_g4b_rejects_path_traversal(self, tmp_path: Path) -> None:
@@ -287,7 +285,7 @@ class TestORION137A_Step3B_LiveProof:
         assert result.steps[0].status == "REJECTED"
         assert len(post_files - pre_files) == 0
 
-        print(f"\n[G4b] Malicious Target: ../../outside_target.py -> REJECTED")
+        print("\n[G4b] Malicious Target: ../../outside_target.py -> REJECTED")
         print("[G4b] Status: PROVEN (0 HTTP calls consumed)")
 
     def test_g4c_rejects_noncanonical_action(self, tmp_path: Path) -> None:
@@ -318,5 +316,5 @@ class TestORION137A_Step3B_LiveProof:
         assert result.steps[0].status == "REJECTED"
         assert len(post_files - pre_files) == 0
 
-        print(f"\n[G4c] Non-canonical Action: system_call -> REJECTED")
+        print("\n[G4c] Non-canonical Action: system_call -> REJECTED")
         print("[G4c] Status: PROVEN (0 HTTP calls consumed)")

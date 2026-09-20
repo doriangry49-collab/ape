@@ -4,7 +4,6 @@ RFC-019 Real User Journey & Governed Autonomous Build Acceptance Tests.
 """
 import json
 import subprocess
-import sys
 from pathlib import Path
 
 from typer.testing import CliRunner

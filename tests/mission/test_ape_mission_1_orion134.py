@@ -37,7 +37,6 @@ from ape.pipeline.stages.task_execution import TaskExecutionStage
 from ape.pipeline.stages.verification import VerificationStage
 from ape.project import Project
 
-
 TOPIC = "ollama_local_llm_ecosystem"
 TOPIC_SLUG = "ollama_local_llm_ecosystem"
 
@@ -251,6 +250,6 @@ class TestORION134_ResearchUnitProductionProofGate:
         err_str = str(exc_info.value)
         assert "verification" in err_str.lower() or "halted" in err_str.lower() or "failed" in err_str.lower()
 
-        print(f"\n[Proof 3] Failure Injection Result: Pipeline halted at VerificationStage as expected.")
+        print("\n[Proof 3] Failure Injection Result: Pipeline halted at VerificationStage as expected.")
         print(f"[Proof 3] Exception caught: {err_str[:120]}...")
         print("[Proof 3] Fail-closed Release Gate verified: Broken build halted before release!")

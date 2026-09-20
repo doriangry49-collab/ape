@@ -1,5 +1,5 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Optional
 
 import typer
@@ -1266,8 +1266,11 @@ def venture_replay(
     typer.echo(_hr())
 
 
-from ape.etsy.cli import etsy_app
-app.add_typer(etsy_app, name="etsy")
+try:
+    from ape.etsy.cli import etsy_app
+    app.add_typer(etsy_app, name="etsy")
+except (ImportError, ModuleNotFoundError):
+    pass
 
 
 if __name__ == "__main__":

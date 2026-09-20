@@ -13,19 +13,14 @@ from __future__ import annotations
 from pathlib import Path
 from unittest import mock
 
-import pytest
-
 from ape.intelligence.execution.agent import ApeCoderAgent
 from ape.intelligence.execution.executor import (
     DockerSandboxExecutor,
     SandboxExecutor,
-    SandboxResult,
-    SimulationTaskExecutor,
     TaskExecutor,
 )
 from ape.intelligence.execution.models import ExecutionTask
 from ape.intelligence.execution.policy import (
-    ACTION_PARAMETER_SCHEMAS,
     validate_action_parameters,
 )
 from ape.intelligence.roadmap.llm import PlannerModel

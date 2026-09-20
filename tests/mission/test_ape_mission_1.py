@@ -27,13 +27,8 @@ Mission #1 Production Finding:
 from __future__ import annotations
 
 import json
-import textwrap
 from pathlib import Path
-from typing import List
 
-import pytest
-
-from ape.intelligence.execution.engine import ExecutionEngine
 from ape.intelligence.execution.evaluators import (
     CompositeRuntimeEvaluator,
     RepeatedErrorEvaluator,
@@ -45,8 +40,8 @@ from ape.intelligence.execution.intervention import (
     InterventionAction,
 )
 from ape.intelligence.execution.trajectory import ExecutionTrajectory, TrajectoryStep
-from ape.pipeline.contracts import ExecutionContext, StageStatus
-from ape.pipeline.runner import ConstitutionalPipelineRunner, PipelineExecutionError
+from ape.pipeline.contracts import ExecutionContext
+from ape.pipeline.runner import ConstitutionalPipelineRunner
 from ape.pipeline.stages.capability_check import CapabilityCheckStage
 from ape.pipeline.stages.execution_evidence import ExecutionEvidenceStage
 from ape.pipeline.stages.execution_persist import ExecutionPersistStage
