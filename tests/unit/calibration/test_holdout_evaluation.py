@@ -1,3 +1,5 @@
+import pytest
+
 """Unit tests for G5.4 Holdout Counterfactual Evaluation Engine & Phase 1 (F-1) / Phase 2 (F-2) Metrics.
 
 EVIDENCE SEPARATION:
@@ -201,6 +203,7 @@ def test_production_package_never_imports_lab():
         assert "import lab" not in content, f"Production file {py_file} imports from lab!"
 
 
+@pytest.mark.skipif(not HOLDOUT_PATH.exists(), reason="Holdout dataset not present")
 def test_holdout_population_counts_derived_dynamically():
     """Denominator must come from sealed dataset contents, never be hardcoded."""
     with open(HOLDOUT_PATH, "r", encoding="utf-8") as f:
@@ -214,6 +217,7 @@ def test_holdout_population_counts_derived_dynamically():
     assert actual_successes + actual_non_successes == 20
 
 
+@pytest.mark.skipif(not HOLDOUT_PATH.exists(), reason="Holdout dataset not present")
 def test_success_capture_rate_never_exceeds_100_percent():
     """An 11-success dataset must report rates <= 100%."""
     scorecards = run_g5_holdout_evaluation(HOLDOUT_PATH, REPO_ROOT)
@@ -223,6 +227,7 @@ def test_success_capture_rate_never_exceeds_100_percent():
         assert card.validation_recall <= 1.0
 
 
+@pytest.mark.skipif(not HOLDOUT_PATH.exists(), reason="Holdout dataset not present")
 def test_no_double_counting_across_decisions():
     """BUILD + VALIDATE + WAIT must exactly account for all 20 records per model."""
     scorecards = run_g5_holdout_evaluation(HOLDOUT_PATH, REPO_ROOT)
@@ -232,6 +237,7 @@ def test_no_double_counting_across_decisions():
         assert total == 20
 
 
+@pytest.mark.skipif(not HOLDOUT_PATH.exists(), reason="Holdout dataset not present")
 def test_g5_holdout_evaluation_runs_cleanly():
     """Verify G5.4 corrected holdout evaluation runs cleanly across all 20 sealed records."""
     scorecards = run_g5_holdout_evaluation(HOLDOUT_PATH, REPO_ROOT)
