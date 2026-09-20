@@ -12,7 +12,7 @@ GOVERNANCE INVARIANTS:
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
@@ -21,7 +21,6 @@ sys.path.insert(0, str(REPO_ROOT))
 from ape.intelligence.ablation.representation_contract import (
     extract_r2_features_isolated,
     map_r2_to_scorer_v1_input,
-    sanitize_snapshot_input,
 )
 from lab.calibration.run_g3b3c_ablation import (
     build_r1_scorer_input,

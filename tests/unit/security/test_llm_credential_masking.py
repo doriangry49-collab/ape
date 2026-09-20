@@ -16,10 +16,8 @@ Invariant:
 from __future__ import annotations
 
 import io
-import sys
 import urllib.error
 from http.client import HTTPMessage
-from typing import Any, Dict
 from unittest.mock import MagicMock, patch
 
 import pytest

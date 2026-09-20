@@ -1,5 +1,5 @@
-import pytest
 from ape.intelligence.execution.policy import translate_sandbox_path
+
 
 def test_translate_sandbox_path_basic_file():
     assert translate_sandbox_path("/workspace/foo.py") == "foo.py"

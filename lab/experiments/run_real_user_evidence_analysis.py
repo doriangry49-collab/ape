@@ -150,7 +150,7 @@ def main() -> None:
     print(f"  Evidence Quality        : {res['evidence_quality']}/100")
     print(f"  Confidence              : {res['confidence']}%")
     print(f"  DECISION                : {res['decision']}")
-    print(f"  GO                      : IMPOSSIBLE")
+    print("  GO                      : IMPOSSIBLE")
     print(f"  Reason                  : {res['decision_reason']}")
     print("========================================================")
 

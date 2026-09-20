@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 
 
 class RealUserEvidenceAnalyzer:
@@ -163,7 +163,7 @@ class RealUserEvidenceAnalyzer:
             "pricing_29_license": "UNSUPPORTED" if h2_pos == 0 else f"SUPPORTED_BY_{h2_pos}_RESPONSES",
             "developer_community_outreach": "UNSUPPORTED" if h3_pos == 0 else f"SUPPORTED_BY_{h3_pos}_RESPONSES",
             "target_50_devs_14_days": "PROPOSED_THRESHOLD_UNVERIFIED",
-            "inferred_vs_observed_note": f"INFERRED != OBSERVED invariant enforced. 0 inferred hypotheses were converted to observed evidence without real user data.",
+            "inferred_vs_observed_note": "INFERRED != OBSERVED invariant enforced. 0 inferred hypotheses were converted to observed evidence without real user data.",
         }
 
         # Decision Gate Logic

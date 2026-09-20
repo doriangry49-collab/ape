@@ -11,7 +11,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
-from ape.calibration.contracts import MarketOutcomeEnum, PolicyDecisionEnum
 from ape.intelligence.decision.scorer import Scorer, load_weights
 
 

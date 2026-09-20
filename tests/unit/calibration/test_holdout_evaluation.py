@@ -5,11 +5,11 @@ EVIDENCE SEPARATION:
 - Phase 2: F-2a (Primary BSI-5), F-2b (Noise-Only BSI-4), 3x3 Transition Matrices, Conservation Rules.
 """
 
-import json, math
+import json
+import math
 from pathlib import Path
 
 from lab.calibration.holdout_evaluator import (
-    HoldoutScorecard,
     compute_boundary_stability,
     compute_ridge_logistic_calibration,
     compute_score_outcome_association_slope,

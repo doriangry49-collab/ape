@@ -6,14 +6,13 @@ reproducibility, rubric range enforcement [0, 4], and holdout access rejection.
 
 import ast
 import copy
-import pytest
 from pathlib import Path
 
+import pytest
+
 from ape.calibration.representation_contract import (
-    SCHEMA_VERSION,
-    ALLOWED_INPUT_FIELDS,
     FORBIDDEN_TARGET_FIELDS,
-    RubricRangeViolationError,
+    SCHEMA_VERSION,
     extract_representation_r1,
     extract_representation_r2,
     extract_representation_r3,

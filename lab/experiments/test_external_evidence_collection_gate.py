@@ -6,6 +6,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import pytest
+
 from lab.candidates.external_collection_gate import ExternalEvidenceCollectionGate
 from lab.candidates.real_user_evidence_ingestion import RealUserEvidenceIngestionValidator
 

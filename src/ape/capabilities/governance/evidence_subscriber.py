@@ -4,9 +4,7 @@ Subscribes to platform EventBus events and persists governance trace evidence JS
 to .governance/evidence/ without blocking capability execution.
 """
 
-import json
 import os
-import time
 from typing import Optional
 
 from ape.capabilities.resiliency import EventBus, RuntimeEvent
@@ -28,6 +26,7 @@ class GovernanceEvidenceSubscriber:
         """Handle incoming RuntimeEvent and append to JSONL ledger via append_to_evidence boundary."""
         try:
             from pathlib import Path
+
             from ape.utils import append_to_evidence
 
             track = "decisions" if event.event_type == "GovernedCapabilityStarted" else "execution"

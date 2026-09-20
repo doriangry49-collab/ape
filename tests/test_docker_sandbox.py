@@ -165,6 +165,7 @@ def test_deliverable_verifier_contract_parsing(tmp_path):
 def test_agent_exploratory_step_does_not_false_complete_file_task():
     """Verify that an exploratory step (search) does NOT falsely complete a task requiring deliverables."""
     from types import SimpleNamespace
+
     from ape.intelligence.execution.agent import ApeCoderAgent
 
     task = SimpleNamespace(
@@ -201,6 +202,7 @@ def test_agent_exploratory_step_does_not_false_complete_file_task():
 def test_agent_positive_write_step_completes_task():
     """Verify that a positive write action (create_file) proceeds to COMPLETED when executed."""
     from types import SimpleNamespace
+
     from ape.intelligence.execution.agent import ApeCoderAgent
 
     task = SimpleNamespace(

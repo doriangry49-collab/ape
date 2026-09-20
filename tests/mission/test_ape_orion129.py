@@ -22,8 +22,8 @@ from pathlib import Path
 
 import pytest
 
-from ape.intelligence.roadmap.engine import RoadmapGenerator
 from ape.intelligence.execution.executor import SimulationTaskExecutor
+from ape.intelligence.roadmap.engine import RoadmapGenerator
 from ape.pipeline.contracts import ExecutionContext
 from ape.pipeline.runner import ConstitutionalPipelineRunner
 from ape.pipeline.stages.capability_check import CapabilityCheckStage
@@ -34,7 +34,6 @@ from ape.pipeline.stages.policy_gate import PolicyGateStage
 from ape.pipeline.stages.release_decision import ReleaseDecisionStage
 from ape.pipeline.stages.task_execution import TaskExecutionStage
 from ape.pipeline.stages.verification import VerificationStage
-
 
 # ---------------------------------------------------------------------------
 # Helpers — shared with existing test_roadmap_policy_semantics.py pattern
@@ -290,7 +289,7 @@ class TestORION129_DecisionToRoadmapBinding:
             f"PROOF FAIL: Expected COMPLETED, got {state.get('status')}"
         )
 
-        print(f"\n[CHAIN] Decision: BUILD")
+        print("\n[CHAIN] Decision: BUILD")
         print(f"[CHAIN] Roadmap: {roadmap.roadmap_id}")
         print(f"[CHAIN] PolicyGate: {pg.status}")
         print(f"[CHAIN] Release: {rd.status}")

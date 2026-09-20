@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+
 from ape.business.brief_generator import BriefGenerator
 
 

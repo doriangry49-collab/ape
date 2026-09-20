@@ -12,7 +12,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 from typing import List
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -26,7 +26,6 @@ from ape.pipeline.resource_budget import (
     ResourceUsage,
 )
 from ape.pipeline.runner import ConstitutionalPipelineRunner
-
 
 # ---------------------------------------------------------------------------
 # Helpers

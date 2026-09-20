@@ -13,16 +13,13 @@ Enforces:
 import json
 import shutil
 import subprocess
-from pathlib import Path
 
 import pytest
 
 from ape.intelligence.execution.agent import ApeCoderAgent
 from ape.intelligence.execution.engine import ExecutionEngine
 from ape.intelligence.execution.executor import DockerSandboxExecutor, SandboxResult
-from ape.intelligence.execution.policy import ExecutionPolicy
 from ape.intelligence.roadmap.llm import PlannerModel
-from ape.pipeline.contracts import StageStatus
 
 
 def _is_docker_daemon_active() -> bool:

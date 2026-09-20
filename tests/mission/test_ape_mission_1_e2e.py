@@ -22,10 +22,7 @@ Pipeline under test:
 from __future__ import annotations
 
 import json
-import shutil
 from pathlib import Path
-
-import pytest
 
 from ape.intelligence.execution.executor import SimulationTaskExecutor
 from ape.pipeline.contracts import ExecutionContext
@@ -38,7 +35,6 @@ from ape.pipeline.stages.policy_gate import PolicyGateStage
 from ape.pipeline.stages.release_decision import ReleaseDecisionStage
 from ape.pipeline.stages.task_execution import TaskExecutionStage
 from ape.pipeline.stages.verification import VerificationStage
-
 
 # ---------------------------------------------------------------------------
 # The one honest runner — all 8 stages, no bypasses

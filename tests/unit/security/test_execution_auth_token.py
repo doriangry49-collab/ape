@@ -4,8 +4,6 @@ Security Unit & Pipeline Tests for ExecutionAuthToken Boundary & Audit Trail —
 
 import json
 import logging
-import os
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
@@ -16,10 +14,9 @@ from ape.intelligence.execution.agent import ApeCoderAgent
 from ape.intelligence.execution.auth_token import (
     ExecutionAuthToken,
     get_governance_secret,
-    create_test_auth_token,
 )
 from ape.intelligence.execution.engine import ExecutionEngine
-from ape.intelligence.execution.executor import DockerSandboxExecutor, SandboxResult
+from ape.intelligence.execution.executor import DockerSandboxExecutor
 from ape.intelligence.roadmap.llm import PlannerModel
 from ape.pipeline.stages.policy_gate import PolicyGateStage
 

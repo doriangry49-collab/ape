@@ -29,8 +29,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT))
 
-from ape.intelligence.evidence import EvidenceInterpreter, ClaimAggregator
 from ape.intelligence.decision.scorer import Scorer, load_weights
+from ape.intelligence.evidence import ClaimAggregator, EvidenceInterpreter
 
 # ---------------------------------------------------------------------------
 # Frozen P1 evidence snapshots — identical to run_p1_opportunity_execution.py
@@ -302,7 +302,7 @@ def run_replay() -> None:
     header(f"P1.5 FORENSIC REPLAY -- {'PASS' if all_pass else 'FAIL'}")
     print(f"  Contract v2 replay result : {new_score} / {decision}")
     print(f"  Score delta               : {new_score - old_score_raw:+d} ({old_score_raw} -> {new_score})")
-    print(f"  Placeholder tokens        : NONE")
+    print("  Placeholder tokens        : NONE")
     print(f"  Dimension coverage        : {aggregated['_provenance']['dimension_coverage']:.0%}")
     print(f"  Assertions                : {'ALL PASS' if all_pass else 'SOME FAILED'}")
     print()

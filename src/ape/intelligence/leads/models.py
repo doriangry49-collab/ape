@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Literal, Optional
-from dataclasses import dataclass, field, asdict
-
+from dataclasses import dataclass, field
+from typing import Any, Literal
 
 SourceType = Literal["twitter", "github_issue", "forum_post"]
 VerificationStatus = Literal["VERIFIED_EXISTS", "UNVERIFIED_OR_404", "ERROR"]

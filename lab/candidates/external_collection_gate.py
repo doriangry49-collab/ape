@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 
 
 class ExternalEvidenceCollectionGate:
@@ -77,7 +77,7 @@ class ExternalEvidenceCollectionGate:
             go_possible = False
         elif real_user_count == 0:
             decision = "VALIDATE_MORE"
-            decision_reason = f"Zero real user responses observed (observed_real_user_count = 0). APE MUST STOP and await human evidence collection. GO decision is IMPOSSIBLE without real user evidence."
+            decision_reason = "Zero real user responses observed (observed_real_user_count = 0). APE MUST STOP and await human evidence collection. GO decision is IMPOSSIBLE without real user evidence."
             status = "WAITING_FOR_REAL_USERS"
             go_possible = False
         else:

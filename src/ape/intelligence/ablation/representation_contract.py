@@ -12,10 +12,10 @@ GOVERNANCE DIRECTIVE:
 
 import ast
 import inspect
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 
 class TargetIsolationViolationError(ValueError):
@@ -198,6 +198,7 @@ class R3Representation:
 # ---------------------------------------------------------------------------
 
 import textwrap
+
 
 def verify_static_target_isolation(func) -> None:
     """Performs static AST inspection of an extraction function to verify zero references to target keys."""

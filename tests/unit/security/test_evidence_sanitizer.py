@@ -3,13 +3,12 @@ Unit and E2E Tests for Evidence Sanitizer Security Boundary — ORION-158 Phase 
 """
 
 import json
+
 import pytest
-from pathlib import Path
+
 from ape.utils import (
-    sanitize_evidence_payload,
     append_to_evidence,
-    DENYLIST_KEYS,
-    ALLOWLIST_KEYS,
+    sanitize_evidence_payload,
 )
 
 

@@ -6,7 +6,6 @@ Handles immutable evidence persistence (.governance/evidence/) and canonical sta
 from __future__ import annotations
 
 import json
-import re
 from typing import List
 
 from ape.pipeline.contracts import (

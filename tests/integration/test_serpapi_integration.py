@@ -14,6 +14,7 @@ pytestmark = pytest.mark.integration
 import sys
 from unittest.mock import MagicMock, patch
 
+
 def test_missing_api_key_raises_error():
     # If key is missing, verify clean failure (AdapterError)
     adapter = WebSearchAdapter(max_requests=1)

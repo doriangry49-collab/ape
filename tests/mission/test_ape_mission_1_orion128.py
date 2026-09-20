@@ -47,7 +47,6 @@ from ape.pipeline.stages.task_execution import TaskExecutionStage
 from ape.pipeline.stages.verification import VerificationStage
 from ape.project import Project
 
-
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -442,7 +441,7 @@ class TestORION128_ResearchToDecisionProof:
         # --- RETRY live status ---
         retry_observed = False  # Would need a failure injection to trigger
         print(f"[RETRY] Live enforcement observed: {retry_observed}")
-        print(f"[RETRY] Status: NOT OBSERVED (nominal run, no failure injection)")
+        print("[RETRY] Status: NOT OBSERVED (nominal run, no failure injection)")
 
         # Assertions: trajectory key or evidence must exist
         assert ev_stage is not None, "G1/G2/G3 FAIL: execution_evidence stage absent."

@@ -218,7 +218,6 @@ def _render_summary(summary: dict) -> None:
 
 def _render_gates(results: list, root: Path, elapsed: float) -> dict:
     """Evaluate and print the 4 mission gates. Returns gate_status dict."""
-    from ape.pipeline.contracts import StageStatus
 
     task_exec_result = next(
         (r for r in results if r.stage_name == "task_execution"), None
@@ -317,15 +316,7 @@ def _render_gates(results: list, root: Path, elapsed: float) -> dict:
 def run_mission(workspace: Path | None = None, verbose: bool = False) -> dict:
     from ape.intelligence.execution.engine import ExecutionEngine
     from ape.pipeline.contracts import ExecutionContext
-    from ape.pipeline.runner import ConstitutionalPipelineRunner, PipelineExecutionError
-    from ape.pipeline.stages.capability_check import CapabilityCheckStage
-    from ape.pipeline.stages.execution_evidence import ExecutionEvidenceStage
-    from ape.pipeline.stages.execution_persist import ExecutionPersistStage
-    from ape.pipeline.stages.execution_plan import ExecutionPlanStage
-    from ape.pipeline.stages.policy_gate import PolicyGateStage
-    from ape.pipeline.stages.release_decision import ReleaseDecisionStage
-    from ape.pipeline.stages.task_execution import TaskExecutionStage
-    from ape.pipeline.stages.verification import VerificationStage
+    from ape.pipeline.runner import PipelineExecutionError
 
     use_tmp = workspace is None
     if use_tmp:

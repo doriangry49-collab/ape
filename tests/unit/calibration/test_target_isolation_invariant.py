@@ -5,11 +5,9 @@ in calibration opportunity records MUST NOT alter reconstructed features or scor
 """
 
 import copy
-import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
-from ape.calibration.contracts import PolicyDecisionEnum, MarketOutcomeEnum
 from ape.intelligence.decision.scorer import Scorer, load_weights
 
 

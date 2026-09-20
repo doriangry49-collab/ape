@@ -1,8 +1,8 @@
 """ORION G3b.3a Ablation & Representation Contract Package."""
 
 from ape.intelligence.ablation.representation_contract import (
-    FeatureRubricLevel,
     FeatureRubric,
+    FeatureRubricLevel,
     R1Representation,
     R2Representation,
     R3Representation,

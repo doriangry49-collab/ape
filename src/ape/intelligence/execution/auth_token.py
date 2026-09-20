@@ -16,7 +16,6 @@ import os
 import secrets
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Optional
 
 # Process-local secret key used ONLY in non-production (dev/test) mode when APE_GOVERNANCE_SECRET is unset.
 _DEV_LOCAL_SECRET: bytes = secrets.token_bytes(32)
