@@ -5,7 +5,7 @@ Provides Web App session authentication for the APE Cloud MVP dashboard.
 
 import hashlib
 import time
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 
 class WebAuthSessionManager:

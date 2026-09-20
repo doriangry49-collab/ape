@@ -28,10 +28,10 @@ def test_serpapi_malformed_json_failure():
     import pytest
 
     from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError, WebSearchAdapter
-    
+
     adapter = WebSearchAdapter()
-    
-    # TEST A, B, C: Malformed JSON triggers AdapterError, producing NO BusinessEvidence
+
+    # Malformed JSON triggers AdapterError, producing NO BusinessEvidence
     with pytest.raises(AdapterError):
         adapter.process_live_result("query", "invalid { json")
 
@@ -74,17 +74,6 @@ def test_serpapi_valid_json_undetermined_observation():
     assert ev.pricing_observation == UNKNOWN
     assert ev.competition_observation == UNKNOWN
     assert ev.provenance.reference_url == "https://example.com"
-
-def test_serpapi_malformed_json_failure():
-    import pytest
-
-    from ape.intelligence.scanner.adapters.web_search_adapter import AdapterError, WebSearchAdapter
-    
-    adapter = WebSearchAdapter()
-    
-    # Test D: Malformed JSON triggers AdapterError, producing NO BusinessEvidence
-    with pytest.raises(AdapterError):
-        adapter.process_live_result("query", "invalid { json")
 
 def test_serpapi_network_failure_semantics():
     import os

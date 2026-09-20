@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from ape.intelligence.execution.models import ExecutionState, ExecutionTask
 from ape.pipeline.contracts import (
