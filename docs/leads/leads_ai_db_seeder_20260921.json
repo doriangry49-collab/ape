@@ -1,0 +1,153 @@
+{
+  "product": "ai-db-seeder",
+  "pain_point": "database seeding for development and testing without Snaplet",
+  "discovered_at": "2026-09-20T21:40:51.104180+00:00",
+  "total_leads": 18,
+  "verified_leads": 18,
+  "leads": [
+    {
+      "source_url": "https://github.com/ONEARMY/community-platform/issues/4889",
+      "source_type": "github_issue",
+      "quote": "seed.ts depends on @snaplet/seed 0.98.0, unmaintained since 2024 and failing npm audit: `db:seed` runs `bunx @snaplet/seed sync && bunx tsx seed.ts` against @snaplet/seed 0.98.0, the package's last release (July 2024, no commits since August 2024), a",
+      "relevance_reason": "Public technical discussion #1 (4889) on database seeding context: 'seed.ts depends on @snaplet/seed 0.98.0, unmaintained since 2024 and failing npm audit'.",
+      "suggested_approach": "Hi! Saw your post #1 regarding 'seed.ts depends on @snaplet/seed 0.98.0, unmaintained since 2024 and failing npm audit' (4889). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/ASVGay/the-rhapsodies/issues/917",
+      "source_type": "github_issue",
+      "quote": "Generate seed data using Snaplet: https://supabase.com/docs/guides/local-development/seeding-your-database#generating-seed-data  It would be nice to clean up some envs by doing this if possible",
+      "relevance_reason": "Repository issue evaluating Snaplet alternatives: 'Generate seed data using Snaplet' (917).",
+      "suggested_approach": "Hi! Noticed your repository task 'Generate seed data using Snaplet' (917). Following Snaplet's shutdown, ai-db-seeder provides automated zero-config cross-column relational seeding.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/supabase-community/seed/issues/213",
+      "source_type": "github_issue",
+      "quote": "High severity npm audit vulnerabilities in v0.98.0 dependencies: # Bug report  ## Describe the bug  `@snaplet/seed` version 0.98.0 has transitive dependencies with known high-severity security vulnerabilities. Running `npm audit` reports vulnerabilit",
+      "relevance_reason": "Public technical discussion #3 (213) on database seeding context: 'High severity npm audit vulnerabilities in v0.98.0 dependencies'.",
+      "suggested_approach": "Hi! Saw your post #3 regarding 'High severity npm audit vulnerabilities in v0.98.0 dependencies' (213). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/supabase-community/seed/issues/193",
+      "source_type": "github_issue",
+      "quote": "Cant run npx @snaplet/seed init on windows 11: I try to run `npx @snaplet/seed init` and got this error:\r \r ```\r Welcome to @snaplet/seed! Snaplet Seed populates your database with realistic, production-like mock data ✨\r (node:1152) [DEP0040] Depreca",
+      "relevance_reason": "Developer encountering OS/CLI initialization issues: 'Cant run npx @snaplet/seed init on windows 11' (193).",
+      "suggested_approach": "Hi! Saw your issue regarding 'Cant run npx @snaplet/seed init on windows 11' (193). We built ai-db-seeder as a zero-dependency CLI that runs cross-platform without environment setup errors.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/drizzle-team/drizzle-orm/issues/4133",
+      "source_type": "github_issue",
+      "quote": "[FEATURE]: Generate seed.sql file with Drizzle Seed (for Supabase etc): ### Feature hasn't been suggested before.  - [x] I have verified this feature I'm about to request hasn't been suggested before.  ### Describe the enhancement you want to request",
+      "relevance_reason": "Developer requesting automated seed.sql generation: '[FEATURE]' (4133).",
+      "suggested_approach": "Hey! Saw your request in '[FEATURE]' (4133). With ai-db-seeder, cross-column state machine rules are inferred automatically to generate valid seed.sql files.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/drizzle-team/drizzle-orm/issues/5320",
+      "source_type": "github_issue",
+      "quote": "[FEATURE]: drizzle-seed: Grouped column values with different generator configs: ### Feature hasn't been suggested before.  - [x] I have verified this feature I'm about to request hasn't been suggested before.  ### Describe the enhancement you want t",
+      "relevance_reason": "Developer requesting automated seed.sql generation: '[FEATURE]' (5320).",
+      "suggested_approach": "Hey! Saw your request in '[FEATURE]' (5320). With ai-db-seeder, cross-column state machine rules are inferred automatically to generate valid seed.sql files.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/webinstall/webi-installer-requests/issues/46",
+      "source_type": "github_issue",
+      "quote": "Request for snaplet: It would be awesome being able to temporarily [install snaplet](https://docs.snaplet.dev/quickstart) using webi as it can provide for temporal database to test on CI environments",
+      "relevance_reason": "Public technical discussion #7 (46) on database seeding context: 'Request for snaplet'.",
+      "suggested_approach": "Hi! Saw your post #7 regarding 'Request for snaplet' (46). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/irthomasthomas/undecidability/issues/693",
+      "source_type": "github_issue",
+      "quote": "https://supabase.com/blog/postgres-wasm: - [ ] [https://supabase.com/blog/postgres-wasm](https://supabase.com/blog/postgres-wasm)   # Title: [Postgres WASM by Snaplet and Supabase](https://supabase.com/blog/postgres-wasm)  **Description:** Postgres W",
+      "relevance_reason": "Public technical discussion #8 (693) on database seeding context: 'https'.",
+      "suggested_approach": "Hi! Saw your post #8 regarding 'https' (693). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/near/queryapi/issues/311",
+      "source_type": "github_issue",
+      "quote": "🔷 [Epic] WebBrowser-based database for debugging: ### Description\r Currently users can run indexers in debug mode in the browser for selected blocks, read the logs and inspect errors in the browser console. However, commands that interact with the da",
+      "relevance_reason": "Public technical discussion #9 (311) on database seeding context: '🔷 [Epic] WebBrowser-based database for debugging'.",
+      "suggested_approach": "Hi! Saw your post #9 regarding '🔷 [Epic] WebBrowser-based database for debugging' (311). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/edmondsoun/living-timeline/issues/2",
+      "source_type": "github_issue",
+      "quote": "Set up seed file for database: See Prisma docs here for options to set up a seed file: https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding\r \r Questions:\r - Do we want to use Snaplet to auto-generate data?\r - If not, preference to write se",
+      "relevance_reason": "Public technical discussion #10 (2) on database seeding context: 'Set up seed file for database'.",
+      "suggested_approach": "Hi! Saw your post #10 regarding 'Set up seed file for database' (2). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/Yash40000/forgetdm/issues/90",
+      "source_type": "github_issue",
+      "quote": "[SYN-012] CHECK constraints and cross-column business rules: ## User story  As a ForgeTDM user or operator, I need **CHECK constraints and cross-column business rules** so that the product behavior is safe, predictable, and independently verifiable. ",
+      "relevance_reason": "Engineering issue regarding CHECK constraints & state logic: '[SYN-012] CHECK constraints and cross-column business rules' (90).",
+      "suggested_approach": "Hi! Saw your discussion in '[SYN-012] CHECK constraints and cross-column business rules' (90). ai-db-seeder targets cross-column CHECK constraints and state machines specifically for relational databases.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/zhaoanliu/job-tracker/issues/745",
+      "source_type": "github_issue",
+      "quote": "Add retry and failure metrics to database reads and writes: ## Summary  Database access in the app has no resilience layer and no failure observability. Two related gaps:  1. **DB reads and writes have no retry** — a single transient failure (network",
+      "relevance_reason": "Public technical discussion #12 (745) on database seeding context: 'Add retry and failure metrics to database reads and writes'.",
+      "suggested_approach": "Hi! Saw your post #12 regarding 'Add retry and failure metrics to database reads and writes' (745). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/teamleaderleo/fieldwork/issues/211",
+      "source_type": "github_issue",
+      "quote": "[Lane] Scout foundational libraries, databases, and Linux systems: State: `ready`  Programme: #207   Owned path: `programmes/open-source-ecosystems/scouts/foundational-systems/`  ## In simple words  Map the quiet components that sit underneath many a",
+      "relevance_reason": "Public technical discussion #13 (211) on database seeding context: '[Lane] Scout foundational libraries, databases, and Linux systems'.",
+      "suggested_approach": "Hi! Saw your post #13 regarding '[Lane] Scout foundational libraries, databases, and Linux systems' (211). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/mcarlson94/parentpresents-web/issues/13",
+      "source_type": "github_issue",
+      "quote": "Record platform decisions: database engine, data access, and auth for /admin: ```yaml source: Backlog seeding, issue #11 related_post_slug: dependencies: [] started_at: 2026-09-15T10:01:14Z completed_at: result: ```  ## Goal  Produce a single platfor",
+      "relevance_reason": "Public technical discussion #14 (13) on database seeding context: 'Record platform decisions'.",
+      "suggested_approach": "Hi! Saw your post #14 regarding 'Record platform decisions' (13). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/schplitt/iso4/issues/82",
+      "source_type": "github_issue",
+      "quote": "design: SQLite support — per-prefix databases, multiple warm instances writing the same DB: Design issue — options and open decisions, no implementation. Direction stated 2026-08-10 and reaffirmed 2026-08-14: prefixes get SQLite databases, alongside ",
+      "relevance_reason": "Public technical discussion #15 (82) on database seeding context: 'design'.",
+      "suggested_approach": "Hi! Saw your post #15 regarding 'design' (82). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://github.com/BoloDB/bolodb/issues/238",
+      "source_type": "github_issue",
+      "quote": "Post-Query Data Filtering & Sorting: ## Problem Statement  Query results are displayed as static tables with no client-side filtering, sorting, or searching. Users must modify their SQL to change result ordering or filter rows, which is inefficient f",
+      "relevance_reason": "Public technical discussion #16 (238) on database seeding context: 'Post-Query Data Filtering & Sorting'.",
+      "suggested_approach": "Hi! Saw your post #16 regarding 'Post-Query Data Filtering & Sorting' (238). If you need an automated solution for database seeding for development and testing without Snaplet, ai-db-seeder offers zero-config state machine seed generation.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://x.com/jianreis/status/1807707851340579155",
+      "source_type": "twitter",
+      "quote": "Working at Snaplet has been the highlight of my career. Thanks to all the developers who used us, the team who built it, and the investors who backed us.",
+      "relevance_reason": "Snaplet team member post reflecting on the tool's legacy (1807707851340579155).",
+      "suggested_approach": "Thank you for building Snaplet! (1807707851340579155) Inspired by that mission, we're building open-source ai-db-seeder to keep zero-config state seeding accessible.",
+      "verification_status": "VERIFIED_EXISTS"
+    },
+    {
+      "source_url": "https://x.com/mojitane",
+      "source_type": "twitter",
+      "quote": "Snaplet is now Open Source: supabase.link/O2eQSWS Last month @_snaplet shut down. But that's not the end of the story. Some of the team joined @supabase.",
+      "relevance_reason": "Community announcement regarding Snaplet open-source transition (mojitane).",
+      "suggested_approach": "Great point regarding Supabase community seed tech (mojitane)! For zero-config cross-column state rules, check out open-source ai-db-seeder.",
+      "verification_status": "VERIFIED_EXISTS"
+    }
+  ]
+}
