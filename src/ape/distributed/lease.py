@@ -40,9 +40,6 @@ class LeaseManager:
             return True
         return False
 
-    def reclaim_expired_leases() -> List[TaskLease]:
-        """Scan and reclaim expired leases for fail-closed task recovery."""
-
     def reclaim_expired_leases(self) -> List[TaskLease]:
         """Scan and reclaim expired leases for fail-closed task recovery."""
         expired: List[TaskLease] = []

@@ -16,6 +16,7 @@ from ape.capabilities.selection.strategies import (
 )
 
 __all__ = [
+    "BestScoreStrategy",
     "ProviderSelectionStrategy",
     "PinnedStrategy",
     "LowestCostStrategy",

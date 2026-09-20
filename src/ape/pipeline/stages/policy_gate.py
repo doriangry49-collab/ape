@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from ape.intelligence.execution.auth_token import ExecutionAuthToken
 from ape.pipeline.contracts import (
     BasePipelineContext,
     ExecutionContext,
@@ -152,6 +153,6 @@ class PolicyGateStage(PipelineStage):
     @staticmethod
     def issue_execution_token(task_id: str) -> ExecutionAuthToken:
         """Issues an ExecutionAuthToken for task_id using the governance secret key."""
-        from ape.intelligence.execution.auth_token import ExecutionAuthToken, get_governance_secret
+        from ape.intelligence.execution.auth_token import get_governance_secret
         secret = get_governance_secret()
         return ExecutionAuthToken.create(task_id, secret)

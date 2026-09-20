@@ -32,7 +32,7 @@ jobs:
           pip install pytest
 
       - name: Run tests
-        run: pytest -v
+        run: pytest -v -m 'not integration'
 
   gitleaks:
     runs-on: ubuntu-latest

@@ -2,7 +2,7 @@ import hashlib
 import json
 import uuid
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
 from ape.intelligence.decision.bridge import BridgeResult, InferenceBridge
 from ape.intelligence.decision.constitution import ConstitutionValidator

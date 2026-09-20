@@ -30,7 +30,7 @@ from ape.intelligence.execution.models import (
 from ape.intelligence.execution.policy import ExecutionPolicy
 from ape.intelligence.execution.verifier import DeliverableVerifier
 from ape.pipeline.contracts import ExecutionContext, StageStatus
-from ape.pipeline.runner import PipelineExecutionError
+from ape.pipeline.runner import ConstitutionalPipelineRunner, PipelineExecutionError
 from ape.utils import get_current_artifact
 
 
@@ -129,7 +129,6 @@ class ExecutionEngine:
 
     def _build_pipeline(self) -> ConstitutionalPipelineRunner:
         """Constructs the constitutional 8-stage ExecutionPipeline."""
-        from ape.pipeline.runner import ConstitutionalPipelineRunner
         from ape.pipeline.stages.capability_check import CapabilityCheckStage
         from ape.pipeline.stages.execution_evidence import ExecutionEvidenceStage
         from ape.pipeline.stages.execution_persist import ExecutionPersistStage
